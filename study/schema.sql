@@ -51,3 +51,17 @@ CREATE TABLE save_routine (
     FOREIGN KEY (user_id) REFERENCES user (id),
     FOREIGN KEY (routine_id) REFERENCES routine (id)
 );
+
+CREATE TABLE class (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    owner_id INTEGER NOT NULL,
+    title TEXT NOT NULL,
+    FOREIGN KEY (owner_id) REFERENCES user (id)
+);
+
+CREATE TABLE class_member (
+    user_id INTEGER NOT NULL,
+    class_id INTEGER NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES user (id),
+    FOREIGN KEY (class_id) REFERENCES class (id)
+);
