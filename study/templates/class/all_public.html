@@ -1,0 +1,35 @@
+{% extends "search.html" %}
+{% block header %}
+    <h1>{% block title %}Public Classes{% endblock %}</h1>
+{% endblock %}
+
+{%block content%}
+{{ super() }}
+<div class="object_list" id="public_classes">
+    {% for n in range(classes|length) %}
+        <div class="object_instance" id="class_instance">
+            {% set class = classes[n] %}
+            {% set is_member = member_info[n] %}
+            <div class="object_info" id="class_info">
+                <a href="{{ url_for('class.view', class_id=class.id) }}">{{ class.title }}</a>
+            </div>
+            <div class="object_options" id="class_options">
+                <form method="post">
+                    {% if is_member  != 1 %}
+                        {% if is_member == 0 %}
+                            <input type="submit" name="leave_class" value="Leave">
+                        {% elif is_member == -1 %}
+                            <input type="submit" name="request_join_class" value="Request to join">
+                            <input type="submit" name="code_join_class" value="Join class with code"
+                        {% endif %}
+                    {% else %}
+                        <input type="submit" name="update_class" value="Update">
+                        <input type="submit" name="delete_class" value="Delete">
+                    {% endif %}
+                    <input type="hidden" name="class_id" value="{{ class.id }}">
+                </form>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

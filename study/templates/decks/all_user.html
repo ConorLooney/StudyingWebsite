@@ -12,7 +12,6 @@
             {% set is_owned = owned_info[n] %}
             <div class="object_info" id="deck_info">
                 <a href="{{ url_for('decks.view_deck', deck_id=deck.id) }}">{{ deck.title }}</a>
-                {{ deck.created.strftime("%d/%m/%Y") }}
             </div>
             <div class="object_options" id="deck_options">
                 <form method="post">

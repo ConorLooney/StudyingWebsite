@@ -63,6 +63,7 @@ CREATE TABLE class (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     owner_id INTEGER NOT NULL,
     title TEXT NOT NULL,
+    description TEXT NOT NULL, 
     is_public BIT NOT NULL,
     FOREIGN KEY (owner_id) REFERENCES user (id)
 );

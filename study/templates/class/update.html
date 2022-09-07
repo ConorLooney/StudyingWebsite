@@ -1,19 +1,19 @@
 {% extends "base.html" %}
 
 {% block header %}
-    <h1>{% block title %}Create Class{% endblock %}</h1>
+    <h1>{% block title %}Update Class {{ class_.title }}{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
 <form method="post">
     <label for="title">Name:</label>
-    <input name="title" id="title" required autofocus>
+    <input name="title" id="title" value="{{ class_.title }}"required autofocus>
     <label for="description">Description:</label>
-    <input name="description" id="description">
+    <textarea name="description" id="description">{{ class_.description }}</textarea>
     <select name="is_public" id="is_public">
         <option name="public" id="public" value="public">Public</option>
         <option name="private" id="private" value="private">Private</option>
     </select>
-    <input type="submit" value="Create">
+    <input type="submit" value="Update">
 </form>
 {% endblock %}

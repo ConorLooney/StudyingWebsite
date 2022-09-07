@@ -49,7 +49,7 @@ def all_user():
     if search_term is None:
         decks = db.execute(
             "SELECT * FROM deck WHERE owner_id = ?",
-            (str(g.user['id']))
+            (str(g.user['id']),)
         ).fetchall()
         decks.extend(db.execute(
             "SELECT * FROM deck \
@@ -87,7 +87,7 @@ def all_user():
         WHERE save_routine.user_id = ?",
         (str(g.user["id"]),)
     ).fetchall())
-
+    
     return render_template("decks/all_user.html", decks=decks, owned_info=owned_info, routines=routines)
 
 @bp.route("/create", methods=("GET", "POST"))
