@@ -1,0 +1,33 @@
+{% extends "search.html" %}
+{% block header %}
+    <h1>{% block title %}Your Routines{% endblock %}</h1>
+{% endblock %}
+
+{%block content%}
+{{ super() }}
+<div class="object_list" id="routine_list">
+    {% for n in range(routines|length) %}
+        <div class="object_instance" id="routine_instance">
+            {% set routine = routines[n] %}
+            {% set is_owned = owned_info[n] %}
+            <div class="object_info" id="routine_info">
+                <a href="{{ url_for('routines.view_routine', routine_id=routine.id) }}">{{ routine.title }}</a>:
+                {{ routine.steps }}
+            </div>
+            <div class="object_options" id="routine_options">
+                <form method="post">
+                    {% if is_owned %}
+                        <input type="submit" name="update_routine" value="Update">
+                        <input type="submit" name="delete_routine" value="Delete">
+                        <input type="hidden" name="modify_routine" id="modify_routine">
+                        <input type="hidden" name="routine_id" value="{{ routine.id }}">
+                    {% else %}
+                        <input type="submit" name="unsave_routine" value="Unsave">
+                        <input type="hidden" name="routine_id" value="{{ routine.id }}">
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

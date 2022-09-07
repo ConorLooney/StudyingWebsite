@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="search">
+    <form method="post">
+        <label for="search_field">Search: </label>
+        <input name="search_field" id="search_field">
+        <label for="search_criteria">Criteria: </label>
+        <select name="search_criteria" id="search_criteria">
+            <option name="contains" id="contains" value="contains">Contains</option>
+            <option name="equals" id="equals" value="equals">Equals</option>
+        </select>
+        <input type="submit" name="search" id="search" value="Go">
+    </form>
+</div>
+{% endblock %}

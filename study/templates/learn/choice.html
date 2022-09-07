@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block header %}
+    <h1>{% block title %}Choice{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<div class="learning_step" id="choice">
+    {{ correct_term.question }}?
+    <form method="post">
+        <label for="answer">
+        {% for choice in choices %}
+            <input type="submit" name="answer" id="{{ choice.id }}" value="{{ choice.answer }}" autofocus>
+        {% endfor %}
+    </form>
+</div>
+{% endblock %}

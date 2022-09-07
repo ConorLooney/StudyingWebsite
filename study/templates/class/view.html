@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block header %}
+    <h1>{% block title %}{{ view_class.title }}{%endblock%}</h1>
+{% endblock %}
+
+{% block content %}
+{{ view_class.title }}
+{% if view_class.is_public == 1 %}
+    <p>Is public</p>
+{% elif view_class.is_public == 0 %}
+    <p>Is private</p>
+{% endif %}
+<p>Members:</p>
+{% for member in members %}
+    {{ member.username }}
+{% endfor %}
+{% endblock %}

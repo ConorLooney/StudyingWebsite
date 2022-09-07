@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block header %}
+    <h1>{%block title%}Delete {{ routine.name }}{%endblock%}</h1>
+{% endblock%}
+
+{% block content %}
+<p>Are you sure you want to delete the routine {{ routine.name }}? This action is irreversible.</p>
+<form method="post">
+    <label for="password">Enter your password to confirm</label>
+    <input type="password" name="password" id="password" required>
+    <input type="submit" value="Delete">
+</form>
+{% endblock %}

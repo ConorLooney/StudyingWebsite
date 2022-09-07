@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block header %}
+    <h1>{% block title %}Update deck{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<form method="post">
+    <label for="deck_name">Deck name:</label>
+    <input name="deck_name" id="deck_name" value="{{ deck.title }}"required>
+    <label for="terms">Terms:</label>
+    <textarea name="terms" id="terms" required>
+    {%- for term in terms -%}
+        {{ term.question }}, {{ term.answer }}
+    {%- endfor -%}
+    </textarea>
+    <label for="intra_term_delimiter">Between question and answer</label>
+    <input name="intra_term_delimiter" id="intra_term_delimiter" value=", " required>
+    <select name="is_public" id="is_public">
+        <option name="private" id="private" value="0">Private</option>
+        <option name="public" id="public" value="1">Public</option>
+    </select>
+    <input type="submit" value="Update Deck">
+</form>
+{% endblock %}

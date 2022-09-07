@@ -1,0 +1,193 @@
+body {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+}
+
+header {
+    font-family: monospace;
+    font-size: 15px;
+}
+
+/*Flashed messages styling*/
+div.flashed_messages {
+    font-size: 30px;
+    font-family: monospace;
+
+    padding: 20px;
+    margin: 20px;
+
+    color: black;
+    border-top: 2px solid darkred;
+    border-bottom: 2px solid darkred;
+}
+
+/*Search bar styling*/
+
+.search {
+    font-family: monospace;
+    font-size: 20px;
+    margin: 15px;
+
+    display: flex;
+    flex-direction: column;
+}
+
+div.search > form > input {
+    font-size: 20px;
+    border: none;
+    background: white;
+    color: black;
+}
+
+div.search > form > input:hover {
+    background: black;
+    color: white;
+}
+
+div.search > form > input#search_field {
+    border: 2px solid black;
+}
+
+div.search > form > select {
+    background: white;
+    color: black;
+    font-size: 20px;
+    font-family: monospace;
+    border: none;
+}
+
+div.search > form > select:hover {
+    background: black;
+    color: white;
+}
+
+/*Navigation bar styling*/
+
+.nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 80%;
+    margin: 15px;
+    border-bottom: 2px solid black;
+
+    font-family: monospace;
+    font-size: 20px;
+}
+
+.nav > p {
+    font-size: 18px;
+    align-self: flex-start;
+}
+
+.nav > a {
+    text-decoration: none;
+    margin: 15px;
+    background: white;
+    color: black;
+}
+
+.nav > a:hover {
+    background: black;
+    color: white;
+}
+
+/*Lists of objects
+(user decks, public decks, public routines, user routines)*/
+
+div.object_list {
+    display: flex;
+    flex-direction: column;
+}
+
+div.object_instance {
+    font-family: monospace;
+    font-size: 20px;
+    border-style: solid;
+    padding: 5px;
+    margin: 10px;
+}
+
+div.object_instance#routine_instance {
+    display: flex;
+    flex-direction: row;
+}
+
+div.object_instance * {
+    text-decoration: none;
+    color: black;
+    padding: 5px;
+}
+
+div.object_info > a {
+    background-color: white;
+    color: black;
+}
+
+div.object_info > a:hover {
+    background-color: black;
+    color: white;
+}
+
+div.object_options > form * {
+    background: white;
+    color: black;
+    border: none;
+    font-family: monospace;
+    font-size: 20px;
+}
+
+div.object_options > form > *:hover {
+    background: black;
+    color: white;
+}
+
+/*Learning styling*/
+
+div.learning_step {
+    padding: 15px;
+    font-size: 20px;
+    font-family: monospace;
+    border: 2px solid black;
+}
+
+div.learning_step * input {
+    font-family: monospace;
+    font-size: 20px;
+    color: black;
+    background-color: white;
+    border: none;
+}
+
+div.learning_step * input:hover {
+    color: white;
+    background-color: black;
+}
+
+/*auth styling*/
+
+div.auth_form > *{
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+
+    font-size: 20px;
+    font-family: monospace;
+}
+
+div.auth_form * input {
+    font-family: monospace;
+    font-size: 20px;
+
+    color: black;
+    background-color: white;
+
+    margin: 20px;
+}
+
+div.auth_form * input:hover {
+    color: white;
+    background-color: black;
+}

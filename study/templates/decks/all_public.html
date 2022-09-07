@@ -1,0 +1,38 @@
+{% extends "search.html" %}
+{% block header %}
+    <h1>{% block title %}Public Decks{% endblock %}</h1>
+{% endblock %}
+
+{%block content%}
+{{ super() }}
+<div class="object_list" id="public_decks">
+    {% for n in range(decks|length) %}
+        <div class="object_instance" id="deck_instance">
+            {% set deck = decks[n] %}
+            {% set is_saved = saved_info[n] %}
+            <div class="object_info" id="deck_info">
+                <a href="{{ url_for('decks.view_deck', deck_id=deck.id) }}">{{ deck.title }}</a>
+                {{ deck.created.strftime("%d/%m/%Y") }}
+            </div>
+            <div class="object_options" id="deck_options">
+                <form method="post">
+                    <input type="submit" name="study_deck" value="Study">
+                    <select name="routines" id="routines"> 
+                        {% for routine in routines %}
+                            <option name="routine" id="routine" value="{{ routine.id }}">{{ routine.title }}</option>
+                        {% endfor %}
+                    </select>
+                    {% if is_saved != -1 %}
+                        {% if is_saved == 1 %}
+                            <input type="submit" name="unsave_deck" value="Unsave">
+                        {% elif is_saved == 0 %}
+                            <input type="submit" name="save_deck" value="Save">
+                        {% endif %}
+                    {% endif %}
+                    <input type="hidden" name="deck_id" value="{{ deck.id }}">
+                </form>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

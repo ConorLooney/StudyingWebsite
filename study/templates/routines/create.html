@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block header %}
+    <h1>{% block title %}New routine{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<form method="post">
+    <label for="routine_name">Routine name:</label>
+    <input name="routine_name" id="routine_name" required>
+    <label for="steps">Steps:</label>
+    <input name="steps" id="steps" required>
+    <select name="is_public" id="is_public">
+        <option name="private" id="private" value="0">Private</option>
+        <option name="public" id="public" value="1">Public</option>
+    </select>
+    <input type="submit" value="Create Routine">
+</form>
+{% endblock %}

@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block header %}
+    <h1>{% block title %}Asking{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<div class="learning_step" id="asking">
+    {{ question }}?
+    <form method="post">
+        <label for="answer">
+        <input name="answer" id="answer" autofocus>
+        <input type="submit" value="Answer">
+    </form>
+</div>
+{% endblock %}

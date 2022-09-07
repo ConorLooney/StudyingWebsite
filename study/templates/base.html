@@ -1,0 +1,32 @@
+<!doctype html>
+<title>{% block title %}{% endblock %}</title>
+<head>
+    <link rel="stylesheet" href=" {{ url_for('static', filename='style.css') }} ">
+</head>
+<body>
+    <div class="nav">
+        {% if g.user %}
+            <p class="username_display">{{ g.user['username']}} Logged on</p>
+            <a href="{{ url_for('auth.logout') }}">Logout</a> |
+            <a href="{{ url_for('decks.all_user') }}">Your decks</a>
+            <a href="{{ url_for('decks.all_public') }}">Public decks</a>
+            <a href="{{ url_for('decks.create') }}">New deck</a>
+            <a href="{{ url_for('routines.all_user') }}">Your routines</a>
+            <a href="{{ url_for('routines.all_public') }}">Public routines</a>
+            <a href="{{ url_for('routines.create') }}">New routine</a>
+            <a href="{{ url_for('class.create') }}">New class</a>
+        {% else %}
+            <a href="{{ url_for('auth.login') }}">Login</a>
+            <a href="{{ url_for('auth.register') }}">Register</a>
+        {% endif %}
+    </div>
+    <header>{% block header%}{% endblock %}</header>
+    {% if get_flashed_messages()|length > 0 %}
+        <div class="flashed_messages">
+            {% for message in get_flashed_messages() %}
+                <div class="flashed_message">{{ message }}</div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    {% block content %}{% endblock %}
+</body>

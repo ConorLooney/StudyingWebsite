@@ -1,0 +1,39 @@
+{% extends "search.html" %}
+{% block header %}
+    <h1>{% block title %}Your Decks{% endblock %}</h1>
+{% endblock %}
+
+{%block content%}
+{{ super() }}
+<div class="object_list" id="deck_list">
+    {% for n in range(decks|length) %}
+        <div class="object_instance" id="deck_instance">
+            {% set deck = decks[n] %}
+            {% set is_owned = owned_info[n] %}
+            <div class="object_info" id="deck_info">
+                <a href="{{ url_for('decks.view_deck', deck_id=deck.id) }}">{{ deck.title }}</a>
+                {{ deck.created.strftime("%d/%m/%Y") }}
+            </div>
+            <div class="object_options" id="deck_options">
+                <form method="post">
+                    <input type="submit" name="study_deck" value="Study">
+                    <select name="routines" id="routines"> 
+                        {% for routine in routines %}
+                            <option name="routine" id="routine" value="{{ routine.id }}">{{ routine.title }}</option>
+                        {% endfor %}
+                    </select>
+                    {% if is_owned %}
+                        <input type="submit" name="update_deck" value="Update">
+                        <input type="submit" name="delete_deck" value="Delete">
+                        <input type="hidden" name="modify_deck" id="modify_deck">
+                        <input type="hidden" name="deck_id" value="{{ deck.id }}">
+                    {% else %}
+                        <input type="submit" name="unsave_deck" value="Unsave">
+                        <input type="hidden" name="deck_id" value="{{ deck.id }}">
+                    {% endif %}
+                </form>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

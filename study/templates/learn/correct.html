@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block header %}
+    <h1>{% block title %}Correcting{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<div class="learning_step" id="correct">
+    <p>{{ question }}</p>
+    <p>Given answer: {{ given_answer}}</p>
+    <p>Actual answer: {{ actual_answer }}</p>
+    <form method="post">
+        <label for="answer">
+        <input name="answer" id="answer" autofocus>
+        <input type="submit" value="Answer">
+    </form>
+</div>
+{% endblock %}

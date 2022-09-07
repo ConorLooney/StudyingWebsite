@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block header %}
+    <h1>{% block title %}Flashcard{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<div class="learning_step">
+    <form method="post">
+        <p>{{ display }}</p>
+        <input type="hidden" name="flip" id="flip">
+        <input type="submit" value="Flip">
+    </form>
+    <form method="post">
+        <input type="hidden" name="next" id="next">
+        <input type="submit" value="Next">
+    </form>
+</div>
+{% endblock %}
