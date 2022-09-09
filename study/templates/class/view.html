@@ -11,8 +11,46 @@
 {% elif view_class.is_public == 0 %}
     <p>Is private</p>
 {% endif %}
+<p>Owned by: {{ owner.username }}</p>
+<p>Admins:</p>
+{% for admin in admins %}
+    <ul>
+        <li>{{ admin.username }}</li>
+        {% if is_owner %}
+            <form method="post">
+                <input type="hidden" name="user_id" value="{{ admin.id }}">
+                <input type="submit" name="remove_admin" value="Remove">
+            </form>
+        {% endif %}
+    </ul>
+{% endfor %}
 <p>Members:</p>
 {% for member in members %}
-    {{ member.username }}
+    <ul>
+        <li>{{ member.username }}</li>
+        {% if ((is_owner) or (is_admin and member.id != user.id)) and member.id != owner.id %}
+            <form method="post">
+                <input type="submit" name="remove_user" value="Remove">
+                <input type="submit" name="make_admin" value="Make admin">
+                <input type="hidden" name="user_id" value="{{ member.id }}">
+            </form>
+        {% endif %}
+    </ul>
 {% endfor %}
+{% if (is_owner or is_admin) %}
+    <form method="post">
+        <label for="gen_code">Generate a unique code for others to join the class</label>
+        <input type="submit" name="gen_code" value="Generate join code">
+    </form>
+    {% for user in join_requests %}
+        <p>{{ user.username}} wants to join</p>
+        <form method="post">
+            <label for="accept_request">Add {{user.username}} to the class</label>
+            <input type="submit" name="accept_request" value="Accept request">
+            <label for="reject_request">Reject request</label>
+            <input type="submit" name="reject_request" value="Reject request">
+            <input type="hidden" name="user_id" value="{{ user.id }}">
+        </form>
+    {% endfor %}
+{% endif %}
 {% endblock %}

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block header %}
+    <h1>{% block title %}Join class with code{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<form method="post">
+    <label for="code">Code to join class:</label>
+    <input name="code" id="code">
+    <input type="submit">
+</form>
+{% endblock %}

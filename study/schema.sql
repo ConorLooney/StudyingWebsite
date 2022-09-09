@@ -10,7 +10,7 @@ DROP TABLE IF EXISTS deck_class;
 DROP TABLE IF EXISTS routine_class;
 DROP TABLE IF EXISTS user_class; 
 DROP TABLE IF EXISTS admin_class;
-DROP TABLE IF EXISTS join_requests;
+DROP TABLE IF EXISTS join_request;
 
 CREATE TABLE user (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -49,14 +49,16 @@ CREATE TABLE save_deck (
     user_id INTEGER NOT NULL,
     deck_id INTEGER NOT NULL,
     FOREIGN KEY (user_id) REFERENCES user (id),
-    FOREIGN KEY (deck_id) REFERENCES deck (id) 
+    FOREIGN KEY (deck_id) REFERENCES deck (id),
+    UNIQUE(user_id, deck_id)
 );
 
 CREATE TABLE save_routine (
     user_id INTEGER NOT NULL,
     routine_id INTEGER NOT NULL,
     FOREIGN KEY (user_id) REFERENCES user (id),
-    FOREIGN KEY (routine_id) REFERENCES routine (id)
+    FOREIGN KEY (routine_id) REFERENCES routine (id),
+    UNIQUE(user_id, routine_id)
 );
 
 CREATE TABLE class (
@@ -72,40 +74,47 @@ CREATE TABLE user_class (
     user_id INTEGER NOT NULL,
     class_id INTEGER NOT NULL,
     FOREIGN KEY (user_id) REFERENCES user (id),
-    FOREIGN KEY (class_id) REFERENCES class (id)
+    FOREIGN KEY (class_id) REFERENCES class (id),
+    UNIQUE(user_id, class_id)
 );
 
 CREATE TABLE deck_class (
     deck_id INTEGER NOT NULL,
     class_id INTEGER NOT NULL,
     FOREIGN KEY (deck_id) REFERENCES deck (id),
-    FOREIGN KEY (class_id) REFERENCES class (id)
+    FOREIGN KEY (class_id) REFERENCES class (id),
+    UNIQUE(deck_id, class_id)
 );
 
 CREATE TABLE routine_class (
     routine_id INTEGER NOT NULL,
     class_id INTEGER NOT NULL,
     FOREIGN KEY (routine_id) REFERENCES routine (id),
-    FOREIGN KEY (class_id) REFERENCES class (id)
+    FOREIGN KEY (class_id) REFERENCES class (id),
+    UNIQUE(routine_id, class_Id)
 );
 
 CREATE TABLE admin_class (
     admin_id INTEGER NOT NULL,
     class_id INTEGER NOT NULL,
     FOREIGN KEY (admin_id) REFERENCES user (id),
-    FOREIGN KEY (class_id) REFERENCES class (id)
+    FOREIGN KEY (class_id) REFERENCES class (id),
+    UNIQUE(admin_id, class_id)
 );
 
-CREATE TABLE join_requests (
+CREATE TABLE join_request (
     requester_id INTEGER NOT NULL,
     class_id INTEGER NOT NULL,
     FOREIGN KEY (requester_id) REFERENCES user (id),
-    FOREIGN KEY (class_id) REFERENCES class (id)
+    FOREIGN KEY (class_id) REFERENCES class (id),
+    UNIQUE (requester_id, class_id)
 );
 
 CREATE TABLE invite_code (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
-    code TEXT NOT NULL,
+    created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    code TEXT UNIQUE NOT NULL,
     class_id INTEGER NOT NULL,
-    FOREIGN KEY (class_id) REFERENCES class (id)
+    FOREIGN KEY (class_id) REFERENCES class (id),
+    UNIQUE(class_id)
 );
