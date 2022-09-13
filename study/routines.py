@@ -3,6 +3,11 @@ from flask import (
 )
 from werkzeug.security import check_password_hash
 from study.db import get_db, to_bit
+from study.db_utility import (
+    get_all_user_controlled_classes, get_saved_info, get_all_user_routines,
+    save_routine_to_user, unsave_routine_from_user, save_routine_to_class
+)
+from study.search_utility import handle_search,apply_filter
 from study.auth import login_required, private_routine_view, protected_routine_view
 
 bp = Blueprint("routines", __name__, url_prefix="/routine")
@@ -10,8 +15,9 @@ bp = Blueprint("routines", __name__, url_prefix="/routine")
 @bp.route("/", methods=("GET", "POST"))
 @login_required
 def all_user():
-    db = get_db()
     search_term = None
+    search_function = None
+
     if request.method == "POST":
         if "delete_routine" in request.form:
             routine_id = request.form['routine_id']
@@ -20,58 +26,57 @@ def all_user():
             routine_id = request.form['routine_id']
             return redirect(url_for("routines.update", routine_id=routine_id))    
         if "unsave_routine" in request.form:
-            print("Hi")
             routine_id = request.form["routine_id"]
-            print(len(db.execute("SELECT * FROM save_routine").fetchall()))
-            print((str(g.user["id"]), str(routine_id),))
-            db.execute(
-                "DELETE FROM save_routine WHERE user_id = ? AND routine_id = ?",
-                (str(g.user["id"]), str(routine_id),)
-            )
-            db.commit()
-            print(len(db.execute("SELECT * FROM save_routine").fetchall()))
+            unsave_routine_from_user(g.user["id"], routine_id)
+        if "save_routine_to_class" in request.form:
+            routine_id = request.form["routine_id"]
+            class_id = request.form["classes"]
+            save_routine_to_class(class_id, routine_id)
         if "search" in request.form:
-            search_term = request.form["search_field"]
-            search_criteria = request.form["search_criteria"]
-            if search_term == "":
-                search_term = None
-                search_criteria = None
-            if search_criteria == "equals":
-                search_term = str(search_term)
-            elif search_criteria == "contains":
-                search_term = "%" + str(search_term) + "%"
-    
-    if search_term is None:
-        routines = db.execute(
-            "SELECT * FROM routine WHERE owner_id = ?",
-            (str(g.user['id']))
-        ).fetchall()
-        routines.extend(db.execute(
-            "SELECT * FROM routine \
-            JOIN save_routine ON save_routine.routine_id = routine.id \
-            WHERE save_routine.user_id = ?",
-            (str(g.user["id"]),)
-        ).fetchall())
-    else:
-        routines = db.execute(
-            "SELECT * FROM routine WHERE owner_id = ? AND title LIKE ?",
-            (str(g.user['id']), str(search_term),)
-        ).fetchall()
-        routines.extend(db.execute(
-            "SELECT * FROM routine \
-            JOIN save_routine ON save_routine.routine_id = routine.id \
-            WHERE save_routine.user_id = ? AND routine.title LIKE ?",
-            (str(g.user["id"]), str(search_term),)
-        ).fetchall())
+            search_term, search_function = handle_search(request.form)
 
-    owned_info = []
-    for routine in routines:
-        if str(routine["owner_id"]) == str(g.user["id"]):
-            owned_info.append(True)
-        else:
-            owned_info.append(False)
+    routines = get_all_user_routines(g.user["id"])
+    routines = apply_filter(routines, "title", search_term, filter_function=search_function)
 
-    return render_template("routines/all_user.html", routines=routines, owned_info=owned_info)
+    saved_info = get_saved_info(routines, "routine", g.user["id"])
+
+    classes = get_all_user_controlled_classes(g.user["id"])
+
+    return render_template("routines/all_user.html",
+     routines=routines, saved_info=saved_info, classes=classes)
+
+@bp.route("/all_public", methods=("GET", "POST"))
+@login_required
+def all_public():
+    db = get_db()
+    search_term = None
+    search_function = None
+
+    if request.method == "POST":
+        if "save_routine" in request.form:
+            routine_id = request.form["routine_id"]
+            save_routine_to_user(g.user["id"], routine_id)
+        if "unsave_routine" in request.form:
+            routine_id = request.form["routine_id"]
+            unsave_routine_from_user(g.user["id"], routine_id)
+        if "save_routine_to_class" in request.form:
+            routine_id = request.form["routine_id"]
+            class_id = request.form["classes"]
+            save_routine_to_class(class_id, routine_id)
+        if "search" in request.form:
+            search_term, search_function = handle_search(request.form)
+
+    routines = db.execute(
+    "SELECT * FROM routine WHERE is_public = ?",
+    (to_bit(True),)
+    ).fetchall()
+    routines = apply_filter(routines, "title", search_term, filter_function=search_function)
+    saved_info = get_saved_info(routines, "routine", g.user["id"])
+        
+    classes = get_all_user_controlled_classes(g.user["id"])
+
+    return render_template("routines/all_public.html",
+     routines=routines, saved_info=saved_info, classes=classes)
 
 @bp.route("/create", methods=("GET", "POST"))
 @login_required
@@ -89,18 +94,15 @@ def create():
 
         if error is None:
             db = get_db()
+            cursor = db.cursor()
             try:
 
-                db.execute(
+                cursor.execute(
                     "INSERT INTO routine (owner_id, title, steps, is_public) VALUES (?, ?, ?, ?)",
                     (str(g.user['id']), routine_name, steps, to_bit(is_public),)
                 )
                 db.commit()
-
-                routine_id = db.execute(
-                    "SELECT * FROM routine WHERE title = ?",
-                    (routine_name,)
-                ).fetchone()['id']
+                routine_id = cursor.lastrowid
 
                 return redirect(url_for("routines.view_routine", routine_id=routine_id))
             except db.IntegrityError:
@@ -193,68 +195,3 @@ def delete(routine_id):
     ).fetchone()
 
     return render_template("routines/delete.html", routine=routine)
-
-@bp.route("/all_public", methods=("GET", "POST"))
-@login_required
-def all_public():
-    db = get_db()
-    search_term = None
-    if request.method == "POST":
-        if "save_routine" in request.form:
-            print("hello")
-            routine_id = request.form["routine_id"]
-            db.execute(
-                "INSERT INTO save_routine (user_id, routine_id) VALUES (?, ?)",
-                (str(g.user["id"]), str(routine_id),)
-            )
-            db.commit()
-        if "unsave_routine" in request.form:
-            routine_id = request.form["routine_id"]
-            db.execute(
-                "DELETE FROM save_routine WHERE user_id = ? AND routine_id = ?",
-                (str(g.user["id"]), str(routine_id),)
-            )
-            db.commit()
-        if "search" in request.form:
-            search_term = request.form["search_field"]
-            search_criteria = request.form["search_criteria"]
-            if search_term == "":
-                search_term = None
-                search_criteria = None
-            if search_criteria == "equals":
-                search_term = str(search_term)
-            elif search_criteria == "contains":
-                search_term = "%" + str(search_term) + "%"
-
-    if search_term is None:
-        routines = db.execute(
-        "SELECT * FROM routine WHERE is_public = ?",
-        (to_bit(True),)
-        ).fetchall()
-    else:
-        routines = db.execute(
-            "SELECT * FROM routine WHERE is_public = ? AND title LIKE ?",
-            (to_bit(True), str(search_term),)
-        ).fetchall()
-
-    saved_info = []
-    for routine in routines:
-        print(routine["owner_id"])
-        print(g.user["id"])
-        if routine["owner_id"] == g.user["id"]:
-            saved_info.append(-1)
-            continue
-            
-        save_routine = db.execute(
-            "SELECT * FROM save_routine WHERE routine_id = ? AND user_id = ?",
-            (str(routine["id"]), str(g.user["id"]),)
-        ).fetchall()
-        
-        if len(save_routine) > 0:
-            saved_info.append(1)
-        else:
-            saved_info.append(0)
-        
-        
-
-    return render_template("routines/all_public.html", routines=routines, saved_info=saved_info)

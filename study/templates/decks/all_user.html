@@ -6,10 +6,9 @@
 {%block content%}
 {{ super() }}
 <div class="object_list" id="deck_list">
-    {% for n in range(decks|length) %}
+    {% for deck in decks %}
         <div class="object_instance" id="deck_instance">
-            {% set deck = decks[n] %}
-            {% set is_owned = owned_info[n] %}
+            {% set is_owned = deck.owner_id == user.id %}
             <div class="object_info" id="deck_info">
                 <a href="{{ url_for('decks.view_deck', deck_id=deck.id) }}">{{ deck.title }}</a>
             </div>
@@ -19,6 +18,12 @@
                     <select name="routines" id="routines"> 
                         {% for routine in routines %}
                             <option name="routine" id="routine" value="{{ routine.id }}">{{ routine.title }}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="submit" name="save_deck_to_class" value="Save to class">
+                    <select type="submit" name="classes">
+                        {% for class in classes %}
+                            <option name="class" id="class" value="{{ class.id }}">{{ class.title }}</option>
                         {% endfor %}
                     </select>
                     {% if is_owned %}

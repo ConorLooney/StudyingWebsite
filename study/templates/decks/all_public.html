@@ -21,6 +21,12 @@
                             <option name="routine" id="routine" value="{{ routine.id }}">{{ routine.title }}</option>
                         {% endfor %}
                     </select>
+                    <input type="submit" name="save_deck_to_class" value="Save to class">
+                    <select name="classes">
+                        {% for class in classes %}
+                            <option name="class" id="class" value="{{ class.id }}">{{ class.title }}</option>
+                        {% endfor %}
+                    </select>
                     {% if is_saved != -1 %}
                         {% if is_saved == 1 %}
                             <input type="submit" name="unsave_deck" value="Unsave">

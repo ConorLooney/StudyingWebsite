@@ -9,13 +9,19 @@
     {% for n in range(routines|length) %}
         <div class="object_instance" id="routine_instance">
             {% set routine = routines[n] %}
-            {% set is_owned = owned_info[n] %}
+            {% set is_owned = saved_info[n] == -1 %}
             <div class="object_info" id="routine_info">
                 <a href="{{ url_for('routines.view_routine', routine_id=routine.id) }}">{{ routine.title }}</a>:
                 {{ routine.steps }}
             </div>
             <div class="object_options" id="routine_options">
                 <form method="post">
+                    <input type="submit" name="save_routine_to_class" value="Save to class">
+                    <select name="classes">
+                        {% for class in classes %}
+                            <option name="class" id="class" value="{{ class.id }}">{{ class.title }}</option>
+                        {% endfor %}
+                    </select>
                     {% if is_owned %}
                         <input type="submit" name="update_routine" value="Update">
                         <input type="submit" name="delete_routine" value="Delete">

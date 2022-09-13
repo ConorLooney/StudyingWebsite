@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block header %}
+    <h1>{% block title %}{{ view_class.title }}{%endblock%}</h1>
+{% endblock %}
+
+{% block content %}
+<div class="class_contents">
+    <div class="side_class_info">
+        <div class="class_publicitity">
+            {% if view_class.is_public == 1 %}
+                <p>Is public</p>
+            {% elif view_class.is_public == 0 %}
+                <p>Is private</p>
+            {% endif %}
+        </div>
+        <div class="class_owner">
+            <p>Owned by: {{ owner.username }}</p>
+        </div>
+        <div class="class_admins">
+            <p>Admins:</p>
+            {% for admin in admins %}
+                <ul>
+                    <li>{{ admin.username }}
+                    {%- if is_owner -%}
+                        <form method="post">
+                            <input type="submit" name="remove_admin" value="Remove">
+                            <input type="hidden" name="user_id" value="{{ admin.id }}">
+                        </form>
+                    {%- endif -%}
+                    </li>
+                </ul>
+            {% endfor %}
+        </div>
+        <div class="class_members">
+            <p>Members:</p>
+            {% for member in members %}
+                <ul>
+                    <li>{{ member.username }}</li>
+                    {% if ((is_owner) or (is_admin and member.id != user.id)) and member.id != owner.id %}
+                        <form method="post">
+                            <input type="submit" name="remove_user" value="Remove">
+                            <input type="submit" name="make_admin" value="Make admin">
+                            <input type="hidden" name="user_id" value="{{ member.id }}">
+                        </form>
+                    {% endif %}
+                </ul>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="other_class_info">
+        <a href="{{ url_for('class.view', class_id=view_class.id) }}">Normal View</a>
+        {% if user.id in (admins|map(attribute="admin_id"))|list or user.id == owner.id %}
+            <a href="{{ url_for('class.admin_view', class_id=view_class.id) }}">Admin View</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -9,7 +9,7 @@
     {% for n in range(classes|length) %}
         <div class="object_instance" id="class_instance">
             {% set class = classes[n] %}
-            {% set is_owned = owned_info[n] %}
+            {% set is_owned = saved_info[n] == -1 %}
             <div class="object_info" id="class_info">
                 <a href="{{ url_for('class.view', class_id=class.id) }}">{{ class.title }}</a>
             </div>

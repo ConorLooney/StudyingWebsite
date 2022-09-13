@@ -5,52 +5,65 @@
 {% endblock %}
 
 {% block content %}
-{{ view_class.title }}
-{% if view_class.is_public == 1 %}
-    <p>Is public</p>
-{% elif view_class.is_public == 0 %}
-    <p>Is private</p>
-{% endif %}
-<p>Owned by: {{ owner.username }}</p>
-<p>Admins:</p>
-{% for admin in admins %}
-    <ul>
-        <li>{{ admin.username }}</li>
-        {% if is_owner %}
-            <form method="post">
-                <input type="hidden" name="user_id" value="{{ admin.id }}">
-                <input type="submit" name="remove_admin" value="Remove">
-            </form>
+<div class="class_contents">
+    <div class="main_class_info">
+        <div class="class_decks">
+            <p>Decks:</p>
+            {% for n in range(decks|length) %}
+                {% set deck = decks[n] %}
+                {% set saved = saved_decks_info[n] %}
+                <p>{{ deck.title }}</p>
+                <form method="post">
+                    <input type="submit" name="study_deck" value="Study">
+                    <select name="routines">
+                        {% for routine in class_routines %}
+                            <option name="routine" id="routine" value="{{ routine.id }}">{{ routine.title }}</option>
+                        {% endfor %}
+                        {% for routine in user_routines %}
+                            <option name="routine" id="routine" value="{{ routine.id }}">{{ routine.title }}</option>
+                        {% endfor %}
+                    </select>
+                    {% if user.id in (admins|map(attribute="admin_id"))|list or user.id == owner.id %}
+                        <input type="submit" name="unsave_deck_from_class" value="Unsave from class">
+                    {% endif %}
+                    {% if saved != -1 and deck.is_public == 1 %}
+                        {% if saved == 1 %}
+                            <input type="submit" name="unsave_deck_from_user" value="Unsave">
+                        {% else %}
+                            <input type="submit" name="save_deck_to_user" value="Save">
+                        {% endif %}
+                    {% endif %}
+                    <input type="hidden" name="deck_id" value="{{ deck.id }}">
+                </form>
+            {% endfor %}
+        </div>
+        <div class="class_routines">
+            <p>Routines:</p>
+            {% for n in range(class_routines|length) %}
+                {% set routine = class_routines[n] %}
+                {% set saved = saved_routines_info[n] %}
+                <p>{{ routine.title }}</p>
+                <form method="post">
+                    {% if user.id in (admins|map(attribute="admin_id"))|list or user.id == owner.id %}
+                        <input type="submit" name="unsave_routine_from_class" value="Unsave from class">
+                    {% endif %}
+                    {% if saved != -1 and routine.is_public == 1 %}
+                        {% if saved == 1 %}
+                            <input type="submit" name="unsave_routine_from_user" value="Unsave">
+                        {% else %}
+                            <input type="submit" name="save_routine_to_user" value="Save">
+                        {% endif %}
+                    {% endif %}
+                    <input type="hidden" name="routine_id" value="{{ routine.id }}">
+                </form>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="other_class_info">
+        <a href="{{ url_for('class.meta_view', class_id=view_class.id) }}">Metainfo</a>
+        {% if user.id in (admins|map(attribute="admin_id"))|list or user.id == owner.id %}
+            <a href="{{ url_for('class.admin_view', class_id=view_class.id) }}">Admin View</a>
         {% endif %}
-    </ul>
-{% endfor %}
-<p>Members:</p>
-{% for member in members %}
-    <ul>
-        <li>{{ member.username }}</li>
-        {% if ((is_owner) or (is_admin and member.id != user.id)) and member.id != owner.id %}
-            <form method="post">
-                <input type="submit" name="remove_user" value="Remove">
-                <input type="submit" name="make_admin" value="Make admin">
-                <input type="hidden" name="user_id" value="{{ member.id }}">
-            </form>
-        {% endif %}
-    </ul>
-{% endfor %}
-{% if (is_owner or is_admin) %}
-    <form method="post">
-        <label for="gen_code">Generate a unique code for others to join the class</label>
-        <input type="submit" name="gen_code" value="Generate join code">
-    </form>
-    {% for user in join_requests %}
-        <p>{{ user.username}} wants to join</p>
-        <form method="post">
-            <label for="accept_request">Add {{user.username}} to the class</label>
-            <input type="submit" name="accept_request" value="Accept request">
-            <label for="reject_request">Reject request</label>
-            <input type="submit" name="reject_request" value="Reject request">
-            <input type="hidden" name="user_id" value="{{ user.id }}">
-        </form>
-    {% endfor %}
-{% endif %}
+    </div>
+</div>
 {% endblock %}
