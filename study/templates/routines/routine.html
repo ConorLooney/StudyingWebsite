@@ -1,10 +1,13 @@
 {% extends "base.html" %}
 {% block header %}
-    <h1>{% block title %}{{routine.name}}{% endblock %}</h1>
+    <h1>{% block title %}{{routine.title}}{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
-<div class="routine_steps">
-    {{ routine.steps }}
+<div class="object_view">
+    <p>Steps:</p>
+    <div class="object_elements" id="routine_steps">
+        {{ routine.steps }}
+    </div>
 </div>
 {% endblock %}

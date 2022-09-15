@@ -7,55 +7,59 @@
 {% block content %}
 <div class="class_contents">
     <div class="main_class_info">
-        <div class="class_decks">
-            <p>Decks:</p>
+        <div class="class_section" id="class_decks">
+            <p class="class_section_title">Decks:</p>
             {% for n in range(decks|length) %}
-                {% set deck = decks[n] %}
-                {% set saved = saved_decks_info[n] %}
-                <p>{{ deck.title }}</p>
-                <form method="post">
-                    <input type="submit" name="study_deck" value="Study">
-                    <select name="routines">
-                        {% for routine in class_routines %}
-                            <option name="routine" id="routine" value="{{ routine.id }}">{{ routine.title }}</option>
-                        {% endfor %}
-                        {% for routine in user_routines %}
-                            <option name="routine" id="routine" value="{{ routine.id }}">{{ routine.title }}</option>
-                        {% endfor %}
-                    </select>
-                    {% if user.id in (admins|map(attribute="admin_id"))|list or user.id == owner.id %}
-                        <input type="submit" name="unsave_deck_from_class" value="Unsave from class">
-                    {% endif %}
-                    {% if saved != -1 and deck.is_public == 1 %}
-                        {% if saved == 1 %}
-                            <input type="submit" name="unsave_deck_from_user" value="Unsave">
-                        {% else %}
-                            <input type="submit" name="save_deck_to_user" value="Save">
+                <div class="class_section_entry" id="class_routine">
+                    {% set deck = decks[n] %}
+                    {% set saved = saved_decks_info[n] %}
+                    <p>{{ deck.title }}</p>
+                    <form method="post">
+                        <input type="submit" name="study_deck" value="Study">
+                        <select name="routines">
+                            {% for routine in class_routines %}
+                                <option name="routine" id="routine" value="{{ routine.id }}">{{ routine.title }}</option>
+                            {% endfor %}
+                            {% for routine in user_routines %}
+                                <option name="routine" id="routine" value="{{ routine.id }}">{{ routine.title }}</option>
+                            {% endfor %}
+                        </select>
+                        {% if user.id in (admins|map(attribute="admin_id"))|list or user.id == owner.id %}
+                            <input type="submit" name="unsave_deck_from_class" value="Unsave from class">
                         {% endif %}
-                    {% endif %}
-                    <input type="hidden" name="deck_id" value="{{ deck.id }}">
-                </form>
+                        {% if saved != -1 and deck.is_public == 1 %}
+                            {% if saved == 1 %}
+                                <input type="submit" name="unsave_deck_from_user" value="Unsave">
+                            {% else %}
+                                <input type="submit" name="save_deck_to_user" value="Save">
+                            {% endif %}
+                        {% endif %}
+                        <input type="hidden" name="deck_id" value="{{ deck.id }}">
+                    </form>
+                </div>
             {% endfor %}
         </div>
-        <div class="class_routines">
-            <p>Routines:</p>
+        <div class="class_section" id="class_routines">
+            <p class="class_section_title">Routines:</p>
             {% for n in range(class_routines|length) %}
-                {% set routine = class_routines[n] %}
-                {% set saved = saved_routines_info[n] %}
-                <p>{{ routine.title }}</p>
-                <form method="post">
-                    {% if user.id in (admins|map(attribute="admin_id"))|list or user.id == owner.id %}
-                        <input type="submit" name="unsave_routine_from_class" value="Unsave from class">
-                    {% endif %}
-                    {% if saved != -1 and routine.is_public == 1 %}
-                        {% if saved == 1 %}
-                            <input type="submit" name="unsave_routine_from_user" value="Unsave">
-                        {% else %}
-                            <input type="submit" name="save_routine_to_user" value="Save">
+                    <div class="class_section_entry" id="class_routine">
+                    {% set routine = class_routines[n] %}
+                    {% set saved = saved_routines_info[n] %}
+                    <p>{{ routine.title }}</p>
+                    <form method="post">
+                        {% if user.id in (admins|map(attribute="admin_id"))|list or user.id == owner.id %}
+                            <input type="submit" name="unsave_routine_from_class" value="Unsave from class">
                         {% endif %}
-                    {% endif %}
-                    <input type="hidden" name="routine_id" value="{{ routine.id }}">
-                </form>
+                        {% if saved != -1 and routine.is_public == 1 %}
+                            {% if saved == 1 %}
+                                <input type="submit" name="unsave_routine_from_user" value="Unsave">
+                            {% else %}
+                                <input type="submit" name="save_routine_to_user" value="Save">
+                            {% endif %}
+                        {% endif %}
+                        <input type="hidden" name="routine_id" value="{{ routine.id }}">
+                    </form>
+                </div>
             {% endfor %}
         </div>
     </div>

@@ -5,15 +5,18 @@
 {% endblock %}
 
 {% block content %}
-<form method="post">
-    <label for="title">Name:</label>
-    <input name="title" id="title" value="{{ class_.title }}"required autofocus>
-    <label for="description">Description:</label>
-    <textarea name="description" id="description">{{ class_.description }}</textarea>
-    <select name="is_public" id="is_public">
-        <option name="public" id="public" value="public">Public</option>
-        <option name="private" id="private" value="private">Private</option>
-    </select>
-    <input type="submit" value="Update">
-</form>
+<div class="object_form">
+    <form method="post">
+        <label for="title">Name:</label>
+        <input name="title" id="title" value="{{ class_.title }}"required autofocus>
+        <label for="description">Description:</label>
+        <textarea name="description" id="description">{{ class_.description }}</textarea>
+        <label for="is_public">Is the class public or private?</label>
+        <select name="is_public" id="is_public">
+            <option name="public" id="public" value="public">Public</option>
+            <option name="private" id="private" value="private">Private</option>
+        </select>
+        <input type="submit" value="Update">
+    </form>
+</div>
 {% endblock %}

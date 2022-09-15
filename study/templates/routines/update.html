@@ -4,15 +4,18 @@
 {% endblock %}
 
 {% block content %}
-<form method="post">
-    <label for="routine_name">Routine name:</label>
-    <input name="routine_name" id="routine_name" value="{{ routine.title }}"required>
-    <label for="steps">Steps:</label>
-    <input name="steps" id="steps" value="{{ routine.steps }}" required>
-    <select name="is_public" id="is_public">
-        <option name="private" id="private" value="0">Private</option>
-        <option name="public" id="public" value="1">Public</option>
-    </select>
-    <input type="submit" value="Update Routine">
-</form>
+<div class="object_form">
+    <form method="post">
+        <label for="routine_name">Routine name:</label>
+        <input name="routine_name" id="routine_name" value="{{ routine.title }}"required>
+        <label for="steps">Steps:</label>
+        <input name="steps" id="steps" value="{{ routine.steps }}" required>
+        <label for="is_public">Is the routine public or private?</label>
+        <select name="is_public" id="is_public">
+            <option name="private" id="private" value="0">Private</option>
+            <option name="public" id="public" value="1">Public</option>
+        </select>
+        <input type="submit" value="Update Routine">
+    </form>
+</div>
 {% endblock %}

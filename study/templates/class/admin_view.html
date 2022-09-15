@@ -6,22 +6,22 @@
 
 {% block content %}
 <div class="class_contents">
-    <div class="class_owner">
+    <div class="class_section" id="class_owner">
         <p>Owned by: {{ owner.username }}</p>
     </div>
-    <div class="class_publicitity">
+    <div class="class_section" id="class_publicitity">
         {% if view_class.is_public == 1 %}
             <p>Is public</p>
         {% elif view_class.is_public == 0 %}
             <p>Is private</p>
         {% endif %}
     </div>
-    <div class="class_admins">
+    <div class="class_section" id="class_admins">
         <p>Admins:</p>
         {% for admin in admins %}
             <ul>
                 <li>{{ admin.username }}
-                {%- if is_owner -%}
+                {%- if is_admin or is_owner -%}
                     <form method="post">
                         <input type="submit" name="remove_admin" value="Remove admin authority">
                         <input type="hidden" name="user_id" value="{{ admin.id }}">
@@ -31,7 +31,7 @@
             </ul>
         {% endfor %}
     </div>
-    <div class="class_members">
+    <div class="class_section" id="class_members">
         <p>Members:</p>
         {% for member in members %}
             <ul>

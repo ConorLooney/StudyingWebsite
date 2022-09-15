@@ -95,7 +95,68 @@ div.search > form > select:hover {
 }
 
 /*Class contents stlying*/
+div.class_contents {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+}
 
+div.class_contents > * {
+    font-family: monospace;
+    font-size: 20px;
+    color: black;
+    background-color: white;
+
+    margin: 10px;
+    padding: 10px;
+    border-bottom: 2px solid black;
+}
+
+div.class_contents * form * {
+    font-size: 20px;
+    color: black;
+    background-color: white;
+    border: none;
+}
+
+div.class_contents * form *:hover{
+    color: white;
+    background-color: black;
+}
+
+div.other_class_info {
+    width: 80%;
+    height: 100px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+div.other_class_info > a {
+    text-decoration: none;
+    margin: 15px;
+    background: white;
+    color: black;
+}
+
+div.other_class_info > a:hover {
+    background: black;
+    color: white;
+}
+
+div.class_section {
+    border: 2px solid black;
+    padding: 10px;
+    margin: 10px;
+}
+
+div.class_section > div.class_section_entry {
+    padding: 10px;
+}
+
+div.class_section > .class_section_title {
+    text-align: center;
+}
 
 /*Lists of objects
 (user decks, public decks, public routines, user routines)*/
@@ -145,6 +206,62 @@ div.object_options > form * {
 div.object_options > form > *:hover {
     background: black;
     color: white;
+}
+
+/*Creating form styling*/
+div.object_form {
+    display: flex;
+    flex-direction: column;
+}
+
+div.object_form > form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+div.object_form > form > * {
+    background: white;
+    color: black;
+    font-family: monospace;
+    font-size: 20px;
+
+    padding: 10px;
+    margin: 10px;
+}
+
+div.object_form > form > input {
+    border: 2px solid black;
+}
+
+div.object_form > form > select {
+    border: 2px solid black;
+}
+
+div.object_form > form > input:hover {
+    background: black;
+    color: white;
+}
+
+/*Object view styling*/
+div.object_view {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 20px;
+    font-family: monospace;
+    color: black;
+    background-color: white;
+}
+
+div.object_view > .object_title {
+    font-size: 30px;
+}
+
+div.object_view > .object_elements {
+    text-align: center;
 }
 
 /*Learning styling*/

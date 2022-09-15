@@ -15,7 +15,7 @@ import time
 
 bp = Blueprint("class", __name__, url_prefix="/class")
 
-def protected_class_view(view):
+def member_level_view(view):
     @functools.wraps(view)
     def wrapped_view(**kwargs):
         if g.user is None:
@@ -43,7 +43,35 @@ def protected_class_view(view):
     
     return wrapped_view
 
-def private_class_view(view):
+def admin_level_view(view):
+    @functools.wraps(view)
+    def wrapped_view(**kwargs):
+        if g.user is None:
+            return redirect(url_for("auth.login"))
+
+        class_id = kwargs['class_id']
+        db = get_db()
+        current_class = db.execute(
+            "SELECT * FROM class WHERE id = ?",
+            (str(class_id),)
+        ).fetchone()
+
+        if current_class is None:
+            return redirect(url_for("/index"))
+
+        authorised_ids = [current_class['owner_id']]
+        authorised_ids.extend([row["admin_id"] for row in db.execute(
+            "SELECT admin_id FROM admin_class WHERE class_id = ?",
+            (str(class_id),)
+        ).fetchall()])
+        if g.user['id'] not in authorised_ids:
+            return redirect(url_for("/index"))
+
+        return view(**kwargs)
+    
+    return wrapped_view
+
+def owner_level_view(view):
     @functools.wraps(view)
     def wrapped_view(**kwargs):
         if g.user is None:
@@ -126,7 +154,7 @@ If owner of admin of class, user can remove decks and routines
 """
 @bp.route("/view/<class_id>", methods=("GET", "POST"))
 @login_required
-@protected_class_view
+@member_level_view
 def view(class_id):
     db = get_db()
     if request.method == "POST":
@@ -265,6 +293,7 @@ Can generate join code
 Can see list of decks and unsave them from class
 Can see list of routines and unsave them from class"""
 @bp.route("/admin_view/<class_id>", methods=("GET", "POST"))
+@admin_level_view
 def admin_view(class_id):
     db = get_db()
     if request.method == "POST":
@@ -385,6 +414,7 @@ def admin_view(class_id):
       admins=admins, is_owner=is_owner, is_admin=is_admin, join_requests=join_requests)
 
 @bp.route("/meta_view/<class_id>")
+@member_level_view
 def meta_view(class_id):
     db = get_db()
     view_class = db.execute(
@@ -505,7 +535,7 @@ def all_public():
 
 @bp.route("/update/<class_id>", methods=("GET", "POST"))
 @login_required
-@private_class_view
+@owner_level_view
 def update(class_id):
     db = get_db()
     if request.method == "POST":
@@ -528,7 +558,7 @@ def update(class_id):
 
 @bp.route("/delete/<class_id>", methods=("GET", "POST"))
 @login_required
-@private_class_view
+@owner_level_view
 def delete(class_id):
     db = get_db()
     if request.method == "POST":
@@ -556,7 +586,7 @@ def delete(class_id):
 
 @bp.route("/gen_code/<class_id>", methods=("GET", "POST"))
 @login_required
-@private_class_view
+@admin_level_view
 def gen_code(class_id):
     db = get_db()
     code = db.execute(

@@ -1,17 +1,21 @@
 {% extends "base.html" %}
 {% block header %}
-    <h1>{% block title %}{{deck.name}}{% endblock %}</h1>
+    <h1>{% block title %}{{deck.title}}{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
-<div class="terms">
-{% if terms|length == 0 %}
-    <p>No terms in this deck</p>
-{% endif %}
-{% for term in terms %}
-    <div class="term" id="{{term.id}}">
-        <p>{{ term.question }}, {{ term.answer }}</p>
+<div class="object_view">
+    <div class="object_elements" id="terms">
+        {% if terms|length == 0 %}
+            <p>No terms in this deck</p>
+        {% else %}
+            <p>Terms:</p>
+            {% for term in terms %}
+                <div class="term" id="{{term.id}}">
+                    <p>{{ term.question }}, {{ term.answer }}</p>
+                </div>
+            {% endfor %}
+        {% endif %}
     </div>
-{% endfor %}
 </div>
 {% endblock %}
