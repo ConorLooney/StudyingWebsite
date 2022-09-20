@@ -1,7 +1,10 @@
 from flask import (
     Blueprint, request, redirect, url_for, session, render_template, flash
 )
-from study.auth import login_required, protected_routine_view, protected_deck_view
+from study.auth import (
+    login_required,
+    member_routine_view, member_deck_view
+)
 from study.db import get_db
 import random
 
@@ -9,8 +12,8 @@ bp = Blueprint("learn", __name__, url_prefix="/learn")
 
 @bp.route("/<deck_id>/<routine_id>")
 @login_required
-@protected_deck_view
-@protected_routine_view
+@member_deck_view
+@member_routine_view
 def begin_learn(deck_id, routine_id):
     db = get_db()
     terms = db.execute(
@@ -26,8 +29,8 @@ def begin_learn(deck_id, routine_id):
 
 @bp.route("/<deck_id>/<routine_id>/<term_id>/<routine_position>", methods=("GET", "POST"))
 @login_required
-@protected_deck_view
-@protected_routine_view
+@member_deck_view
+@member_routine_view
 def learn(deck_id, routine_id, term_id, routine_position):
     routine_position = int(routine_position)
 
@@ -41,9 +44,10 @@ def learn(deck_id, routine_id, term_id, routine_position):
     if routine_position >= amount_of_steps:
         term_id = int(term_id)
         terms = db.execute(
-        "SELECT id FROM term WHERE deck_id = ?",
-        (str(deck_id),)
+            "SELECT id FROM term WHERE deck_id = ? ORDER BY id",
+            (str(deck_id),)
         ).fetchall()
+
         if term_id == terms[len(terms)-1]["id"]:
             return redirect(url_for("/index"))
         else:
@@ -54,7 +58,8 @@ def learn(deck_id, routine_id, term_id, routine_position):
          term_id=next_term_id, routine_position=0))
 
     current_step = steps[routine_position]
-
+    print("steps:")
+    print(steps)
     step_views = {"a": "learn.ask", "c": "learn.correct", "f": "learn.flashcard",
     "m": "learn.choice"}
     if current_step in step_views:
@@ -65,8 +70,8 @@ def learn(deck_id, routine_id, term_id, routine_position):
 
 @bp.route("/<deck_id>/<routine_id>/<term_id>/<routine_position>/ask", methods=("GET", "POST"))
 @login_required
-@protected_deck_view
-@protected_routine_view
+@member_deck_view
+@member_routine_view
 def ask(deck_id, routine_id, term_id, routine_position):
     if request.method == "POST":
         given_answer = request.form['answer']
@@ -77,6 +82,12 @@ def ask(deck_id, routine_id, term_id, routine_position):
             error = "You must give an answer"
         
         if error is None:
+            db = get_db()
+            db.execute(
+                "SELECT * FROM attempt WHERE term_id = ? AND step = ?",
+                (str(term_id), "a")
+            ).fetchone()
+            db.commit()
             session['given_answer'] = given_answer
             routine_position = int(routine_position) + 1
             return redirect(url_for("learn.learn", deck_id=deck_id, routine_id=routine_id,
@@ -95,8 +106,8 @@ def ask(deck_id, routine_id, term_id, routine_position):
 
 @bp.route("/<deck_id>/<routine_id>/<term_id>/<routine_position>/correct", methods=("GET", "POST"))
 @login_required
-@protected_deck_view
-@protected_routine_view
+@member_deck_view
+@member_routine_view
 def correct(deck_id, routine_id, term_id, routine_position):
     if request.method == "POST":
         given_answer = request.form["answer"]
@@ -118,7 +129,7 @@ def correct(deck_id, routine_id, term_id, routine_position):
         (str(term_id),)
     ).fetchone()['answer']
 
-    if actual_answer.strip() == given_answer:
+    if actual_answer.strip() == given_answer.strip():
         session.pop("given_answer", None)
         routine_position = int(routine_position) + 1
         return redirect(url_for("learn.learn", deck_id=deck_id, routine_id=routine_id,
@@ -133,8 +144,8 @@ def correct(deck_id, routine_id, term_id, routine_position):
 
 @bp.route("/<deck_id>/<routine_id>/<term_id>/<routine_position>/flashcard", methods=("GET", "POST"))
 @login_required
-@protected_deck_view
-@protected_routine_view
+@member_deck_view
+@member_routine_view
 def flashcard(deck_id, routine_id, term_id, routine_position):
     db = get_db()
     term = db.execute(
@@ -162,38 +173,43 @@ def flashcard(deck_id, routine_id, term_id, routine_position):
 
 @bp.route("/<deck_id>/<routine_id>/<term_id>/<routine_position>/choice", methods=("GET", "POST"))
 @login_required
-@protected_deck_view
-@protected_routine_view
+@member_deck_view
+@member_routine_view
 def choice(deck_id, routine_id, term_id, routine_position):
-    """Presents question with choice of up to 4 answers
-    other answers are randomly selected from other terms
+    """Presents question with choice of up to 4 answers.
+    Incorrect answers are randomly selected from other terms
     if there are less than 4 terms as many answers are
     retrieved as possible in a random order"""
     db = get_db()
-    if request.method == "post":
-        print(request.form)
-        chosen_answer = request.form["answer"]
-        print(chosen_answer)
-
-    db = get_db()
-    correct_term = db.execute(
+    current_term = db.execute(
         "SELECT * FROM term WHERE id = ?",
         (str(term_id),)
     ).fetchone()
+
+    if request.method == "POST":
+        print(request.form)
+        chosen_answer = request.form["answer"].replace("\r", "")
+        session['given_answer'] = chosen_answer
+        routine_position = int(routine_position) + 1
+        return redirect(url_for("learn.learn", deck_id=deck_id, routine_id=routine_id,
+            term_id=term_id, routine_position=routine_position))
 
     all_terms = db.execute(
         "SELECT * FROM term WHERE deck_id = ?",
         (str(deck_id),)
     ).fetchall()
+    all_terms.remove(current_term)
     random.shuffle(all_terms)
 
     choices = []
 
     if len(all_terms) > 3:
-        choices = all_terms[0:3]
-    else:
+        choices = all_terms[0:4]
+    elif len(all_terms) > 0:
         choices = all_terms
+    else:
+        choices = [current_term]
     
-    choices[random.randint(0, min(len(choices), len(all_terms)))] = correct_term
+    choices[random.randint(0, min(len(choices), len(all_terms))) - 1] = current_term
 
-    return render_template("learn/choice.html", correct_term=correct_term, choices=choices)
+    return render_template("learn/choice.html", correct_term=current_term, choices=choices)

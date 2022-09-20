@@ -3,6 +3,7 @@ from flask import (
     redirect, url_for, Blueprint, request, render_template, flash, session
 )
 from werkzeug.security import generate_password_hash, check_password_hash
+from study.utility.general import get_user_root_folder
 from study.db import get_db, to_bool, g
 
 bp = Blueprint("auth", __name__, url_prefix="/auth")
@@ -28,9 +29,16 @@ def register():
         if error is None:
             try:
                 db = get_db()
-                db.execute(
+                print(db.execute("SELECT * FROM user").fetchall())
+                cursor = db.cursor()
+                cursor.execute(
                     "INSERT INTO user (username, password) VALUES (?, ?)",
                     (str(username), generate_password_hash(password),)
+                )
+                user_id = cursor.lastrowid
+                db.execute(
+                    "INSERT INTO folder (title, owner_id, parent_id) VALUES (?, ?, ?)",
+                    ("root", str(user_id), str(-1),)
                 )
                 db.commit()
 
@@ -44,7 +52,6 @@ def register():
 
 @bp.route("/login", methods=("GET", "POST"))
 def login():
-    print(request.method)
     if request.method == "POST":
         username = request.form["username"]
         password = request.form["password"]
@@ -67,6 +74,7 @@ def login():
                 user = users[0]
                 if check_password_hash(user["password"], password):
                     session["user_id"] = user["id"]
+                    session["folder_id"] = get_user_root_folder(user["id"])["id"]
                     return redirect(url_for("/index"))
                 else:
                     error = "Error: Incorrect password"
@@ -81,6 +89,7 @@ def login():
 def logout():
     session.clear()
     g.pop("user", None)
+    g.pop("root", None)
     return redirect(url_for("auth.login"))
 
 @bp.before_app_request
@@ -92,7 +101,13 @@ def load_logged_in_user():
             "SELECT * FROM user WHERE id = ?",
             (str(user_id),)
         ).fetchone()
+        folder_id = session["folder_id"]
+        folder = db.execute(
+            "SELECT * FROM folder WHERE id = ?",
+            (str(folder_id),)
+        ).fetchone()
         g.user = user
+        g.folder = folder
 
 def login_required(view):
     @functools.wraps(view)
@@ -112,9 +127,78 @@ def login_required(view):
     
     return wrapped_view
 
-"""Will only allow viewing of the passed in view if the user is the owner
-of the deck or the deck is public"""
-def protected_deck_view(view):
+"""Only allows viewing if the user owns the deck"""
+def owner_deck_view(view):
+    @functools.wraps(view)
+    def wrapped_view(**kwargs):
+        if g.user is None:
+            return redirect(url_for("auth.login"))
+
+        deck_id = kwargs['deck_id']
+        db = get_db()
+        deck = db.execute(
+            "SELECT * FROM deck WHERE id = ?",
+            (str(deck_id),)
+        ).fetchone()
+
+        if deck is None:
+            return redirect(url_for("/index"))
+
+        authorised_id = deck['owner_id']
+        if g.user['id'] != authorised_id:
+            return redirect(url_for("/index"))
+
+        return view(**kwargs)
+    
+    return wrapped_view
+
+"""Only allows viewing if the user owns the deck,
+if the user is a member of class that the deck is saved in,
+or if the deck is public"""
+def member_deck_view(view):
+    @functools.wraps(view)
+    def wrapped_view(**kwargs):
+        if g.user is None:
+            return redirect(url_for("auth.login"))
+
+        deck_id = kwargs['deck_id']
+        db = get_db()
+        deck = db.execute(
+            "SELECT * FROM deck WHERE id = ?",
+            (str(deck_id),)
+        ).fetchone()
+
+        if deck is None:
+            return redirect(url_for("/index"))
+
+        if to_bool(deck["is_public"]):
+            return view(**kwargs)
+
+        authorised_id = deck['owner_id']
+        if g.user['id'] == authorised_id:
+            return view(**kwargs)
+        
+        classes = db.execute(
+            "SELECT * FROM class \
+            JOIN deck_class ON class.id = deck_class.class_id \
+            WHERE deck_class.deck_id = ?",
+            (str(deck_id),)
+        ).fetchall()
+        for class_ in classes:
+            membership = db.execute(
+                "SELECT * FROM user_class \
+                WHERE class_id = ? AND user_id = ?",
+                (str(class_["id"]), str(g.user["id"]),)
+            ).fetchone()
+            if membership is not None:
+                return view(**kwargs)
+
+        return redirect(url_for("/index"))
+    
+    return wrapped_view
+
+"""Only allows viewing if the user owns the deck or the deck is public"""
+def stranger_deck_view(view):
     @functools.wraps(view)
     def wrapped_view(**kwargs):
         if g.user is None:
@@ -141,25 +225,24 @@ def protected_deck_view(view):
     
     return wrapped_view
 
-"""Will only allow viewing of the passed in view if the user is the owner
-of the deck"""
-def private_deck_view(view):
+"""Only allows viewing if the user owns the routine"""
+def owner_routine_view(view):
     @functools.wraps(view)
     def wrapped_view(**kwargs):
         if g.user is None:
             return redirect(url_for("auth.login"))
 
-        deck_id = kwargs['deck_id']
+        routine_id = kwargs['routine_id']
         db = get_db()
-        deck = db.execute(
-            "SELECT * FROM deck WHERE id = ?",
-            (str(deck_id),)
+        routine = db.execute(
+            "SELECT * FROM routine WHERE id = ?",
+            (str(routine_id),)
         ).fetchone()
 
-        if deck is None:
+        if routine is None:
             return redirect(url_for("/index"))
 
-        authorised_id = deck['owner_id']
+        authorised_id = routine['owner_id']
         if g.user['id'] != authorised_id:
             return redirect(url_for("/index"))
 
@@ -167,15 +250,59 @@ def private_deck_view(view):
     
     return wrapped_view
 
-"""Will only allow viewing of the passed in view if the user is the owner
-of the routine or the routine is public"""
-def protected_routine_view(view):
+"""Only allows viewing if the user owns the routine,
+if the user is a member of class that the routine is saved in,
+or if the routine is public"""
+def member_routine_view(view):
     @functools.wraps(view)
     def wrapped_view(**kwargs):
         if g.user is None:
             return redirect(url_for("auth.login"))
 
-        routine_id = kwargs["routine_id"]
+        routine_id = kwargs['routine_id']
+        db = get_db()
+        routine = db.execute(
+            "SELECT * FROM routine WHERE id = ?",
+            (str(routine_id),)
+        ).fetchone()
+
+        if routine is None:
+            return redirect(url_for("/index"))
+
+        if to_bool(routine["is_public"]):
+            return view(**kwargs)
+
+        authorised_id = routine['owner_id']
+        if g.user['id'] == authorised_id:
+            return view(**kwargs)
+        
+        classes = db.execute(
+            "SELECT * FROM class \
+            JOIN routine_class ON routine.id = routine_class.class_id \
+            WHERE routine_class.routine_id = ?",
+            (str(routine_id),)
+        ).fetchall()
+        for class_ in classes:
+            membership = db.execute(
+                "SELECT * FROM user_class \
+                WHERE class_id = ? AND user_id = ?",
+                (str(class_["id"]), str(g.user["id"]),)
+            ).fetchone()
+            if membership is not None:
+                return view(**kwargs)
+
+        return redirect(url_for("/index"))
+    
+    return wrapped_view
+
+"""Only allows viewing if the user owns the routine or the routine is public"""
+def stranger_routine_view(view):
+    @functools.wraps(view)
+    def wrapped_view(**kwargs):
+        if g.user is None:
+            return redirect(url_for("auth.login"))
+
+        routine_id = kwargs['routine_id']
         db = get_db()
         routine = db.execute(
             "SELECT * FROM routine WHERE id = ?",
@@ -189,32 +316,6 @@ def protected_routine_view(view):
             return view(**kwargs)
 
         authorised_id = routine['owner_id']
-        if g.user['id'] != authorised_id:
-            return redirect(url_for("/index"))
-
-        return view(**kwargs)
-
-    return wrapped_view
-
-"""Will only allow viewing of the passed in view if the user is the owner
-of the routine"""
-def private_routine_view(view):
-    @functools.wraps(view)
-    def wrapped_view(**kwargs):
-        if g.user is None:
-            return redirect(url_for("auth.login"))
-
-        routine_id = kwargs["routine_id"]
-        db = get_db()
-        routine = db.execute(
-            "SELECT * FROM routine WHERE id = ?",
-            (str(routine_id),)
-        ).fetchone()
-
-        if routine is None:
-            return redirect(url_for("/index"))
-
-        authorised_id = routine["owner_id"]
         if g.user['id'] != authorised_id:
             return redirect(url_for("/index"))
 

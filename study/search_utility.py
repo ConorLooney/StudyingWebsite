@@ -9,6 +9,8 @@ def apply_filter(terms, attribute, filter_value=None, filter_function=contains_f
         return terms
     new = []
     for term in terms:
+        print(term[attribute])
+        print(filter_value)
         if filter_function(term[attribute], filter_value):
             new.append(term)
     return new

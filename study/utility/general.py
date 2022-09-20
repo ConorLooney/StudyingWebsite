@@ -1,7 +1,8 @@
 from flask import (
-    flash
+    flash, session, g
 )
 from study.db import get_db, to_bool
+from study.utility.folder import get_user_root_folder
 
 """Can be used to get saved info for classes, decks, and routines"""
 def get_saved_info(objects, object_table, user_id):
@@ -50,17 +51,17 @@ def get_all_user_controlled_classes(user_id):
     ).fetchall())
     return classes
 
-def get_all_user_decks(user_id):
+def get_all_user_decks(user_id, folder_id):
     db = get_db()
     decks = db.execute(
-        "SELECT * FROM deck WHERE owner_id = ?",
-        (str(user_id),)
+        "SELECT * FROM deck WHERE owner_id = ? AND folder_id = ?",
+        (str(user_id), str(folder_id),)
     ).fetchall()
     decks.extend(db.execute(
         "SELECT * FROM deck \
         JOIN save_deck ON save_deck.deck_id = deck.id \
-        WHERE save_deck.user_id = ?",
-        (str(user_id),)
+        WHERE save_deck.user_id = ? AND save_deck.folder_id = ?",
+        (str(user_id), str(folder_id),)
     ).fetchall())
     return decks
 
@@ -116,7 +117,7 @@ def save_deck_to_class(class_id, deck_id):
     try:
         db.execute(
             "INSERT INTO deck_class (deck_id, class_id) VALUES (?, ?)",
-            (str(deck_id), str(class_id),)
+            (str(deck_id), str(class_id))
         )
         db.commit()
     except db.IntegrityError:
@@ -151,7 +152,9 @@ def remove_user_from_class(user_id, class_id):
     )
     db.commit()
 
-def save_deck_to_user(user_id, deck_id):
+def save_deck_to_user(user_id, deck_id, folder_id=None):
+    if folder_id is None:
+        folder_id = get_user_root_folder(user_id)["id"]
     db = get_db()
     error = None
 
@@ -169,8 +172,8 @@ def save_deck_to_user(user_id, deck_id):
     if error is None:
         try:
             db.execute(
-                "INSERT INTO save_deck (user_id, deck_id) VALUES (?, ?)",
-                (str(user_id), str(deck_id),)
+                "INSERT INTO save_deck (user_id, deck_id, folder_id) VALUES (?, ?, ?)",
+                (str(user_id), str(deck_id), str(folder_id),)
             )
             db.commit()
         except db.IntegrityError:

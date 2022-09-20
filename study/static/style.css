@@ -113,6 +113,41 @@ div.class_contents > * {
     border-bottom: 2px solid black;
 }
 
+div#join_class_with_code {
+    font-family: monospace;
+    font-size: 20px;
+    color: black;
+    background-color: white;
+}
+
+div#gen_class_code * {
+    font-family: monospace;
+    font-size: 20px;
+    color: black;
+    background-color: white;
+    border: none;
+}
+
+div#gen_class_code * input:hover {
+    color: white;
+    background-color: black;
+}
+
+p#class_code {
+    font-size: 200px;
+    border-bottom: 4px solid black;
+    border-top: 4px solid black;
+    text-align: center;
+    margin: 40px;
+}
+
+div.class_contents * {
+    font-family: monospace;
+    font-size: 20px;
+    color: black;
+    background-color: white;
+}
+
 div.class_contents * form * {
     font-size: 20px;
     color: black;
@@ -262,6 +297,16 @@ div.object_view > .object_title {
 
 div.object_view > .object_elements {
     text-align: center;
+}
+
+/*Folder options in deck user view styling*/
+div#folder_section > div {
+    margin: 20px;
+    border: 2px solid black;
+}
+
+input#new_folder_title {
+    width: 25%;
 }
 
 /*Learning styling*/

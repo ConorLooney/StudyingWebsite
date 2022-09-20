@@ -5,9 +5,9 @@ from flask import (
 from werkzeug.security import check_password_hash
 from study.auth import login_required
 from study.db import get_db, to_bit
-from study.utility import gen_random_code
+from study.utility.helper import gen_random_code
 from study.search_utility import apply_filter, handle_search
-from study.db_utility import (
+from study.utility.general import (
     save_deck_to_user, save_routine_to_user, remove_user_from_class, get_all_user_routines,
     add_user_to_class, delete_class, get_saved_info
 )

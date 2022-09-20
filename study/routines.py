@@ -3,12 +3,12 @@ from flask import (
 )
 from werkzeug.security import check_password_hash
 from study.db import get_db, to_bit
-from study.db_utility import (
+from study.utility.general import (
     get_all_user_controlled_classes, get_saved_info, get_all_user_routines,
     save_routine_to_user, unsave_routine_from_user, save_routine_to_class
 )
 from study.search_utility import handle_search,apply_filter
-from study.auth import login_required, private_routine_view, protected_routine_view
+from study.auth import login_required, owner_routine_view, member_routine_view
 
 bp = Blueprint("routines", __name__, url_prefix="/routine")
 
@@ -114,7 +114,7 @@ def create():
 
 @bp.route("/view/<routine_id>")
 @login_required
-@protected_routine_view
+@member_routine_view
 def view_routine(routine_id):
     db = get_db()
     routine = db.execute(
@@ -126,7 +126,7 @@ def view_routine(routine_id):
 
 @bp.route("/update/<routine_id>", methods=("GET", "POST"))
 @login_required
-@private_routine_view
+@owner_routine_view
 def update(routine_id):
     db = get_db()
 
@@ -165,7 +165,7 @@ def update(routine_id):
 
 @bp.route("/delete/<routine_id>", methods=("GET", "POST"))
 @login_required
-@private_routine_view
+@owner_routine_view
 def delete(routine_id):
     db = get_db()
     if request.method == "POST":

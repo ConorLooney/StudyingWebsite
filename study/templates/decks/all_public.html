@@ -32,6 +32,13 @@
                             <input type="submit" name="unsave_deck" value="Unsave">
                         {% elif is_saved == 0 %}
                             <input type="submit" name="save_deck" value="Save">
+                            <select type="submit" name="folders">
+                                {% for n in range(folders|length) %}
+                                    {% set folder = folders[n] %}
+                                    {% set path = folder_paths[n] %}
+                                    <option name="folder" id="folder" value="{{ folder.id }}">{{ path }}</option>
+                                {% endfor %}
+                            </select>
                         {% endif %}
                     {% endif %}
                     <input type="hidden" name="deck_id" value="{{ deck.id }}">

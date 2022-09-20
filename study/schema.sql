@@ -11,6 +11,8 @@ DROP TABLE IF EXISTS routine_class;
 DROP TABLE IF EXISTS user_class; 
 DROP TABLE IF EXISTS admin_class;
 DROP TABLE IF EXISTS join_request;
+DROP TABLE IF EXISTS folder;
+DROP TABLE IF EXISTS attempt;
 
 CREATE TABLE user (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -21,11 +23,13 @@ CREATE TABLE user (
 CREATE TABLE deck (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     owner_id INTEGER NOT NULL,
+    folder_id INTEGER NOT NULL,
     title TEXT NOT NULL,
     created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     modified TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     is_public BIT NOT NULL,
-    FOREIGN KEY (owner_id) REFERENCES user (id)
+    FOREIGN KEY (owner_id) REFERENCES user (id),
+    FOREIGN KEY (folder_id) REFERENCES folder (id)
 );
 
 CREATE TABLE term (
@@ -48,8 +52,10 @@ CREATE TABLE routine (
 CREATE TABLE save_deck (
     user_id INTEGER NOT NULL,
     deck_id INTEGER NOT NULL,
+    folder_id INTEGER NOT NULL,
     FOREIGN KEY (user_id) REFERENCES user (id),
     FOREIGN KEY (deck_id) REFERENCES deck (id),
+    FOREIGN KEY (folder_id) REFERENCES folder (id),
     UNIQUE(user_id, deck_id)
 );
 
@@ -117,4 +123,25 @@ CREATE TABLE invite_code (
     class_id INTEGER NOT NULL,
     FOREIGN KEY (class_id) REFERENCES class (id),
     UNIQUE(class_id)
+);
+
+CREATE TABLE folder (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT NOT NULL,
+    created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    owner_id INTEGER NOT NULL,
+    parent_id INTEGER NOT NULL,
+    FOREIGN KEY (owner_id) REFERENCES user (id),
+    FOREIGN KEY (parent_id) REFERENCES folder (id)
+);
+
+CREATE TABLE attempt (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    step TEXT NOT NULL,
+    total_frequency INTEGER,
+    correct_frequency INTEGER,
+    incorrect_frequency INTEGER,
+    term_id INTEGER NOT NULL,
+    FOREIGN KEY (term_id) REFERENCES term (id),
+    UNIQUE (step, term_id)
 );
