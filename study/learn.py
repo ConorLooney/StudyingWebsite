@@ -1,11 +1,11 @@
 from flask import (
-    Blueprint, request, redirect, url_for, session, render_template, flash
+    Blueprint, request, redirect, url_for, session, render_template, flash, g
 )
 from study.auth import (
     login_required,
     member_routine_view, member_deck_view
 )
-from study.db import get_db
+from study.db import get_db, to_bit
 import random
 
 bp = Blueprint("learn", __name__, url_prefix="/learn")
@@ -73,6 +73,13 @@ def learn(deck_id, routine_id, term_id, routine_position):
 @member_deck_view
 @member_routine_view
 def ask(deck_id, routine_id, term_id, routine_position):
+    db = get_db()
+
+    term = db.execute(
+        "SELECT * FROM term WHERE id = ?",
+        (str(term_id),)
+    ).fetchone()
+
     if request.method == "POST":
         given_answer = request.form['answer']
 
@@ -83,11 +90,14 @@ def ask(deck_id, routine_id, term_id, routine_position):
         
         if error is None:
             db = get_db()
+
+            is_correct =  given_answer.strip() == term["answer"].strip()
             db.execute(
-                "SELECT * FROM attempt WHERE term_id = ? AND step = ?",
-                (str(term_id), "a")
-            ).fetchone()
+                "INSERT INTO attempt (step, term_id, user_id, is_correct) VALUES (?, ?, ?, ?)",
+                ("a", str(term_id), str(g.user["id"]), str(to_bit(is_correct)),)
+            )
             db.commit()
+
             session['given_answer'] = given_answer
             routine_position = int(routine_position) + 1
             return redirect(url_for("learn.learn", deck_id=deck_id, routine_id=routine_id,
@@ -95,20 +105,19 @@ def ask(deck_id, routine_id, term_id, routine_position):
 
         flash(error)
 
-    db = get_db()
-
-    question = db.execute(
-        "SELECT question FROM term WHERE id = ?",
-        (str(term_id),)
-    ).fetchone()['question']
-
-    return render_template("learn/ask.html", question=question)
+    return render_template("learn/ask.html", question=term["question"])
 
 @bp.route("/<deck_id>/<routine_id>/<term_id>/<routine_position>/correct", methods=("GET", "POST"))
 @login_required
 @member_deck_view
 @member_routine_view
 def correct(deck_id, routine_id, term_id, routine_position):
+    db = get_db()
+    term = db.execute(
+        "SELECT * FROM term WHERE id = ?",
+        (str(term_id),)
+    ).fetchone()
+
     if request.method == "POST":
         given_answer = request.form["answer"]
         error = None
@@ -121,26 +130,23 @@ def correct(deck_id, routine_id, term_id, routine_position):
         else:
             flash(error)
 
+        is_correct = term["answer"].strip() == given_answer.strip()
+        db.execute(
+            "INSERT INTO attempt (step, term_id, user_id, is_correct) VALUES (?, ?, ?, ?)",
+            ("c", str(term_id), str(g.user["id"]), str(to_bit(is_correct)),)
+        )
+        db.commit()
+
     given_answer = session['given_answer']
 
-    db = get_db()
-    actual_answer = db.execute(
-        "SELECT answer FROM term WHERE id = ?",
-        (str(term_id),)
-    ).fetchone()['answer']
-
-    if actual_answer.strip() == given_answer.strip():
+    if term["answer"].strip() == given_answer.strip():
         session.pop("given_answer", None)
         routine_position = int(routine_position) + 1
         return redirect(url_for("learn.learn", deck_id=deck_id, routine_id=routine_id,
          term_id=term_id, routine_position=routine_position))
 
-    question = db.execute(
-        "SELECT question FROM term WHERE id = ?",
-        (str(term_id),)
-    ).fetchone()['question']
-
-    return render_template("learn/correct.html", question=question, given_answer=given_answer, actual_answer=actual_answer)
+    return render_template("learn/correct.html", question=term["question"],
+     given_answer=given_answer, actual_answer=term["answer"])
 
 @bp.route("/<deck_id>/<routine_id>/<term_id>/<routine_position>/flashcard", methods=("GET", "POST"))
 @login_required
@@ -157,6 +163,13 @@ def flashcard(deck_id, routine_id, term_id, routine_position):
         session["flashcard_display"] = term["question"]
 
     if request.method == "POST":
+        # Update attempts 
+        db.execute(
+            "INSERT INTO attempt (step, term_id, user_id, is_correct) VALUES (?, ?, ?, ?)",
+            ("f", str(term_id), str(g.user["id"]), str(to_bit(1)),)
+        )
+        db.commit()
+
         if "flip" in request.form:
             if session["flashcard_display"] == term["question"]:
                 session["flashcard_display"] = term["answer"]
@@ -187,8 +200,13 @@ def choice(deck_id, routine_id, term_id, routine_position):
     ).fetchone()
 
     if request.method == "POST":
-        print(request.form)
         chosen_answer = request.form["answer"].replace("\r", "")
+        is_correct = chosen_answer.strip() == current_term["answer"].strip()
+        db.execute(
+            "INSERT INTO attempt (step, term_id, user_id, is_correct) VALUES (?, ?, ?, ?)",
+            ("m", str(term_id), str(g.user["id"]), str(to_bit(is_correct)),)
+        )
+        db.commit()
         session['given_answer'] = chosen_answer
         routine_position = int(routine_position) + 1
         return redirect(url_for("learn.learn", deck_id=deck_id, routine_id=routine_id,

@@ -17,8 +17,8 @@ from study.search_utility import handle_search, apply_filter
 
 bp = Blueprint("decks", __name__)
 
-@login_required
 @bp.route("/", methods=("GET", "POST"))
+@login_required
 def all_user():
     search_term = None
     search_function = None
@@ -166,6 +166,7 @@ def create():
                 deck_id = cursor.lastrowid
                 for line in terms.split("\n"):
                     question, answer = line.split(intra_term_delimiter)
+                    answer = answer.strip()
                     db.execute(
                         "INSERT INTO term (deck_id, question, answer) VALUES (?, ?, ?)",
                         (str(deck_id), question, answer,)

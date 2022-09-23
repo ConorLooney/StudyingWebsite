@@ -138,10 +138,10 @@ CREATE TABLE folder (
 CREATE TABLE attempt (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     step TEXT NOT NULL,
-    total_frequency INTEGER,
-    correct_frequency INTEGER,
-    incorrect_frequency INTEGER,
+    is_correct BIT,
+    created TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     term_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
     FOREIGN KEY (term_id) REFERENCES term (id),
-    UNIQUE (step, term_id)
+    FOREIGN KEY (user_id) REFERENCES user (id)
 );

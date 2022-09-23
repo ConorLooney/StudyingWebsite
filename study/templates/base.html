@@ -16,7 +16,8 @@
             <a href="{{ url_for('routines.create') }}">New routine</a> |
             <a href="{{ url_for('class.all_user') }}">Your classes</a>
             <a href="{{ url_for('class.all_public') }}">Public classes</a>
-            <a href="{{ url_for('class.create') }}">New class</a>
+            <a href="{{ url_for('class.create') }}">New class</a> |
+            <a href="{{ url_for('statistics.all') }}">Stats</a>
         {% else %}
             <a href="{{ url_for('auth.login') }}">Login</a>
             <a href="{{ url_for('auth.register') }}">Register</a>

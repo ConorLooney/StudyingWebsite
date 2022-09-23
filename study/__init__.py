@@ -32,4 +32,7 @@ def create_app():
     from . import classes
     app.register_blueprint(classes.bp)
 
+    from . import statistics
+    app.register_blueprint(statistics.bp)
+
     return app
