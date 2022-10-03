@@ -13,6 +13,8 @@ DROP TABLE IF EXISTS admin_class;
 DROP TABLE IF EXISTS join_request;
 DROP TABLE IF EXISTS folder;
 DROP TABLE IF EXISTS attempt;
+DROP TABLE IF EXISTS study_session;
+DROP TABLE IF EXISTS spaced_repetition;
 
 CREATE TABLE user (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -144,4 +146,21 @@ CREATE TABLE attempt (
     user_id INTEGER NOT NULL,
     FOREIGN KEY (term_id) REFERENCES term (id),
     FOREIGN KEY (user_id) REFERENCES user (id)
+);
+
+CREATE TABLE study_session (
+    user_id INTEGER NOT NULL,
+    routine_id INTEGER NOT NULL,
+    date_studied TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES user (id),
+    FOREIGN KEY (routine_id) REFERENCES routine (id),
+    PRIMARY KEY (user_id, routine_id)
+);
+
+CREATE TABLE spaced_repetition (
+    user_id INTEGER NOT NULL,
+    deck_id INTEGER NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES user (id),
+    FOREIGN KEY (deck_id) REFERENCES deck (id),
+    PRIMARY KEY (user_id, deck_id)
 );
