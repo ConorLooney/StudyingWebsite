@@ -1,9 +1,11 @@
 from flask import (
-    Blueprint, render_template, g
+    Blueprint, render_template, g, request
 )
 from study.auth import login_required
 from study.db import get_db, to_bool
+from study.utility.folder import get_folder_path
 import time
+import datetime
 import json
 
 bp = Blueprint("statistics", __name__, url_prefix="/statistics")
@@ -16,11 +18,11 @@ def gen_json_string_summary_accuracy(total_correct, total_incorrect):
         ],
         "rows":[
             {"c":[
-                {"v":"total correct"},
+                {"v":"Total Correct"},
                 {"v":total_correct},
             ]},
             {"c":[
-                {"v":"total incorrect"},
+                {"v":"Total Incorrect"},
                 {"v":total_incorrect},
             ]},
         ],
@@ -29,8 +31,7 @@ def gen_json_string_summary_accuracy(total_correct, total_incorrect):
 
 def gen_json_string_summary_frequency(days, frequencies):
     day_values = [{"v":day} for day in days]
-    print(days)
-    frequency_values = [{"v":frequency for frequency in frequencies}]
+    frequency_values = [{"v":frequency} for frequency in frequencies]
     cells = []
     for i in range(len(day_values)):
         cell = {
@@ -89,8 +90,8 @@ def summarise_term_flashcard_attempts(attempts):
     days = []
     frequencies = []
     for attempt in attempts:
-        print(dict(attempt))
         day = time.gmtime(attempt["unixepoch(created)"])
+        # month is 0 indexed in google charts, indexed from 1 with time library so subtract 1
         day = "Date(" + str(day.tm_year) + ", " + str(day.tm_mon-1) + ", " + str(day.tm_mday) + ")"
         if day in days:
             index = days.index(day)
@@ -121,39 +122,88 @@ def summarise_term_ask_attempts(attempts):
     summary = gen_json_string_summary_accuracy(total_correct, total_incorrect)
     return json.dumps(summary)
 
-@bp.route("/all")
+def get_max_date_range(terms):
+    db = get_db()
+    smallest_time = None
+    biggest_time = None
+
+    ask_attempts = []
+    flashcard_attempts = []
+    multiple_attempts = []
+    correct_attempts = []
+    for term in terms:
+        ask_attempts.extend(db.execute(
+            "SELECT id, term_id, user_id, unixepoch(created), is_correct, step \
+            FROM attempt WHERE user_id = ? AND term_id = ? AND step = ?",
+            (str(g.user["id"]), str(term["id"]), "a")
+        ).fetchall())
+
+        flashcard_attempts.extend(db.execute(
+            "SELECT id, term_id, user_id, unixepoch(created), is_correct, step \
+            FROM attempt WHERE user_id = ? AND term_id = ? AND step = ?",
+            (str(g.user["id"]), str(term["id"]), "f",)
+        ).fetchall())
+
+        multiple_attempts.extend(db.execute(
+            "SELECT id, term_id, user_id, unixepoch(created), is_correct, step \
+            FROM attempt WHERE user_id = ? AND term_id = ? AND step = ?",
+            (str(g.user["id"]), str(term["id"]), "m",)
+        ).fetchall())
+
+        correct_attempts.extend(db.execute(
+            "SELECT id, term_id, user_id, unixepoch(created), is_correct, step \
+            FROM attempt WHERE user_id = ? AND term_id = ? AND step = ?",
+            (str(g.user["id"]), str(term["id"]), "c",)
+        ).fetchall())
+
+        for attempt in ask_attempts + flashcard_attempts + multiple_attempts + correct_attempts:
+            created_time = int(attempt['unixepoch(created)'])
+            if smallest_time is None or created_time < smallest_time:
+                smallest_time = created_time
+            if biggest_time is None or created_time > biggest_time:
+                biggest_time = created_time
+    
+    print(biggest_time)
+    print(smallest_time)
+    return biggest_time, smallest_time
+
+@bp.route("/all", methods=("GET", "POST"))
 @login_required
 def all():
     db = get_db()
-
     decks = db.execute(
-        "SELECT DISTINCT deck.id, deck.title FROM deck \
+        "SELECT DISTINCT deck.id, deck.title, deck.folder_id FROM deck \
         JOIN term ON term.deck_id = deck.id \
         JOIN attempt ON attempt.term_id = term.id \
         WHERE attempt.user_id = ?",
         (str(g.user["id"]),)
     ).fetchall()
 
-    print()
-    print("DECKS:")
-    print([dict(d) for d in decks])
-    print()
-    print("attempts:")
-    attempts = db.execute(
-        "SELECT * FROM attempt WHERE user_id = ?",
-        (str(g.user["id"]),)
-    ).fetchall()
-    print([dict(a) for a in attempts])
-    print(":")
-    attempts = db.execute(
-        "SELECT * FROM term \
-        JOIN attempt ON attempt.term_id = term.id \
-        WHERE attempt.user_id = ?",
-        (str(g.user["id"]),)
-    ).fetchall()
-    print([dict(a) for a in attempts])
-    print()
-    
+    terms = []
+    for deck in decks:
+        terms.extend(db.execute(
+            "SELECT * FROM term WHERE deck_id = ?",
+            str(deck["id"],)
+        ).fetchall())
+
+    biggest_time, smallest_time = get_max_date_range(terms)
+    start_from_epoch = smallest_time
+    end_from_epoch = biggest_time
+
+    if request.method == "POST":
+        date_filter_start = request.form["filter_start"]
+        date_filter_end = request.form["filter_end"]
+        start_from_epoch = (datetime.datetime.fromisoformat(date_filter_start)).timestamp()
+        end_from_epoch = (datetime.datetime.fromisoformat(date_filter_end)).timestamp()
+
+    date_filter_start = datetime.date.fromtimestamp(start_from_epoch)
+    date_filter_end = datetime.date.fromtimestamp(end_from_epoch)
+
+    # increase end from epoch by day because datetime timestamp is seconds
+    # from the very beginning of the day, so to include attempts made on that
+    # day it is incremented by a day to cover the whole day
+    end_from_epoch += 86400
+
     decks_ask_data = []
     decks_flashcard_data = []
     decks_correct_data = []
@@ -170,20 +220,31 @@ def all():
         correct_attempts = []
         for term in terms:
             ask_attempts.extend(db.execute(
-                "SELECT id, term_id, user_id, unixepoch(created), is_correct, step FROM attempt WHERE user_id = ? AND term_id = ? AND step = ?",
-                (str(g.user["id"]), str(term["id"]), "a")
+                "SELECT id, term_id, user_id, unixepoch(created), is_correct, step \
+                FROM attempt WHERE user_id = ? AND term_id = ? AND step = ? \
+                AND unixepoch(created) >= ? AND unixepoch(created) <= ?",
+                (str(g.user["id"]), str(term["id"]), "a", start_from_epoch, end_from_epoch)
             ).fetchall())
+
             flashcard_attempts.extend(db.execute(
-                "SELECT id, term_id, user_id, unixepoch(created), is_correct, step FROM attempt WHERE user_id = ? AND term_id = ? AND step = ?",
-                (str(g.user["id"]), str(term["id"]), "f")
+                "SELECT id, term_id, user_id, unixepoch(created), is_correct, step \
+                FROM attempt WHERE user_id = ? AND term_id = ? AND step = ? \
+                AND unixepoch(created) >= ? AND unixepoch(created) <= ?",
+                (str(g.user["id"]), str(term["id"]), "f", start_from_epoch, end_from_epoch)
             ).fetchall())
+
             multiple_attempts.extend(db.execute(
-                "SELECT id, term_id, user_id, unixepoch(created), is_correct, step FROM attempt WHERE user_id = ? AND term_id = ? AND step = ?",
-                (str(g.user["id"]), str(term["id"]), "m")
+                "SELECT id, term_id, user_id, unixepoch(created), is_correct, step \
+                FROM attempt WHERE user_id = ? AND term_id = ? AND step = ? \
+                AND unixepoch(created) >= ? AND unixepoch(created) <= ?",
+                (str(g.user["id"]), str(term["id"]), "m", start_from_epoch, end_from_epoch)
             ).fetchall())
+
             correct_attempts.extend(db.execute(
-                "SELECT id, term_id, user_id, unixepoch(created), is_correct, step FROM attempt WHERE user_id = ? AND term_id = ? AND step = ?",
-                (str(g.user["id"]), str(term["id"]), "c")
+                "SELECT id, term_id, user_id, unixepoch(created), is_correct, step \
+                FROM attempt WHERE user_id = ? AND term_id = ? AND step = ? \
+                AND unixepoch(created) >= ? AND unixepoch(created) <= ?",
+                (str(g.user["id"]), str(term["id"]), "c", start_from_epoch, end_from_epoch)
             ).fetchall())
         
         decks_ask_data.append(summarise_deck_ask_attempts(ask_attempts))
@@ -191,19 +252,24 @@ def all():
         decks_multiple_data.append(summarise_deck_multiple_attempts(multiple_attempts))
         decks_correct_data.append(summarise_deck_correct_attempts(correct_attempts))
 
-    print("dict deck")
-    for deck in decks:
-        print(json.dumps(dict(deck)))
     json_decks = [json.dumps(dict(deck)) for deck in decks]
 
-    print(decks_ask_data)
-    print("flashcard:")
-    print(decks_flashcard_data)
-    return render_template("statistics/all.html", decks=decks, json_decks=json_decks,
+    deck_paths = []
+    for deck in decks:
+        folder = deck["folder_id"]
+        path = get_folder_path(folder, "")
+        deck_paths.append(path)
+
+    max_date = datetime.date.today().isoformat()
+    min_date = max_date if smallest_time is None else datetime.datetime.fromtimestamp(smallest_time).date()
+
+    return render_template("statistics/all.html",
+    start_date=date_filter_start, end_date=date_filter_end, min_date=min_date, max_date=max_date,
+    decks=decks, deck_paths=deck_paths, json_decks=json_decks,
     decks_ask_data=decks_ask_data, decks_flashcard_data=decks_flashcard_data,
     decks_correct_data=decks_correct_data, decks_multiple_data=decks_multiple_data)
 
-@bp.route("/deck/<deck_id>")
+@bp.route("/deck/<deck_id>", methods=("GET", "POST"))
 @login_required
 def deck(deck_id):
     db = get_db()
@@ -213,6 +279,24 @@ def deck(deck_id):
         (str(deck_id),)
     ).fetchall()
 
+    biggest_time, smallest_time = get_max_date_range(terms)
+    start_from_epoch = smallest_time
+    end_from_epoch = biggest_time
+
+    if request.method == "POST":
+        date_filter_start = request.form["filter_start"]
+        date_filter_end = request.form["filter_end"]
+        start_from_epoch = (datetime.datetime.fromisoformat(date_filter_start)).timestamp()
+        end_from_epoch = (datetime.datetime.fromisoformat(date_filter_end)).timestamp()
+
+    date_filter_start = datetime.date.fromtimestamp(start_from_epoch)
+    date_filter_end = datetime.date.fromtimestamp(end_from_epoch)
+
+    # increase end from epoch by day because datetime timestamp is seconds
+    # from the very beginning of the day, so to include attempts made on that
+    # day it is incremented by a day to cover the whole day
+    end_from_epoch += 86400
+
     terms_ask_data = []
     terms_flashcard_data = []
     terms_correct_data = []
@@ -220,20 +304,28 @@ def deck(deck_id):
 
     for term in terms:
         ask_attempts = db.execute(
-            "SELECT id, term_id, user_id, unixepoch(created), is_correct, step FROM attempt WHERE user_id = ? AND term_id = ? AND step = ?",
-            (str(g.user["id"]), str(term["id"]), "a")
+            "SELECT id, term_id, user_id, unixepoch(created), is_correct, step\
+            FROM attempt WHERE user_id = ? AND term_id = ? AND step = ?\
+            AND unixepoch(created) >= ? AND unixepoch(created) <= ?",
+            (str(g.user["id"]), str(term["id"]), "a", start_from_epoch, end_from_epoch)
         ).fetchall()
         flashcard_attempts = db.execute(
-            "SELECT id, term_id, user_id, unixepoch(created), is_correct, step FROM attempt WHERE user_id = ? AND term_id = ? AND step = ?",
-            (str(g.user["id"]), str(term["id"]), "f")
+            "SELECT id, term_id, user_id, unixepoch(created), is_correct, step\
+            FROM attempt WHERE user_id = ? AND term_id = ? AND step = ?\
+            AND unixepoch(created) >= ? AND unixepoch(created) <= ?",
+            (str(g.user["id"]), str(term["id"]), "f", start_from_epoch, end_from_epoch)
         ).fetchall()
         correct_attempts = db.execute(
-            "SELECT id, term_id, user_id, unixepoch(created), is_correct, step FROM attempt WHERE user_id = ? AND term_id = ? AND step = ?",
-            (str(g.user["id"]), str(term["id"]), "c")
+            "SELECT id, term_id, user_id, unixepoch(created), is_correct, step\
+            FROM attempt WHERE user_id = ? AND term_id = ? AND step = ?\
+            AND unixepoch(created) >= ? AND unixepoch(created) <= ?",
+            (str(g.user["id"]), str(term["id"]), "c", start_from_epoch, end_from_epoch)
         ).fetchall()
         multiple_attempts = db.execute(
-            "SELECT id, term_id, user_id, unixepoch(created), is_correct, step FROM attempt WHERE user_id = ? AND term_id = ? AND step = ?",
-            (str(g.user["id"]), str(term["id"]), "m")
+            "SELECT id, term_id, user_id, unixepoch(created), is_correct, step\
+            FROM attempt WHERE user_id = ? AND term_id = ? AND step = ?\
+            AND unixepoch(created) >= ? AND unixepoch(created) <= ?",
+            (str(g.user["id"]), str(term["id"]), "m", start_from_epoch, end_from_epoch)
         ).fetchall()
 
         terms_ask_data.append(summarise_term_ask_attempts(ask_attempts))
@@ -243,7 +335,20 @@ def deck(deck_id):
     
     json_terms = [json.dumps(dict(t)) for t in terms]
 
+    deck = db.execute(
+        "SELECT title, folder_id FROM deck WHERE id = ?",
+        (str(deck_id),)
+    ).fetchone()
+    folder = deck["folder_id"]
+    deck_path = get_folder_path(folder, "")
+    deck_title = deck["title"]
+
+    max_date = datetime.date.today().isoformat()
+    min_date = max_date if smallest_time is None else datetime.datetime.fromtimestamp(smallest_time).date()
+
     return render_template("statistics/deck.html", terms=terms,
+    start_date=date_filter_start, end_date=date_filter_end, min_date=min_date, max_date=max_date,
+    deck_path=deck_path, deck_title=deck_title,
     json_terms=json_terms, terms_ask_data=terms_ask_data,
     terms_flashcard_data=terms_flashcard_data,
     terms_correct_data=terms_correct_data,

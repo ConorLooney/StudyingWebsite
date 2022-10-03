@@ -1,8 +1,7 @@
-{% extends "base.html" %}
+{% extends "statistics/date_filter.html" %}
 
 {% block header %}
-    {{ super() }}
-    <h1>{% block title %}Statistics of All terms{% endblock %}</h1>
+    <h1>{% block title %}Statistics of All terms in {{ deck_title }} from {{ deck_path }}{% endblock %}</h1>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript">
         var terms = {{ json_terms|safe }};
@@ -46,6 +45,16 @@
                     "title":title,
                     "width":width,
                     "height":height,
+                    "colors":['darkgreen', 'darkred'],
+                    "titleTextStyle":{
+                        "color":'black',
+                        "fontName":'consolas',
+                        "fontSize":20,
+                        "bold":true,
+                        "italic":false
+                    },
+                    "fontName":'consolas',
+                    "pieSliceBorderColor":'black'
                 };
 
                 var chart = new google.visualization.PieChart(document.getElementById(
@@ -71,11 +80,25 @@
                     "title":title,
                     "width":width,
                     "height":height,
+                    "colors":['black'],
+                    "titleTextStyle":{
+                        "color":'black',
+                        "fontName":'consolas',
+                        "fontSize":20,
+                        "bold":true,
+                        "italic":false
+                    },
+                    "vAxis":{
+                        "format":'dd/MM/yy'
+                    },
+                    "fontName":'consolas',
+                    "orientation":'vertical'
                 };
-                
-                var chart = new google.visualization.LineChart(document.getElementById(
+
+                var chart = new google.visualization.BarChart(document.getElementById(
                     id=base_id + String(term.id)
                 ));
+
                 chart.draw(data, options)
                 index += 1
             }
@@ -84,15 +107,16 @@
 {% endblock %}
 
 {% block content %}
-    {% for term in terms %}
-        <div class="data_display">
-            <p>{{ term['question'] + "," + term['answer'] }}</p>
-            <div class="graph_row">
-                <div class="graph" id="term_ask_chart_div_{{ term['id'] }}"></div>
-                <div class="graph" id="term_correct_chart_div_{{ term['id'] }}"></div>
-                <div class="graph" id="term_multiple_chart_div_{{ term['id'] }}"></div>
-                <div class="graph" id="term_flashcard_chart_div_{{ term['id'] }}"></div>
-            </div>
+{{ super() }}
+{% for term in terms %}
+    <div class="data_display">
+        <p class="graph_row_title">{{ term['question'] + ", " + term['answer'] }}</p>
+        <div class="graph_row">
+            <div class="graph" id="term_ask_chart_div_{{ term['id'] }}"></div>
+            <div class="graph" id="term_correct_chart_div_{{ term['id'] }}"></div>
+            <div class="graph" id="term_multiple_chart_div_{{ term['id'] }}"></div>
+            <div class="graph" id="term_flashcard_chart_div_{{ term['id'] }}"></div>
         </div>
-    {% endfor %}
+    </div>
+{% endfor %}
 {% endblock %}

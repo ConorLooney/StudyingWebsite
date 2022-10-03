@@ -1,7 +1,6 @@
-{% extends "base.html" %}
+{% extends "statistics/date_filter.html" %}
 
 {% block header %}
-    {{ super() }}
     <h1>{% block title %}Statistics of All Decks{% endblock %}</h1>
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript">
@@ -46,6 +45,16 @@
                     "title":title,
                     "width":width,
                     "height":height,
+                    "colors":['darkgreen', 'darkred'],
+                    "titleTextStyle":{
+                        "color":'black',
+                        "fontName":'consolas',
+                        "fontSize":20,
+                        "bold":true,
+                        "italic":false
+                    },
+                    "fontName":'consolas',
+                    "pieSliceBorderColor":'black'
                 };
 
                 var chart = new google.visualization.PieChart(document.getElementById(
@@ -71,11 +80,25 @@
                     "title":title,
                     "width":width,
                     "height":height,
+                    "colors":['black'],
+                    "titleTextStyle":{
+                        "color":'black',
+                        "fontName":'consolas',
+                        "fontSize":20,
+                        "bold":true,
+                        "italic":false
+                    },
+                    "vAxis":{
+                        "format":'dd/MM/yy'
+                    },
+                    "fontName":'consolas',
+                    "orientation":'vertical'
                 };
-                
-                var chart = new google.visualization.LineChart(document.getElementById(
+
+                var chart = new google.visualization.BarChart(document.getElementById(
                     id=base_id + String(deck.id)
                 ));
+
                 chart.draw(data, options)
                 index += 1
             }
@@ -84,15 +107,18 @@
 {% endblock %}
 
 {% block content %}
-    {% for deck in decks %}
-        <div class="data_display">
-            <a href="{{ url_for('statistics.deck', deck_id=deck['id'] ) }}">{{ deck['title'] }}</a>
-            <div class="graph_row">
-                <div class="graph" id="deck_ask_chart_div_{{ deck['id'] }}"></div>
-                <div class="graph" id="deck_correct_chart_div_{{ deck['id'] }}"></div>
-                <div class="graph" id="deck_multiple_chart_div_{{ deck['id'] }}"></div>
-                <div class="graph" id="deck_flashcard_chart_div_{{ deck['id'] }}"></div>
-            </div>
+{{ super() }}
+{% for i in range(decks|length) %}
+    {% set deck = decks[i] %}
+    {% set path = deck_paths[i] %}
+    <div class="data_display">
+        <a class="graph_row_title" href="{{ url_for('statistics.deck', deck_id=deck['id'] ) }}"><p>{{ deck['title'] }} in {{ path }}</p></a>
+        <div class="graph_row">
+            <div class="graph" id="deck_ask_chart_div_{{ deck['id'] }}"></div>
+            <div class="graph" id="deck_correct_chart_div_{{ deck['id'] }}"></div>
+            <div class="graph" id="deck_multiple_chart_div_{{ deck['id'] }}"></div>
+            <div class="graph" id="deck_flashcard_chart_div_{{ deck['id'] }}"></div>
         </div>
-    {% endfor %}
+    </div>
+{% endfor %}
 {% endblock %}

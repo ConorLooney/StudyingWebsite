@@ -364,19 +364,15 @@ div.graph_row {
     flex-wrap: wrap;
 }
 
-div.graph_row > * {
-    flex: 1;
-}
-
 div.data_display {
     text-align: center;
     border-bottom: 2px solid black;
     width: 95%
 }
 
-div.data_display > a {
-    margin-top: 30px;
-    font-size: 40px;
+div.data_display > .graph_row_title {
+    margin: 50px;
+    font-size: 35px;
     font-family: monospace;
     color: black;
     text-decoration: none;
@@ -386,4 +382,29 @@ div.data_display > a {
 div.data_display > a:hover {
     background-color: black;
     color: white;
+}
+
+div.date_filter {
+    left: 10%;
+}
+
+div.date_filter > form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+div.date_filter > form > * {
+    margin: 10px;
+    font-family: monospace;
+    font-size: 20px;
+    border: none;
+    color: black;
+    background-color: white;
+}
+
+div.date_filter > form > #submit_date_filter:hover {
+    color: white;
+    background-color: black;
 }
