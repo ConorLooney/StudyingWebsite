@@ -186,6 +186,9 @@ def all():
             str(deck["id"],)
         ).fetchall())
 
+    if len(terms) == 0:
+        return render_template("statistics/empty.html")
+
     biggest_time, smallest_time = get_max_date_range(terms)
     start_from_epoch = smallest_time
     end_from_epoch = biggest_time
@@ -278,6 +281,9 @@ def deck(deck_id):
         "SELECT * FROM term WHERE deck_id = ?",
         (str(deck_id),)
     ).fetchall()
+
+    if len(terms) == 0:
+        return render_template("statistics/empty.html")
 
     biggest_time, smallest_time = get_max_date_range(terms)
     start_from_epoch = smallest_time
