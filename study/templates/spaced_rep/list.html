@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block header %}
+    <h1>{% block title %}Spaced Repetition Suggestions{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+{% for i in range(suggestions|length) %}
+    {% set deck = decks[i] %}
+    {% set routine = routines[i] %}
+    <p>Deck {{ deck.title }} with routine {{ routine.title }} </p>
+    <form method="post">
+        <label for="filter_date_start">From date:</label>
+        <input type="date" id="filter_date_start" name="filter_start" value="{{ start_date }}" min="{{ min_date }}" max="{{ max_date }}">
+        <input type="submit" name="study" value="Study">
+        <input type="submit" name="study" value="Forget">
+    </form>
+{% endfor %}
+{% endblock %}
