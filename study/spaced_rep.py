@@ -8,6 +8,7 @@ import datetime
 bp = Blueprint("spaced_repetition", __name__, url_prefix="/spaced_repetition")
 
 def find_next_study_date(previous_dates):
+    print(previous_dates)
     if len(previous_dates) == 0:
         return datetime.date.today()
     elif len(previous_dates) == 1:

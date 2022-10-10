@@ -10,6 +10,15 @@ import random
 
 bp = Blueprint("learn", __name__, url_prefix="/learn")
 
+def record_study_session(routine_id, deck_id):
+    db = get_db()
+    user_id = g.user["id"]
+    db.execute(
+        "INSERT INTO study_session (user_id, routine_id, deck_id) VALUES (?, ?, ?)",
+        (str(user_id), str(routine_id), str(deck_id),)
+    )
+    db.commit()
+
 @bp.route("/<deck_id>/<routine_id>")
 @login_required
 @member_deck_view
@@ -49,6 +58,7 @@ def learn(deck_id, routine_id, term_id, routine_position):
         ).fetchall()
 
         if term_id == terms[len(terms)-1]["id"]:
+            record_study_session(routine_id, deck_id)
             return redirect(url_for("/index"))
         else:
             for i in range(len(terms)):
@@ -58,8 +68,6 @@ def learn(deck_id, routine_id, term_id, routine_position):
          term_id=next_term_id, routine_position=0))
 
     current_step = steps[routine_position]
-    print("steps:")
-    print(steps)
     step_views = {"a": "learn.ask", "c": "learn.correct", "f": "learn.flashcard",
     "m": "learn.choice"}
     if current_step in step_views:
