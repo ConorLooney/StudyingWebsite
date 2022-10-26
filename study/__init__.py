@@ -26,7 +26,7 @@ def create_app():
     from . import routines
     app.register_blueprint(routines.bp)
 
-    from . import learn
+    from .learn import learn
     app.register_blueprint(learn.bp)
 
     from . import classes

@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block header %}
+    <h1>{% block title %}Choice{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<div class="learning_step" id="fill_in_blanks">
+    {{ question }}?
+    <br>
+    {% set covered_words = [1] %}
+    {% for i in range(words|length) %}
+        {% set word = words[i] %}
+        {% set is_covered = covered_words_map[i] %}
+        {% if is_covered %}
+            {% set fill_in = "_" * (word|length) %}
+            {{ fill_in[word|length] }}
+            {% fill_in[word|length / 2] = covered_words|length|string %}
+            {% set ___ = covered_words.append(1) %}
+        {% else %}
+            {{ word + " " }}
+        {% endif %}
+    {% endfor %}
+    <form method="post">
+        {% set covered_words = [1] %}
+        {% for i in range(words|length) %}
+            {% set word = words[i] %}
+            {% set is_covered = covered_words_map[i] %}
+            {% if is_covered %}
+                <label for="{{ word }}">{{ covered_words|length }}</label>
+                <input name="{{ word }}" id="{{ word }}">
+                <br>
+                {% set ___ = covered_words.append(1) %}
+            {% endif %}
+        {% endfor %}
+        <input type="submit" value="Submit">
+    </form>
+</div>
+{% endblock %}

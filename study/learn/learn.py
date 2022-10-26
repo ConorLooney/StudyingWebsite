@@ -33,6 +33,8 @@ def begin_learn(deck_id, routine_id):
 
     routine_position = 0
 
+    session['to_correct'] = []
+
     return redirect(url_for("learn.learn", deck_id=deck_id, routine_id=routine_id,
      term_id=smallest_id, routine_position=routine_position))
 
@@ -69,12 +71,20 @@ def learn(deck_id, routine_id, term_id, routine_position):
 
     current_step = steps[routine_position]
     step_views = {"a": "learn.ask", "c": "learn.correct", "f": "learn.flashcard",
-    "m": "learn.choice"}
+    "m": "learn.choice", "b": "learn.fill_in_blanks"}
     if current_step in step_views:
         return redirect(url_for(step_views[current_step], deck_id=deck_id, routine_id=routine_id,
          term_id=term_id, routine_position=routine_position))
 
     return redirect(url_for("/index"))
+
+def queue_to_correct(term_id, given_answer):
+    session['to_correct'].append([term_id, given_answer])
+    session.modified = True
+
+def pop_queue_to_correct():
+    session['to_correct'].remove(session['to_correct'][0])
+    session.modified = True
 
 @bp.route("/<deck_id>/<routine_id>/<term_id>/<routine_position>/ask", methods=("GET", "POST"))
 @login_required
@@ -105,8 +115,9 @@ def ask(deck_id, routine_id, term_id, routine_position):
                 ("a", str(term_id), str(g.user["id"]), str(to_bit(is_correct)),)
             )
             db.commit()
+            if not is_correct:
+                queue_to_correct(term_id, given_answer)
 
-            session['given_answer'] = given_answer
             routine_position = int(routine_position) + 1
             return redirect(url_for("learn.learn", deck_id=deck_id, routine_id=routine_id,
             term_id=term_id, routine_position=routine_position))
@@ -120,6 +131,11 @@ def ask(deck_id, routine_id, term_id, routine_position):
 @member_deck_view
 @member_routine_view
 def correct(deck_id, routine_id, term_id, routine_position):
+    to_correct_queue = session['to_correct']
+    first = to_correct_queue[0]
+    term_id = first[0]
+    to_correct_answer = first[1]
+
     db = get_db()
     term = db.execute(
         "SELECT * FROM term WHERE id = ?",
@@ -134,7 +150,7 @@ def correct(deck_id, routine_id, term_id, routine_position):
             error = "Answer is required"
 
         if error is None:
-            session['given_answer'] = given_answer
+            pop_queue_to_correct()
         else:
             flash(error)
 
@@ -145,6 +161,9 @@ def correct(deck_id, routine_id, term_id, routine_position):
         )
         db.commit()
 
+        if not is_correct:
+            queue_to_correct_priority
+
     given_answer = session['given_answer']
 
     if term["answer"].strip() == given_answer.strip():
@@ -154,7 +173,7 @@ def correct(deck_id, routine_id, term_id, routine_position):
          term_id=term_id, routine_position=routine_position))
 
     return render_template("learn/correct.html", question=term["question"],
-     given_answer=given_answer, actual_answer=term["answer"])
+     to_correct_answer=to_correct_answer, actual_answer=term["answer"])
 
 @bp.route("/<deck_id>/<routine_id>/<term_id>/<routine_position>/flashcard", methods=("GET", "POST"))
 @login_required
@@ -215,7 +234,8 @@ def choice(deck_id, routine_id, term_id, routine_position):
             ("m", str(term_id), str(g.user["id"]), str(to_bit(is_correct)),)
         )
         db.commit()
-        session['given_answer'] = chosen_answer
+        if not is_correct:
+            queue_to_correct(term_id, chosen_answer)
         routine_position = int(routine_position) + 1
         return redirect(url_for("learn.learn", deck_id=deck_id, routine_id=routine_id,
             term_id=term_id, routine_position=routine_position))
