@@ -17,7 +17,7 @@ from .main import bp
 
 @bp.route("/see_user", methods=("GET", "POST"))
 @login_required
-def all_user():
+def see_user():
     search_term = None
     search_function = None
     

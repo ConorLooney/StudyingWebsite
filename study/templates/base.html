@@ -8,8 +8,8 @@
         {% if g.user %}
             <p class="username_display">{{ g.user['username']}} Logged on</p>
             <a href="{{ url_for('auth.logout') }}">Logout</a> |
-            <a href="{{ url_for('decks.all_user') }}">Your decks</a>
-            <a href="{{ url_for('decks.all_public') }}">Public decks</a>
+            <a href="{{ url_for('decks.see_user') }}">Your decks</a>
+            <a href="{{ url_for('decks.see_public') }}">Public decks</a>
             <a href="{{ url_for('decks.create') }}">New deck</a> |
             <a href="{{ url_for('routines.all_user') }}">Your routines</a>
             <a href="{{ url_for('routines.all_public') }}">Public routines</a>

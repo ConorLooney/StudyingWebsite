@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, url_for
 import os
 
 def create_app():
@@ -19,9 +19,10 @@ def create_app():
     from . import auth
     app.register_blueprint(auth.bp)
 
-    from . import decks
-    app.register_blueprint(decks.bp)
+    from .blueprints import decks
+    app.register_blueprint(decks.main.bp)
     app.add_url_rule("/", endpoint="/index")
+    app.add_url_rule("/index", endpoint="deck/see_user")
 
     from . import routines
     app.register_blueprint(routines.bp)
