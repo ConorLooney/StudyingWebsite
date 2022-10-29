@@ -1,4 +1,4 @@
-from flask import Flask, url_for
+from flask import Flask, url_for, redirect
 import os
 
 def create_app():
@@ -13,6 +13,11 @@ def create_app():
     except OSError:
         pass
 
+    @app.route("/")
+    @app.route("/index")
+    def index():
+        return redirect(url_for("decks.see_user"))
+
     from . import db
     db.init_app(app)
 
@@ -21,17 +26,15 @@ def create_app():
 
     from .blueprints import decks
     app.register_blueprint(decks.main.bp)
-    app.add_url_rule("/", endpoint="/index")
-    app.add_url_rule("/index", endpoint="deck/see_user")
+
+    from .blueprints import classes
+    app.register_blueprint(classes.main.bp)
 
     from . import routines
     app.register_blueprint(routines.bp)
 
     from .learn import learn
     app.register_blueprint(learn.bp)
-
-    from . import classes
-    app.register_blueprint(classes.bp)
 
     from . import statistics
     app.register_blueprint(statistics.bp)

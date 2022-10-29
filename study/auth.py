@@ -75,7 +75,7 @@ def login():
                 if check_password_hash(user["password"], password):
                     session["user_id"] = user["id"]
                     session["folder_id"] = get_user_root_folder(user["id"])["id"]
-                    return redirect(url_for("/index"))
+                    return redirect(url_for("index"))
                 else:
                     error = "Error: Incorrect password"
             else:
