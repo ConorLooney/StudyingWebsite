@@ -3,17 +3,13 @@ from study.db import get_db, to_bit
 from study.auth import login_required
 
 from .main import bp
+from .validation import presence_check
 
 def read_form():
     return [request.form["deck_name"],
     request.form["terms"],
     request.form["intra_term_delimiter"],
     request.form["is_public"]]
-
-def presence_check(data):
-    if data is None:
-        return False
-    return True
 
 """Returns true if data is valid otherwise displays error and returns false"""
 def validate_data(deck_name, terms, intra_term_delimiter, is_public):
