@@ -1,7 +1,13 @@
-from flask import (
-    request, redirect, url_for
-)
-from study.db import get_db
+from flask import request, redirect, url_for, session, render_template, g
+from study.auth import login_required, member_routine_view, member_deck_view
+from study.db import get_db, to_bit
+import random
+
+from .main import bp
+
+def queue_to_correct(term_id, given_answer):
+    session['to_correct'].append([term_id, given_answer])
+    session.modified = True
 
 def get_question_answer(term_id):
     db = get_db()
