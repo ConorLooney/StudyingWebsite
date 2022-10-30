@@ -30,8 +30,8 @@ def create_app():
     from .blueprints import classes
     app.register_blueprint(classes.main.bp)
 
-    from . import routines
-    app.register_blueprint(routines.bp)
+    from .blueprints import routines
+    app.register_blueprint(routines.main.bp)
 
     from .learn import learn
     app.register_blueprint(learn.bp)
