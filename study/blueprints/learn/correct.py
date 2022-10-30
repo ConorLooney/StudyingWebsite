@@ -14,6 +14,12 @@ def pop_queue_to_correct():
 @member_routine_view
 def correct(deck_id, routine_id, term_id, routine_position):
     to_correct_queue = session['to_correct']
+    if len(to_correct_queue) == 0:
+        session.pop("to_correct", None)
+        routine_position = int(routine_position) + 1
+        return redirect(url_for("learn.learn", deck_id=deck_id, routine_id=routine_id,
+         term_id=term_id, routine_position=routine_position))
+
     first = to_correct_queue[0]
     term_id = first[0]
     to_correct_answer = first[1]

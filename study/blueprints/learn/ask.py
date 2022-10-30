@@ -1,4 +1,4 @@
-from flask import request, redirect, url_for, render_template, flash, g
+from flask import request, redirect, url_for, render_template, flash, g, session
 from study.auth import login_required, member_routine_view, member_deck_view
 from study.db import get_db, to_bit
 
