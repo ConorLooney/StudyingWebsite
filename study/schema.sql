@@ -149,14 +149,14 @@ CREATE TABLE attempt (
 );
 
 CREATE TABLE study_session (
-    id INTEGER PRIMARY KEY AUTOINCREMENT;
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     user_id INTEGER NOT NULL,
     routine_id INTEGER NOT NULL,
     deck_id INTEGER NOT NULL,
     date_studied TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES user (id),
     FOREIGN KEY (routine_id) REFERENCES routine (id),
-    FOREIGN KEY (deck_id) REFERENCES deck (id),
+    FOREIGN KEY (deck_id) REFERENCES deck (id)
 );
 
 CREATE TABLE spaced_repetition_setting (

@@ -1,1 +1,1 @@
-import list
+from . import list

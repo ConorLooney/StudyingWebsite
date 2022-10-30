@@ -1,6 +1,6 @@
-import all_user
-import all_public
-import create
-import view_routine
-import update
-import delete
+from . import all_user
+from . import all_public
+from . import create
+from . import view_routine
+from . import update
+from . import delete
