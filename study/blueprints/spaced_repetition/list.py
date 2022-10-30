@@ -1,11 +1,9 @@
-from flask import (
-    Blueprint, render_template, g, request, redirect, url_for
-)
+from flask import render_template, g, request, redirect, url_for
 from study.auth import login_required
 from study.db import get_db
 import datetime
 
-bp = Blueprint("spaced_repetition", __name__, url_prefix="/spaced_repetition")
+from .main import bp
 
 def find_next_study_date(previous_dates):
     print(previous_dates)

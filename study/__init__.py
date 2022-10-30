@@ -39,7 +39,7 @@ def create_app():
     from . import statistics
     app.register_blueprint(statistics.bp)
 
-    from . import spaced_rep
-    app.register_blueprint(spaced_rep.bp)
+    from .blueprints import spaced_repetition
+    app.register_blueprint(spaced_repetition.main.bp)
 
     return app
