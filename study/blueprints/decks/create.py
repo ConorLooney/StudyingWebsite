@@ -57,7 +57,6 @@ def insert_term_into_database(deck_id, intra_term_delimiter, line):
     )
     db.commit()
 
-
 """Makes new deck in database along with the new terms, returns the new deck id
 
 Assumes the data is valid"""

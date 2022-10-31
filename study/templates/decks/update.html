@@ -10,8 +10,12 @@
         <input name="deck_name" id="deck_name" value="{{ deck.title }}"required>
         <label for="terms">Terms:</label>
         <textarea name="terms" id="terms" required>
-        {%- for term in terms -%}
-            {{ term.question }}, {{ term.answer }}
+        {%- for i in range(terms|length) -%}
+            {%- set term = terms[i] -%}
+            {{ term.question }}, {{ term.answer}}
+            {%- if i != terms|length - 1 -%}
+                {{ "\n" }}
+            {%- endif -%}
         {%- endfor -%}
         </textarea>
         <label for="intra_term_delimiter">Between question and answer</label>
