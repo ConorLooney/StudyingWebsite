@@ -20,12 +20,6 @@
                             <option name="routine" id="routine" value="{{ routine.id }}">{{ routine.title }}</option>
                         {% endfor %}
                     </select>
-                    <input type="submit" name="save_deck_to_class" value="Save to class">
-                    <select type="submit" name="classes">
-                        {% for class in classes %}
-                            <option name="class" id="class" value="{{ class.id }}">{{ class.title }}</option>
-                        {% endfor %}
-                    </select>
                     <input type="submit" name="move_deck_to_folder" value="Move to folder">
                     <select type="submit" name="folders">
                         {% for n in range(all_folders|length) %}

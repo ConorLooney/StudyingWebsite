@@ -1,5 +1,5 @@
 from flask import render_template, g, request, redirect, url_for
-from study.utility.general import save_deck_to_class, unsave_deck_from_user, save_deck_to_user, get_all_user_routines, get_saved_info, get_all_user_controlled_classes
+from study.utility.general import unsave_deck_from_user, save_deck_to_user, get_all_user_routines, get_saved_info, get_all_user_controlled_classes
 from study.utility.folder import get_user_root_folder, get_all_folders_orderered, get_formatted_folder_path
 from study.db import get_db, to_bit
 from study.auth import login_required
@@ -28,10 +28,6 @@ def see_public():
         if "unsave_deck" in request.form:
             deck_id = request.form["deck_id"]
             unsave_deck_from_user(g.user["id"], deck_id)
-        if "save_deck_to_class" in request.form:
-            deck_id = request.form["deck_id"]
-            class_id = request.form["classes"]
-            save_deck_to_class(class_id, deck_id)
 
     decks = db.execute(
         "SELECT * FROM deck WHERE is_public = ?",

@@ -2,7 +2,7 @@ from flask import (
     render_template, g, request, redirect, url_for
 )
 from study.utility.general import (
-    save_deck_to_class, unsave_deck_from_user, get_all_user_routines, 
+    unsave_deck_from_user, get_all_user_routines, 
     get_all_user_decks, get_all_user_controlled_classes
 )
 from study.utility.folder import (
@@ -31,10 +31,6 @@ def see_user():
         elif "unsave_deck" in request.form:
             deck_id = request.form["deck_id"]
             unsave_deck_from_user(g.user["id"], deck_id)
-        elif "save_deck_to_class" in request.form:
-            deck_id = request.form["deck_id"]
-            class_id = request.form["classes"]
-            save_deck_to_class(class_id, deck_id)
         elif "rename_folder" in request.form:
             folder_id = request.form["folder_id"]
             new_title = request.form["new_folder_title"]
