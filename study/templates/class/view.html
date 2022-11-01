@@ -44,18 +44,10 @@
             {% for n in range(class_routines|length) %}
                     <div class="class_section_entry" id="class_routine">
                     {% set routine = class_routines[n] %}
-                    {% set saved = saved_routines_info[n] %}
                     <p>{{ routine.title }}</p>
                     <form method="post">
                         {% if user.id in (admins|map(attribute="admin_id"))|list or user.id == owner.id %}
                             <input type="submit" name="unsave_routine_from_class" value="Unsave from class">
-                        {% endif %}
-                        {% if saved != -1 and routine.is_public == 1 %}
-                            {% if saved == 1 %}
-                                <input type="submit" name="unsave_routine_from_user" value="Unsave">
-                            {% else %}
-                                <input type="submit" name="save_routine_to_user" value="Save">
-                            {% endif %}
                         {% endif %}
                         <input type="hidden" name="routine_id" value="{{ routine.id }}">
                     </form>

@@ -1,7 +1,7 @@
 from flask import render_template, request, redirect, url_for, g, flash
 from study.auth import login_required
 from study.db import get_db
-from study.utility.general import save_deck_to_user, save_routine_to_user, get_all_user_routines
+from study.utility.general import save_deck_to_user, get_all_user_routines
 
 from .main import bp
 from .view_levels import member_level_view
@@ -59,19 +59,6 @@ def view(class_id):
             )
             db.commit()
 
-        if "save_routine_to_user" in request.form:
-            print(request.form)
-            routine_id = request.form["routine_id"]
-            save_routine_to_user(g.user["id"], routine_id)
-
-        if "unsave_routine_from_user" in request.form:
-            routine_id = request.form["routine_id"]
-            db.execute(
-                "DELETE FROM save_routine WHERE routine_id = ? AND user_id = ?",
-                (str(routine_id), str(g.user["id"]),)
-            )
-            db.commit()
-
         if error is not None:
             flash(error)
 
@@ -123,25 +110,9 @@ def view(class_id):
         else:
             saved_decks_info.append(0) # can be saved
 
-    saved_routines_info = []
-    for routine in class_routines:
-        if str(routine["owner_id"]) == str(g.user["id"]):
-            saved_routines_info.append(-1) # cannot be saved
-            continue
-
-        save_routine = db.execute(
-            "SELECT * FROM save_routine WHERE routine_id = ? AND user_id = ?",
-            (str(routine["id"]), str(g.user["id"]),)
-        ).fetchall()
-
-        if len(save_routine) > 0:
-            saved_routines_info.append(1) # already saved, should be unsaved
-        else:
-            saved_routines_info.append(0) # can be saved
-
     user = g.user
     
     return render_template("class/view.html",
      user=user, view_class=view_class, owner=owner, saved_decks_info=saved_decks_info, decks=decks,
-      saved_routines_info=saved_routines_info, class_routines=class_routines, user_routines=user_routines,
+      class_routines=class_routines, user_routines=user_routines,
       admins=admins)

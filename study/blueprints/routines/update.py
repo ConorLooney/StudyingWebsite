@@ -1,5 +1,5 @@
 from flask import request, url_for, render_template, redirect, flash
-from study.db import get_db, to_bit
+from study.db import get_db
 from study.auth import login_required, owner_routine_view
 
 from .main import bp
@@ -13,7 +13,6 @@ def update(routine_id):
     if request.method == "POST":
         routine_name = request.form["routine_name"]
         steps = request.form["steps"]
-        is_public = request.form["is_public"] == "1"
 
         error = None
         if routine_name is None:
@@ -25,8 +24,8 @@ def update(routine_id):
             try:
 
                 db.execute(
-                    "UPDATE routine SET title = ?, steps = ?, is_public = ? WHERE id = ?",
-                    (routine_name, steps, str(to_bit(is_public)), str(routine_id),)
+                    "UPDATE routine SET title = ?, steps = ?, WHERE id = ?",
+                    (routine_name, steps, str(routine_id),)
                 )
                 db.commit()
 

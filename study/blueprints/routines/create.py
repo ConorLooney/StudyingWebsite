@@ -1,5 +1,5 @@
 from flask import request, url_for, render_template, redirect, flash, g
-from study.db import get_db, to_bit
+from study.db import get_db
 from study.auth import login_required
 
 from .main import bp
@@ -10,7 +10,6 @@ def create():
     if request.method == "POST":
         routine_name = request.form["routine_name"]
         steps = request.form["steps"]
-        is_public = request.form["is_public"] == "1"
 
         error = None
         if routine_name is None:
@@ -24,8 +23,8 @@ def create():
             try:
 
                 cursor.execute(
-                    "INSERT INTO routine (owner_id, title, steps, is_public) VALUES (?, ?, ?, ?)",
-                    (str(g.user['id']), routine_name, steps, to_bit(is_public),)
+                    "INSERT INTO routine (owner_id, title, steps) VALUES (?, ?, ?, ?)",
+                    (str(g.user['id']), routine_name, steps,)
                 )
                 db.commit()
                 routine_id = cursor.lastrowid
