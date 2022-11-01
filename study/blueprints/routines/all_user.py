@@ -1,5 +1,5 @@
 from flask import request, url_for, render_template, redirect, g
-from study.utility.general import get_all_user_controlled_classes, get_saved_info, get_all_user_routines, unsave_routine_from_user, save_routine_to_class
+from study.utility.general import get_all_user_controlled_classes, get_saved_info, get_all_user_routines, save_routine_to_class
 from study.search_utility import handle_search,apply_filter
 from study.auth import login_required
 
@@ -17,10 +17,7 @@ def all_user():
             return redirect(url_for("routines.delete", routine_id=routine_id))
         if "update_routine" in request.form:
             routine_id = request.form['routine_id']
-            return redirect(url_for("routines.update", routine_id=routine_id))    
-        if "unsave_routine" in request.form:
-            routine_id = request.form["routine_id"]
-            unsave_routine_from_user(g.user["id"], routine_id)
+            return redirect(url_for("routines.update", routine_id=routine_id))
         if "save_routine_to_class" in request.form:
             routine_id = request.form["routine_id"]
             class_id = request.form["classes"]

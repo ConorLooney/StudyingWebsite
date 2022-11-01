@@ -5,7 +5,6 @@ DROP TABLE IF EXISTS routine;
 DROP TABLE IF EXISTS class;
 DROP TABLE IF EXISTS invite_code;
 DROP TABLE IF EXISTS save_deck;
-DROP TABLE IF EXISTS save_routine;
 DROP TABLE IF EXISTS deck_class;
 DROP TABLE IF EXISTS routine_class;
 DROP TABLE IF EXISTS user_class; 
@@ -47,7 +46,6 @@ CREATE TABLE routine (
     owner_id INTEGER NOT NULL,
     title TEXT NOT NULL,
     steps TEXT NOT NULL,
-    is_public BIT NOT NULL,
     FOREIGN KEY (owner_id) REFERENCES user (id)
 );
 
@@ -59,14 +57,6 @@ CREATE TABLE save_deck (
     FOREIGN KEY (deck_id) REFERENCES deck (id),
     FOREIGN KEY (folder_id) REFERENCES folder (id),
     UNIQUE(user_id, deck_id)
-);
-
-CREATE TABLE save_routine (
-    user_id INTEGER NOT NULL,
-    routine_id INTEGER NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES user (id),
-    FOREIGN KEY (routine_id) REFERENCES routine (id),
-    UNIQUE(user_id, routine_id)
 );
 
 CREATE TABLE class (

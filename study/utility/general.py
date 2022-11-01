@@ -71,12 +71,6 @@ def get_all_user_routines(user_id):
         "SELECT * FROM routine WHERE owner_id = ?",
         (str(user_id),)
     ).fetchall()
-    routines.extend(db.execute(
-        "SELECT * FROM routine \
-        JOIN save_routine ON save_routine.routine_id = routine.id \
-        WHERE save_routine.user_id = ?",
-        (str(user_id),)
-    ).fetchall())
     return routines
 
 def delete_class(class_id):
@@ -203,39 +197,3 @@ def save_routine_to_class(class_id, routine_id):
         error = "Error: Routine already saved to class"
     if error:
         flash(error)
-
-def save_routine_to_user(user_id, routine_id):
-    db = get_db()
-    error = None
-
-    routine = db.execute(
-        "SELECT * FROM routine WHERE id = ?",
-        (str(routine_id),)
-    ).fetchone()
-
-    if str(routine["owner_id"]) == str(user_id):
-        error = "Error: Cannot save routine you own"
-
-    if not to_bool(routine["is_public"]):
-        error = "Error: Cannot save private routine"
-
-    if error is None:
-        try:
-            db.execute(
-                "INSERT INTO save_routine (user_id, routine_id) VALUES (?, ?)",
-                (str(user_id), str(routine_id),)
-            )
-            db.commit()
-        except db.IntegrityError:
-            error = "Error: User has already saved routine"
-
-    if error is not None:
-        flash(error)
-
-def unsave_routine_from_user(user_id, routine_id):
-    db = get_db()
-    db.execute(
-        "DELETE FROM save_routine WHERE user_id = ? AND routine_id = ?",
-        (str(user_id), str(routine_id),)
-    )
-    db.commit()
