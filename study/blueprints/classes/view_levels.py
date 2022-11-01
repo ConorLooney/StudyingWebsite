@@ -1,6 +1,8 @@
 import functools
 from flask import redirect, url_for, g
 
+from study.db import get_db
+
 def member_level_view(view):
     @functools.wraps(view)
     def wrapped_view(**kwargs):

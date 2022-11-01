@@ -35,8 +35,6 @@
                         {% endfor %}
                     </select>
                     {% if is_owned %}
-                        <input type="submit" name="update_deck" value="Update">
-                        <input type="submit" name="delete_deck" value="Delete">
                         <input type="hidden" name="modify_deck" id="modify_deck">
                         <input type="hidden" name="deck_id" value="{{ deck.id }}">
                         <input type="hidden" name="owned_deck">

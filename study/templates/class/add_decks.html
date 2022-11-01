@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Add decks{% endblock %}
+
+{% block header %}
+{% endblock %}
+
+{% block content %}
+{% for deck in decks %}
+    {{ deck.title }}
+    <form method="post">
+        <input type="hidden" name="deck_id" value="{{ deck.id }}">
+        <input type="submit" value="Add deck">
+    </form>
+{% endfor %}
+{% endblock %}

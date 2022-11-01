@@ -8,3 +8,4 @@ from . import update
 from . import delete
 from . import gen_code
 from . import code_join
+from . import add_decks

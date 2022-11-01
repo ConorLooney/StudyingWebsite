@@ -24,12 +24,6 @@ def see_user():
     if request.method == "POST":
         if "new_deck" in request.form:
             return redirect(url_for("decks.create"))
-        elif "delete_deck" in request.form:
-            deck_id = request.form["deck_id"]
-            return redirect(url_for("decks.delete", deck_id=deck_id))
-        elif "update_deck" in request.form:
-            deck_id = request.form["deck_id"]
-            return redirect(url_for("decks.update", deck_id=deck_id))
         elif "study_deck" in request.form:
             deck_id = request.form["deck_id"]
             routine_id = request.form["routines"]

@@ -16,6 +16,8 @@
                 </div>
             {% endfor %}
         {% endif %}
+        <a href="{{ url_for('decks.update', deck_id=deck.id) }}">Update deck</a>
+        <a href="{{ url_for('decks.delete', deck_id=deck.id) }}">Delete deck</a>
     </div>
 </div>
 {% endblock %}

@@ -81,6 +81,6 @@ def delete(deck_id):
                 delete_deck_from_database(deck_id)
                 return redirect(url_for("decks.all_user"))
 
-    deck = get_deck()
+    deck = get_deck(deck_id)
 
     return render_template("decks/delete.html", deck=deck)
