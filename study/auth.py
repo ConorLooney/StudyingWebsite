@@ -251,8 +251,7 @@ def owner_routine_view(view):
     return wrapped_view
 
 """Only allows viewing if the user owns the routine,
-if the user is a member of class that the routine is saved in,
-or if the routine is public"""
+if the user is a member of class that the routine is saved in"""
 def member_routine_view(view):
     @functools.wraps(view)
     def wrapped_view(**kwargs):
@@ -268,9 +267,6 @@ def member_routine_view(view):
 
         if routine is None:
             return redirect(url_for("/index"))
-
-        if to_bool(routine["is_public"]):
-            return view(**kwargs)
 
         authorised_id = routine['owner_id']
         if g.user['id'] == authorised_id:
@@ -292,33 +288,5 @@ def member_routine_view(view):
                 return view(**kwargs)
 
         return redirect(url_for("/index"))
-    
-    return wrapped_view
-
-"""Only allows viewing if the user owns the routine or the routine is public"""
-def stranger_routine_view(view):
-    @functools.wraps(view)
-    def wrapped_view(**kwargs):
-        if g.user is None:
-            return redirect(url_for("auth.login"))
-
-        routine_id = kwargs['routine_id']
-        db = get_db()
-        routine = db.execute(
-            "SELECT * FROM routine WHERE id = ?",
-            (str(routine_id),)
-        ).fetchone()
-
-        if routine is None:
-            return redirect(url_for("/index"))
-        
-        if to_bool(routine["is_public"]):
-            return view(**kwargs)
-
-        authorised_id = routine['owner_id']
-        if g.user['id'] != authorised_id:
-            return redirect(url_for("/index"))
-
-        return view(**kwargs)
     
     return wrapped_view
