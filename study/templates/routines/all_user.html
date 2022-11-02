@@ -16,15 +16,7 @@
             </div>
             <div class="object_options" id="routine_options">
                 <form method="post">
-                    <input type="submit" name="save_routine_to_class" value="Save to class">
-                    <select name="classes">
-                        {% for class in classes %}
-                            <option name="class" id="class" value="{{ class.id }}">{{ class.title }}</option>
-                        {% endfor %}
-                    </select>
                     {% if is_owned %}
-                        <input type="submit" name="update_routine" value="Update">
-                        <input type="submit" name="delete_routine" value="Delete">
                         <input type="hidden" name="modify_routine" id="modify_routine">
                         <input type="hidden" name="routine_id" value="{{ routine.id }}">
                     {% else %}

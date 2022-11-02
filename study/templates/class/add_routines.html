@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block title %}Add decks{% endblock %}
+
+{% block header %}
+{% endblock %}
+
+{% block content %}
+{% for routine in routines %}
+    {{ routine.title }}
+    <form method="post">
+        <input type="hidden" name="routine_id" value="{{ routine.id }}">
+        <input type="submit" value="Add routine">
+    </form>
+{% endfor %}
+{% endblock %}

@@ -9,5 +9,7 @@
     <div class="object_elements" id="routine_steps">
         {{ routine.steps }}
     </div>
+    <a href="{{ url_for('routines.update', routine_id=routine.id) }}">Update</a>
+    <a href="{{ url_for('routines.delete', routine_id=routine.id) }}">Delete</a>
 </div>
 {% endblock %}

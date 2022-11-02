@@ -12,16 +12,6 @@ def all_user():
     search_function = None
 
     if request.method == "POST":
-        if "delete_routine" in request.form:
-            routine_id = request.form['routine_id']
-            return redirect(url_for("routines.delete", routine_id=routine_id))
-        if "update_routine" in request.form:
-            routine_id = request.form['routine_id']
-            return redirect(url_for("routines.update", routine_id=routine_id))
-        if "save_routine_to_class" in request.form:
-            routine_id = request.form["routine_id"]
-            class_id = request.form["classes"]
-            save_routine_to_class(class_id, routine_id)
         if "search" in request.form:
             search_term, search_function = handle_search(request.form)
 
@@ -30,7 +20,5 @@ def all_user():
 
     saved_info = get_saved_info(routines, "routine", g.user["id"])
 
-    classes = get_all_user_controlled_classes(g.user["id"])
-
     return render_template("routines/all_user.html",
-     routines=routines, saved_info=saved_info, classes=classes)
+     routines=routines, saved_info=saved_info)
