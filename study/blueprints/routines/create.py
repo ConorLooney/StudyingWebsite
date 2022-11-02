@@ -23,7 +23,7 @@ def create():
             try:
 
                 cursor.execute(
-                    "INSERT INTO routine (owner_id, title, steps) VALUES (?, ?, ?, ?)",
+                    "INSERT INTO routine (owner_id, title, steps) VALUES (?, ?, ?)",
                     (str(g.user['id']), routine_name, steps,)
                 )
                 db.commit()
