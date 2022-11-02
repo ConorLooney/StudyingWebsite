@@ -57,15 +57,6 @@ def see_user():
             open_folder(folder_id)
         elif "prev_folder" in request.form:
             open_prev_folder()
-        elif "save_to_spaced_repetition" in request.form:
-            db = get_db()
-            routine_id = request.form["routines"]
-            deck_id = request.form["deck_id"]
-            db.execute(
-                "INSERT INTO spaced_repetition_setting (user_id, deck_id, routine_id) VALUES (?, ?, ?)",
-                (str(g.user["id"]), str(deck_id), str(routine_id),)
-            )
-            db.commit()
         elif "search" in request.form:
             search_term, search_function = handle_search(request.form)
     

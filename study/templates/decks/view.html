@@ -18,6 +18,14 @@
         {% endif %}
         <a href="{{ url_for('decks.update', deck_id=deck.id) }}">Update deck</a>
         <a href="{{ url_for('decks.delete', deck_id=deck.id) }}">Delete deck</a>
+        <form method="post">
+            <input type="submit" name="save_to_spaced_repetition" value="Apply spaced repetition">
+            <select name="routines" id="routines"> 
+                {% for routine in routines %}
+                    <option name="routine" id="routine" value="{{ routine.id }}">{{ routine.title }}</option>
+                {% endfor %}
+            </select>
+        </form>
     </div>
 </div>
 {% endblock %}
