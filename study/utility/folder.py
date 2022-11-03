@@ -90,10 +90,9 @@ def get_all_folders_orderered(parent_id, result):
         (str(parent_id),)
     ).fetchone()
     result.append(parent)
-    print("HI")
 
     children = get_all_immediate_child_folders(parent_id)
-    print([x["parent_id"] for x in children])
+    
     for child in children:
         get_all_folders_orderered(child["id"], result)
     return result
@@ -164,7 +163,6 @@ def new_folder(user_id, parent_folder, folder_title):
         "INSERT INTO folder (title, owner_id, parent_id) VALUES (?, ?, ?)",
         (str(folder_title), str(user_id), str(parent_folder["id"]),)
     )
-    print("new folder")
     db.commit()
 
 """Each user has their own root folder

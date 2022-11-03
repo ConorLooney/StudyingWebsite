@@ -29,7 +29,6 @@ def register():
         if error is None:
             try:
                 db = get_db()
-                print(db.execute("SELECT * FROM user").fetchall())
                 cursor = db.cursor()
                 cursor.execute(
                     "INSERT INTO user (username, password) VALUES (?, ?)",

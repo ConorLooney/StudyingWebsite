@@ -14,7 +14,6 @@ def unload_queue():
     and the given answer to correct"""
     to_correct_queue = session['to_correct']
     first_in_queue = to_correct_queue[0]
-    print(first_in_queue)
     term_id = first_in_queue[0]
     to_correct_answer = first_in_queue[1]
     pop_queue_to_correct()

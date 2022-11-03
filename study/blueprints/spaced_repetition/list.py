@@ -6,7 +6,6 @@ import datetime
 from .main import bp
 
 def find_next_study_date(previous_dates):
-    print(previous_dates)
     if len(previous_dates) == 0:
         return datetime.date.today()
     elif len(previous_dates) == 1:
@@ -57,8 +56,6 @@ def list():
             date = datetime.date.fromtimestamp(session["unixepoch(date_studied)"])
             dates.append(date)
         next_date = find_next_study_date(dates)
-        print("Next date:")
-        print(next_date)
         if next_date == datetime.date.today():
             suggestions.append(pair)
             deck = db.execute(

@@ -161,8 +161,6 @@ def get_max_date_range(terms):
             if biggest_time is None or created_time > biggest_time:
                 biggest_time = created_time
     
-    print(biggest_time)
-    print(smallest_time)
     return biggest_time, smallest_time
 
 @bp.route("/all", methods=("GET", "POST"))
