@@ -34,7 +34,7 @@ def get_next_term_id(terms, term_id):
     for i in range(len(terms)-1):
         id = int(terms[i]["id"])
         if id == term_id:
-            return terms[i + 1]
+            return terms[i + 1]["id"]
     return -1
 
 def record_study_session(routine_id, deck_id):
@@ -59,7 +59,7 @@ def learn(deck_id, routine_id, term_id, routine_position):
     routine_id = int(routine_id)
 
     # all the steps for the current routine
-    steps = get_steps()
+    steps = get_steps(routine_id)
     amount_of_steps = len(steps)
     
     # if we are done with all the steps the position is equal to the amount of steps
@@ -72,7 +72,7 @@ def learn(deck_id, routine_id, term_id, routine_position):
         # records the study session and redirects to index
         if term_id == last_term_id:
             record_study_session(routine_id, deck_id)
-            return redirect(url_for("/index"))
+            return redirect(url_for("index"))
         # otherwise we are done with the steps for this term but have more terms to do
         # redirects to this function with the next term in line and back to start of routine
         else:
@@ -91,4 +91,4 @@ def learn(deck_id, routine_id, term_id, routine_position):
         error = "Error: Routine step does not exist"
         flash(error)
 
-    return redirect(url_for("/index"))
+    return redirect(url_for("index"))
