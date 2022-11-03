@@ -10,7 +10,7 @@
     <form method="post">
         <label for="answer">
         {% for choice in choices %}
-            <input type="submit" name="answer" id="{{ choice.id }}" value="{{ choice.answer }}" autofocus>
+            <input type="submit" name="answer" id="{{ choice.id }}" value="{{ choice.answer }}">
         {% endfor %}
     </form>
 </div>
