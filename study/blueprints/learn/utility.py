@@ -42,3 +42,11 @@ def redirect_to_next(deck_id, routine_id, term_id, routine_position):
     routine_position = int(routine_position) + 1
     return redirect(url_for("learn.learn", deck_id=deck_id, routine_id=routine_id,
         term_id=term_id, routine_position=routine_position))
+
+def get_term(term_id):
+    db = get_db()
+    term = db.execute(
+        "SELECT * FROM term WHERE id = ?",
+        (str(term_id),)
+    ).fetchone()
+    return term
