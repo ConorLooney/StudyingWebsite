@@ -1,15 +1,13 @@
-from flask import request, redirect, url_for, render_template, flash, g, session
+from flask import request, redirect, url_for, render_template, flash, session
 from study.auth import login_required, member_routine_view, member_deck_view
-from study.db import get_db, to_bit
+from study.db import get_db
 
 from .main import bp
 from study.validation import presence_check
+from .utility import record_attempt, add_to_queue_to_correct, is_answer_correct, redirect_to_next
 
 def read_form():
     return request.form["answer"]
-
-def is_answer_correct(given_answer, term):
-    return given_answer.strip() == term["answer"].strip()
 
 def get_term(term_id):
     db = get_db()
@@ -18,18 +16,6 @@ def get_term(term_id):
         (str(term_id),)
     ).fetchone()
     return term
-
-def record_attempt(step, term_id, is_correct):
-    db = get_db()
-    db.execute(
-        "INSERT INTO attempt (step, term_id, user_id, is_correct) VALUES (?, ?, ?, ?)",
-        (step, str(term_id), str(g.user["id"]), str(to_bit(is_correct)),)
-    )
-    db.commit()
-
-def queue_to_correct(term_id, given_answer):
-    session['to_correct'].append([term_id, given_answer])
-    session.modified = True
 
 @bp.route("/<deck_id>/<routine_id>/<term_id>/<routine_position>/ask", methods=("GET", "POST"))
 @login_required
@@ -49,11 +35,8 @@ def ask(deck_id, routine_id, term_id, routine_position):
             is_correct = is_answer_correct(given_answer, term)
             record_attempt("a", term_id, is_correct)
             if not is_correct:
-                queue_to_correct(term_id, given_answer)
-
-            routine_position = int(routine_position) + 1
-            return redirect(url_for("learn.learn", deck_id=deck_id, routine_id=routine_id,
-            term_id=term_id, routine_position=routine_position))
+                add_to_queue_to_correct(term_id, given_answer)           
+            return redirect_to_next(deck_id, routine_id, term_id, routine_position)
 
     question = term["question"]
     return render_template("learn/ask.html", question=question)

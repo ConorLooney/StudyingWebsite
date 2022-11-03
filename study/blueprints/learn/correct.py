@@ -1,61 +1,66 @@
-from flask import request, redirect, url_for, session, render_template, flash, g
+from flask import request, redirect, url_for, session, render_template, flash
 from study.auth import login_required, member_routine_view, member_deck_view
-from study.db import get_db, to_bit
+from study.db import get_db
 
 from .main import bp
+from .utility import record_attempt, is_answer_correct, pop_queue_to_correct, add_to_queue_to_correct, redirect_to_next
+from study.validation import presence_check
 
-def pop_queue_to_correct():
-    session['to_correct'].remove(session['to_correct'][0])
-    session.modified = True
+def read_form():
+    return request.form["answer"]
+
+def get_term(term_id):
+    db = get_db()
+    term = db.execute(
+        "SELECT * FROM term WHERE id = ?",
+        (str(term_id),)
+    ).fetchone()
+    return term
+
+def unload_queue():
+    """Takes the first correction out of queue and returns the term id
+    and the given answer to correct"""
+    to_correct_queue = session['to_correct']
+    first_in_queue = to_correct_queue[0]
+    print(first_in_queue)
+    term_id = first_in_queue[0]
+    to_correct_answer = first_in_queue[1]
+    pop_queue_to_correct()
+    return term_id, to_correct_answer
 
 @bp.route("/<deck_id>/<routine_id>/<term_id>/<routine_position>/correct", methods=("GET", "POST"))
 @login_required
 @member_deck_view
 @member_routine_view
 def correct(deck_id, routine_id, term_id, routine_position):
+    """Presents user with the wrong answer they gave, the question, and the correct answer
+    and gets the user to type in the correct answer"""
+
+    if "to_correct" not in session:
+        return redirect_to_next(deck_id, routine_id, term_id, routine_position)
     to_correct_queue = session['to_correct']
+
     if len(to_correct_queue) == 0:
         session.pop("to_correct", None)
-        routine_position = int(routine_position) + 1
-        return redirect(url_for("learn.learn", deck_id=deck_id, routine_id=routine_id,
-         term_id=term_id, routine_position=routine_position))
+        return redirect_to_next(deck_id, routine_id, term_id, routine_position)
 
-    first = to_correct_queue[0]
-    term_id = first[0]
-    to_correct_answer = first[1]
-
-    db = get_db()
-    term = db.execute(
-        "SELECT * FROM term WHERE id = ?",
-        (str(term_id),)
-    ).fetchone()
+    term_id, to_correct_answer = unload_queue()
+    
+    term = get_term(term_id)
 
     if request.method == "POST":
-        given_answer = request.form["answer"]
-        error = None
-
-        if given_answer is None:
+        given_answer = read_form()
+        if not presence_check(given_answer):
             error = "Answer is required"
-
-        if error is None:
-            pop_queue_to_correct()
-        else:
             flash(error)
+        else:
+            is_correct = is_answer_correct(given_answer, term)
+            record_attempt("c", term_id, is_correct)
+            if not is_correct:
+                add_to_queue_to_correct(term_id, given_answer)
+            return redirect_to_next(deck_id, routine_id, term_id, routine_position)
 
-        is_correct = term["answer"].strip() == given_answer.strip()
-        db.execute(
-            "INSERT INTO attempt (step, term_id, user_id, is_correct) VALUES (?, ?, ?, ?)",
-            ("c", str(term_id), str(g.user["id"]), str(to_bit(is_correct)),)
-        )
-        db.commit()
-
-    given_answer = session['given_answer']
-
-    if term["answer"].strip() == given_answer.strip():
-        session.pop("given_answer", None)
-        routine_position = int(routine_position) + 1
-        return redirect(url_for("learn.learn", deck_id=deck_id, routine_id=routine_id,
-         term_id=term_id, routine_position=routine_position))
-
-    return render_template("learn/correct.html", question=term["question"],
-     to_correct_answer=to_correct_answer, actual_answer=term["answer"])
+    question = term["question"]
+    correct_answer = term["answer"]
+    return render_template("learn/correct.html", question=question,
+     to_correct_answer=to_correct_answer, actual_answer=correct_answer)
