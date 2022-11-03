@@ -4,18 +4,10 @@ from study.db import get_db
 
 from .main import bp
 from study.validation import presence_check
-from .utility import record_attempt, add_to_queue_to_correct, is_answer_correct, redirect_to_next
+from .utility import record_attempt, add_to_queue_to_correct, is_answer_correct, redirect_to_next, get_term
 
 def read_form():
     return request.form["answer"]
-
-def get_term(term_id):
-    db = get_db()
-    term = db.execute(
-        "SELECT * FROM term WHERE id = ?",
-        (str(term_id),)
-    ).fetchone()
-    return term
 
 @bp.route("/<deck_id>/<routine_id>/<term_id>/<routine_position>/ask", methods=("GET", "POST"))
 @login_required

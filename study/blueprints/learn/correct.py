@@ -3,19 +3,11 @@ from study.auth import login_required, member_routine_view, member_deck_view
 from study.db import get_db
 
 from .main import bp
-from .utility import record_attempt, is_answer_correct, pop_queue_to_correct, add_to_queue_to_correct, redirect_to_next
+from .utility import record_attempt, is_answer_correct, pop_queue_to_correct, add_to_queue_to_correct, redirect_to_next, get_term
 from study.validation import presence_check
 
 def read_form():
     return request.form["answer"]
-
-def get_term(term_id):
-    db = get_db()
-    term = db.execute(
-        "SELECT * FROM term WHERE id = ?",
-        (str(term_id),)
-    ).fetchone()
-    return term
 
 def unload_queue():
     """Takes the first correction out of queue and returns the term id
@@ -36,10 +28,12 @@ def correct(deck_id, routine_id, term_id, routine_position):
     """Presents user with the wrong answer they gave, the question, and the correct answer
     and gets the user to type in the correct answer"""
 
+    # if there is no queue, no need to correct anything
     if "to_correct" not in session:
         return redirect_to_next(deck_id, routine_id, term_id, routine_position)
     to_correct_queue = session['to_correct']
 
+    # if the queue is empty, no need to correct anything
     if len(to_correct_queue) == 0:
         session.pop("to_correct", None)
         return redirect_to_next(deck_id, routine_id, term_id, routine_position)
