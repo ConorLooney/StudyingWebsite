@@ -4,7 +4,7 @@ from study.db import get_db
 from study.auth import login_required, owner_deck_view
 
 from .main import bp
-from .validation import presence_check
+from study.validation import presence_check
 
 def read_form():
     return request.form["password"]

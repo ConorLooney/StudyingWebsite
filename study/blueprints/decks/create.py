@@ -3,7 +3,7 @@ from study.db import get_db, to_bit
 from study.auth import login_required
 
 from .main import bp
-from .validation import presence_check
+from study.validation import presence_check
 
 def read_form():
     return [request.form["deck_name"],
