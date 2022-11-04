@@ -7,33 +7,17 @@
 {% block content %}
 <div class="learning_step" id="fill_in_blanks">
     {{ question }}?
-    <br>
-    {% set covered_words = [1] %}
-    {% for i in range(words|length) %}
-        {% set word = words[i] %}
-        {% set is_covered = covered_words_map[i] %}
-        {% if is_covered %}
-            {% set fill_in = "_" * (word|length) %}
-            {{ fill_in[word|length] }}
-            {% fill_in[word|length / 2] = covered_words|length|string %}
-            {% set ___ = covered_words.append(1) %}
-        {% else %}
-            {{ word + " " }}
-        {% endif %}
+    {% for word in blanked_words %}
+        {{ word }}
     {% endfor %}
-    <form method="post">
-        {% set covered_words = [1] %}
-        {% for i in range(words|length) %}
-            {% set word = words[i] %}
-            {% set is_covered = covered_words_map[i] %}
-            {% if is_covered %}
-                <label for="{{ word }}">{{ covered_words|length }}</label>
-                <input name="{{ word }}" id="{{ word }}">
-                <br>
-                {% set ___ = covered_words.append(1) %}
+    <form method="POST">
+        {% for i in range((blanked_words|length)) %}
+            {% set is_blanked = blanked_map[i] %}
+            {% if is_blanked %}
+                <input id="{{ i }}" name="{{ i }}">
             {% endif %}
         {% endfor %}
-        <input type="submit" value="Submit">
+        <input type="submit" value="submit">
     </form>
 </div>
 {% endblock %}
