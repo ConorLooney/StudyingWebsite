@@ -52,12 +52,12 @@ def new_class_member_in_database(class_id, user_id):
             "INSERT INTO user_class (user_id, class_id) VALUES (?, ?)",
             (str(user_id), str(class_id),)
         )
+        db.commit()
     except db.IntegrityError:
         error = "Error: User already a member of the class"
         flash(error)
         return False
     return True
-    db.commit()
 
 @bp.route("/create", methods=("GET", "POST"))
 @login_required
@@ -66,7 +66,7 @@ def create():
         title, description, is_public = read_form()
         is_public = is_public == "public"
 
-        if not validate_data(title, description, is_public):
+        if validate_data(title, description, is_public):
             class_id = new_class_in_database(title, description, is_public)
             new_class_member_in_database(class_id, g.user["id"])
             return redirect(url_for("class.view", class_id=class_id))
