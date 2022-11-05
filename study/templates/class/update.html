@@ -1,16 +1,16 @@
 {% extends "base.html" %}
 
 {% block header %}
-    <h1>{% block title %}Update Class {{ class_.title }}{% endblock %}</h1>
+    <h1>{% block title %}Update Class {{ display_class.title }}{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
 <div class="object_form">
     <form method="post">
         <label for="title">Name:</label>
-        <input name="title" id="title" value="{{ class_.title }}"required autofocus>
+        <input name="title" id="title" value="{{ display_class.title }}"required autofocus>
         <label for="description">Description:</label>
-        <textarea name="description" id="description">{{ class_.description }}</textarea>
+        <textarea name="description" id="description">{{ display_class.description }}</textarea>
         <label for="is_public">Is the class public or private?</label>
         <select name="is_public" id="is_public">
             <option name="public" id="public" value="public">Public</option>

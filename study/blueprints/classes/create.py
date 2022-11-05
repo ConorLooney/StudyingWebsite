@@ -1,9 +1,9 @@
-from flask import render_template, request, redirect, url_for, g, flash
+from flask import render_template, request, redirect, url_for, g
 from study.auth import login_required
-from study.db import get_db, to_bit
+from study.db import get_db
 
 from .main import bp
-from study.validation import presence_check
+from .utility import validate_data, new_class_member_in_database
 
 def read_form():
     return [
@@ -11,24 +11,6 @@ def read_form():
         request.form["description"],
         request.form["is_public"]
     ]
-
-def validate_data(title, description, is_public):
-    if not presence_check(title):
-        error = "Error: Name for class is required"
-        flash(error)
-        return False
-    
-    if not presence_check(description):
-        error = "Error: Description of class is required"
-        flash(error)
-        return False
-
-    if not presence_check(is_public):
-        error = "Error: Whether class is public or not is required"
-        flash(error)
-        return False
-
-    return True
 
 def new_class_in_database(title, description, is_public):
     """Creates a new class in the database with the given values at attributes
@@ -42,22 +24,6 @@ def new_class_in_database(title, description, is_public):
     )
     db.commit()
     return cursor.lastrowid
-
-def new_class_member_in_database(class_id, user_id):
-    """Creates a new record of the class membership and returns false if the
-    user is already in this class (and displays this error) otherwise returns true"""
-    db = get_db()
-    try:
-        db.execute(
-            "INSERT INTO user_class (user_id, class_id) VALUES (?, ?)",
-            (str(user_id), str(class_id),)
-        )
-        db.commit()
-    except db.IntegrityError:
-        error = "Error: User already a member of the class"
-        flash(error)
-        return False
-    return True
 
 @bp.route("/create", methods=("GET", "POST"))
 @login_required
