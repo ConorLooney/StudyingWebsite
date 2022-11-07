@@ -121,18 +121,17 @@ def save_deck_to_class(class_id, deck_id):
 
 def add_user_to_class(user_id, class_id):
     db = get_db()
-    error = None
     try:
         db.execute(
             "INSERT INTO user_class (user_id, class_id) VALUES (?, ?)",
             (str(user_id), str(class_id),)
         )
         db.commit()
+        return True
     except db.IntegrityError:
         error = "Error: User already in class"
-    if error:
         flash(error)
-    db.commit()
+        return False
 
 def remove_user_from_class(user_id, class_id):
     db = get_db()
