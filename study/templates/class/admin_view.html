@@ -53,10 +53,7 @@
     <a href="{{ url_for('class.add_decks', class_id=view_class.id) }}">Add decks</a>
     <a href="{{ url_for('class.add_routines', class_id=view_class.id) }}">Add routines</a>
     <div class="class_code">
-        <form method="post">
-            <label for="gen_code">Generate a unique code for others to join the class</label>
-            <input type="submit" name="gen_code" value="Generate join code">
-        </form>
+        <a href="{{ url_for('class.gen_code', class_id=view_class.id) }}">Generate a unique code for others to join the class</a>
     </div>
     <div class="class_join_requests">
         {% if join_requests|length > 0 %}

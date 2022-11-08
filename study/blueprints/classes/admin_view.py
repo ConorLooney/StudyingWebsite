@@ -25,8 +25,7 @@ def admin_view(class_id):
     if request.method == "POST":
         error = None
 
-        if "gen_code" in request.form:
-            return redirect(url_for("class.gen_code", class_id=class_id))
+        
         if "remove_user" in request.form:
             user_id = request.form["user_id"]
             remove_user_from_class(user_id, class_id)
