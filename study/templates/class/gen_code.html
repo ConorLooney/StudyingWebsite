@@ -6,16 +6,17 @@
 
 {% block content %}
 <div id="gen_class_code">
+    <form method="post">
+        {% if code %}
+            <input type="submit" name="delete_code" value="Delete code">
+        {% else %}
+            <label for="gen_code">Generate a new unique code</label>
+            <input type="submit" id="gen_code" name="gen_code" value="Generate code">
+        {% endif %}
+    </form>
     {% if code %}
         <p>Code:</p>
         <p id="class_code">{{ code.code }}</p>
-    {% else %}
-        <p>Click to generate a code</p>
     {% endif %}
-    <form method="post">
-        <label for="code">Generate new code:</label>
-        <input type="submit" name="gen_code" value="Generate code">
-        <input type="submit" name="delete_code" value="Delete code">
-    </form>
 </div>
 {% endblock %}
