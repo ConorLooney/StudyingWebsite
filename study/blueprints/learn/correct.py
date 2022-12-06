@@ -10,13 +10,11 @@ def read_form():
     return request.form["answer"]
 
 def unload_queue():
-    """Takes the first correction out of queue and returns the term id
-    and the given answer to correct"""
+    """Return the term id and the given answer to correct at the front of the queue"""
     to_correct_queue = session['to_correct']
     first_in_queue = to_correct_queue[0]
     term_id = first_in_queue[0]
     to_correct_answer = first_in_queue[1]
-    pop_queue_to_correct()
     return term_id, to_correct_answer
 
 @bp.route("/<deck_id>/<routine_id>/<term_id>/<routine_position>/correct", methods=("GET", "POST"))
@@ -29,11 +27,13 @@ def correct(deck_id, routine_id, term_id, routine_position):
 
     # if there is no queue, no need to correct anything
     if "to_correct" not in session:
+        print("redirect1")
         return redirect_to_next(deck_id, routine_id, term_id, routine_position)
     to_correct_queue = session['to_correct']
 
     # if the queue is empty, no need to correct anything
     if len(to_correct_queue) == 0:
+        print("redirect2")
         session.pop("to_correct", None)
         return redirect_to_next(deck_id, routine_id, term_id, routine_position)
 
@@ -42,13 +42,16 @@ def correct(deck_id, routine_id, term_id, routine_position):
     term = get_term(term_id)
 
     if request.method == "POST":
+        print("post")
         given_answer = read_form()
         if not presence_check(given_answer):
             error = "Answer is required"
             flash(error)
         else:
             is_correct = is_answer_correct(given_answer, term)
+            print("recording attempt")
             record_attempt("c", term_id, is_correct)
+            pop_queue_to_correct()
             if not is_correct:
                 add_to_queue_to_correct(term_id, given_answer)
             return redirect_to_next(deck_id, routine_id, term_id, routine_position)

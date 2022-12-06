@@ -7,60 +7,7 @@ import datetime
 import json
 
 from .main import bp
-
-def gen_json_string_summary_accuracy(total_correct, total_incorrect):
-    summary = {
-        "cols":[
-            {"id":'A', 'type':'string'},
-            {"id":'B', 'type':'number'},
-        ],
-        "rows":[
-            {"c":[
-                {"v":"Total Correct"},
-                {"v":total_correct},
-            ]},
-            {"c":[
-                {"v":"Total Incorrect"},
-                {"v":total_incorrect},
-            ]},
-        ],
-    }
-    return summary
-
-def gen_json_string_summary_frequency(days, frequencies):
-    day_values = [{"v":day} for day in days]
-    frequency_values = [{"v":frequency} for frequency in frequencies]
-    cells = []
-    for i in range(len(day_values)):
-        cell = {
-            "c":[day_values[i], frequency_values[i]]
-            }
-        cells.append(cell)
-    summary = {
-        "cols":[
-            {"id":'A', 'type':'date'},
-            {"id":'B', 'type':'number'},
-        ],
-        "rows":cells,
-    }
-    return summary
-
-def summarise_deck_flashcard_attempts(attempts):
-    if len(attempts) == 0:
-        return {}
-    days = []
-    frequencies = []
-    for attempt in attempts:
-        day = time.gmtime(attempt["unixepoch(created)"])
-        day = "Date(" + str(day.tm_year) + ", " + str(day.tm_mon) + ", " + str(day.tm_mday) + ")"
-        if day in days:
-            index = days.index(day)
-            frequencies[index] += 1
-        else:
-            days.append(day)
-            frequencies.append(1)
-    summary = gen_json_string_summary_frequency(days, frequencies)
-    return json.dumps(summary)
+from .utility import gen_json_string_summary_accuracy, summarise_deck_flashcard_attempts, get_max_date_range, get_accuracy_template, ChartData
 
 def summarise_deck_multiple_attempts(attempts):
     return summarise_deck_ask_attempts(attempts)
@@ -80,24 +27,6 @@ def summarise_deck_ask_attempts(attempts):
         else:
             total_incorrect += 1
     summary = gen_json_string_summary_accuracy(total_correct, total_incorrect)
-    return json.dumps(summary)
-
-def summarise_term_flashcard_attempts(attempts):
-    if len(attempts) == 0:
-        return {}
-    days = []
-    frequencies = []
-    for attempt in attempts:
-        day = time.gmtime(attempt["unixepoch(created)"])
-        # month is 0 indexed in google charts, indexed from 1 with time library so subtract 1
-        day = "Date(" + str(day.tm_year) + ", " + str(day.tm_mon-1) + ", " + str(day.tm_mday) + ")"
-        if day in days:
-            index = days.index(day)
-            frequencies[index] += 1
-        else:
-            days.append(day)
-            frequencies.append(1)
-    summary = gen_json_string_summary_frequency(days, frequencies)
     return json.dumps(summary)
 
 def summarise_term_multiple_attempts(attempts):
@@ -120,52 +49,62 @@ def summarise_term_ask_attempts(attempts):
     summary = gen_json_string_summary_accuracy(total_correct, total_incorrect)
     return json.dumps(summary)
 
-def get_max_date_range(terms):
+def get_accuracy_data(deck, step):
+    """Return data in total correct vs total incorrect graph format based
+    on attempts of given step with given deck"""
     db = get_db()
-    smallest_time = None
-    biggest_time = None
-
-    ask_attempts = []
-    flashcard_attempts = []
-    multiple_attempts = []
-    correct_attempts = []
-    for term in terms:
-        ask_attempts.extend(db.execute(
-            "SELECT id, term_id, user_id, unixepoch(created), is_correct, step \
-            FROM attempt WHERE user_id = ? AND term_id = ? AND step = ?",
-            (str(g.user["id"]), str(term["id"]), "a")
-        ).fetchall())
-
-        flashcard_attempts.extend(db.execute(
-            "SELECT id, term_id, user_id, unixepoch(created), is_correct, step \
-            FROM attempt WHERE user_id = ? AND term_id = ? AND step = ?",
-            (str(g.user["id"]), str(term["id"]), "f",)
-        ).fetchall())
-
-        multiple_attempts.extend(db.execute(
-            "SELECT id, term_id, user_id, unixepoch(created), is_correct, step \
-            FROM attempt WHERE user_id = ? AND term_id = ? AND step = ?",
-            (str(g.user["id"]), str(term["id"]), "m",)
-        ).fetchall())
-
-        correct_attempts.extend(db.execute(
-            "SELECT id, term_id, user_id, unixepoch(created), is_correct, step \
-            FROM attempt WHERE user_id = ? AND term_id = ? AND step = ?",
-            (str(g.user["id"]), str(term["id"]), "c",)
-        ).fetchall())
-
-        for attempt in ask_attempts + flashcard_attempts + multiple_attempts + correct_attempts:
-            created_time = int(attempt['unixepoch(created)'])
-            if smallest_time is None or created_time < smallest_time:
-                smallest_time = created_time
-            if biggest_time is None or created_time > biggest_time:
-                biggest_time = created_time
+    attempts = db.execute(
+        "SELECT * FROM attempt \
+        JOIN term ON term.id = attempt.term_id \
+        WHERE term.deck_id = ? AND attempt.step = ? AND attempt.user_id = ?",
+        (str(deck["id"]), step, str(g.user["id"]),)
+    ).fetchall()
     
-    return biggest_time, smallest_time
+    correct_count = 0
+    incorrect_count = 0
+    for attempt in attempts:
+        if attempt["is_correct"] == 1:
+            correct_count += 1
+        else:
+            incorrect_count += 1
+
+    chart_data = ChartData([["A", "string"], ["B", "number"]])
+    chart_data.newRow(["Total Correct", correct_count], ["Total Incorrect", incorrect_count])
+    
+    return chart_data.data
+
+def get_deck_data(deck):
+    """Return data for each routine of given deck
+    Data is in format required for google charts, so ready to plug into graph"""
+    data = []
+    data.append(["ask", get_accuracy_data(deck, "a")])
+    data.append(["correct", get_accuracy_data(deck, "c")])
+    return data
+
+def get_batch_data():
+    """Return data for each routine for each deck for the user signed in
+    Data is in format required for google charts, so ready to plug into graph"""
+    db = get_db()
+    # gets all decks where the user has studied something, not validating
+    # that those decks should be accessible to user here, just reading what
+    # it says
+    decks = db.execute(
+        "SELECT DISTINCT deck.id, deck.title, deck.folder_id FROM deck \
+        JOIN term ON term.deck_id = deck.id \
+        JOIN attempt ON attempt.term_id = term.id \
+        WHERE attempt.user_id = ?",
+        (str(g.user["id"]),)
+    ).fetchall()
+
+    batch_data = []
+    for deck in decks:
+        batch_data.append(get_deck_data(deck))
+
+    return json.dumps(batch_data)
 
 @bp.route("/all", methods=("GET", "POST"))
 @login_required
-def all():
+def all_decks():
     db = get_db()
     decks = db.execute(
         "SELECT DISTINCT deck.id, deck.title, deck.folder_id FROM deck \
@@ -190,6 +129,10 @@ def all():
     end_from_epoch = biggest_time
 
     if request.method == "POST":
+        if request.headers["Content-Type"] == "application/json":
+            result = get_batch_data()
+            print(result)
+            return result
         date_filter_start = request.form["filter_start"]
         date_filter_end = request.form["filter_end"]
         start_from_epoch = (datetime.datetime.fromisoformat(date_filter_start)).timestamp()
@@ -262,7 +205,7 @@ def all():
     max_date = datetime.date.today().isoformat()
     min_date = max_date if smallest_time is None else datetime.datetime.fromtimestamp(smallest_time).date()
 
-    return render_template("statistics/all.html",
+    return render_template("statistics/all_decks.html",
     start_date=date_filter_start, end_date=date_filter_end, min_date=min_date, max_date=max_date,
     decks=decks, deck_paths=deck_paths, json_decks=json_decks,
     decks_ask_data=decks_ask_data, decks_flashcard_data=decks_flashcard_data,
