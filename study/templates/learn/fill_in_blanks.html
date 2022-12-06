@@ -14,7 +14,7 @@
         {% for i in range((blanked_words|length)) %}
             {% set is_blanked = blanked_map[i] %}
             {% if is_blanked %}
-                <input id="{{ i }}" name="{{ i }}">
+                <input id="{{ i }}" name="{{ i }}" autofocus>
             {% endif %}
         {% endfor %}
         <input type="submit" value="submit">
