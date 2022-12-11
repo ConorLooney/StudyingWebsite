@@ -4,6 +4,12 @@ from study.auth import login_required
 
 from .main import bp
 
+class Step:
+
+    def __init__(self, name, abbreviation):
+        self.name = name
+        self.abbreviation = abbreviation
+
 @bp.route("/create", methods=("GET", "POST"))
 @login_required
 def create():
@@ -33,6 +39,15 @@ def create():
             except db.IntegrityError:
                 error = "Routine name must be unique"
 
-        flash(error) 
+        flash(error)
+
+    avaliable_steps = [
+        Step("ask", "a"),
+        Step("correct", "c"),
+        Step("choice", "m"),
+        Step("flashcard", "f"),
+        Step("blanks", "b")
+        ]
     
-    return render_template("routines/create.html")
+    return render_template("routines/create.html",
+    steps=avaliable_steps)

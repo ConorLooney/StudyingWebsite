@@ -1,6 +1,19 @@
 {% extends "base.html" %}
 {% block header %}
     <h1>{% block title %}New routine{% endblock %}</h1>
+    <script>
+        function add_step(button) {
+            document.getElementById("steps").value += button.name;
+        }
+        function remove_step(button) {
+            steps = document.getElementById("steps").value;
+            steps = steps.substr(0, steps.length-1);
+            document.getElementById("steps").value = steps;
+        }
+        function clear_steps() {
+            document.getElementById("steps").value = "";
+        }
+    </script>
 {% endblock %}
 
 {% block content %}
@@ -12,5 +25,11 @@
         <input name="steps" id="steps" required>
         <input type="submit" value="Create Routine">
     </form>
+    {% for step in steps %}
+        <input type="submit" name="{{ step.abbreviation }}" value="{{ step.name }} - {{ step.abbreviation }}" onclick="add_step(this)">
+    {% endfor %}
+    <br>
+    <input type="submit" value="Remove" onclick="remove_step(this)">
+    <input type="submit" value="Clear" onclick="clear_steps(this)">
 </div>
 {% endblock %}
