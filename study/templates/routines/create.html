@@ -25,11 +25,19 @@
         <input name="steps" id="steps" required>
         <input type="submit" value="Create Routine">
     </form>
-    {% for step in steps %}
-        <input type="submit" name="{{ step.abbreviation }}" value="{{ step.name }} - {{ step.abbreviation }}" onclick="add_step(this)">
-    {% endfor %}
-    <br>
-    <input type="submit" value="Remove" onclick="remove_step(this)">
-    <input type="submit" value="Clear" onclick="clear_steps(this)">
+    <div id="select_routine_steps">
+        <p id="select_routine_steps_explanation">Press buttons to add steps to your routine, or type in the abbreviations</p>
+        <p id="routine_steps_further_explanation">
+        Each step is completed for a term in a deck before moving onto the next term.
+        So the routine "fac" would show a flashcard of a term, then ask you about that term,
+        then correct what you answered, and then do the same for the next term and so on.</p>
+        <br>
+        {% for step in steps %}
+            <input type="submit" name="{{ step.abbreviation }}" value="{{ step.name }} - {{ step.abbreviation }}" onclick="add_step(this)">
+        {% endfor %}
+        <br>
+        <input type="submit" value="Remove" onclick="remove_step(this)">
+        <input type="submit" value="Clear" onclick="clear_steps(this)">
+    </div>
 </div>
 {% endblock %}

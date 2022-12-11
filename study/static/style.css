@@ -408,3 +408,31 @@ div.date_filter > form > #submit_date_filter:hover {
     color: white;
     background-color: black;
 }
+
+div#select_routine_steps > * {
+    font-size: 20px;
+    font-family: monospace;
+}
+
+div#select_routine_steps > p#routine_steps_further_explanation {
+    display: none;
+
+    width: 750px;
+}
+
+div#select_routine_steps > p#routine_steps_further_explanation:hover {
+    display: block;
+}
+
+div#select_routine_steps > input {
+    border: 2px solid black;
+    background: white;
+    color: black;
+
+    margin: 10px;
+}
+
+div#select_routine_steps > input:hover {
+    background: black;
+    color: white;
+}

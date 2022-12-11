@@ -42,11 +42,11 @@ def create():
         flash(error)
 
     avaliable_steps = [
-        Step("ask", "a"),
-        Step("correct", "c"),
-        Step("choice", "m"),
-        Step("flashcard", "f"),
-        Step("blanks", "b")
+        Step("Ask", "a"),
+        Step("Correct", "c"),
+        Step("Choice", "m"),
+        Step("Flashcard", "f"),
+        Step("Blanks", "b")
         ]
     
     return render_template("routines/create.html",
