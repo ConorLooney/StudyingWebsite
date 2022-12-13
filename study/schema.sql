@@ -46,6 +46,7 @@ CREATE TABLE routine (
     owner_id INTEGER NOT NULL,
     title TEXT NOT NULL,
     steps TEXT NOT NULL,
+    is_step_mode BIT NOT NULL,
     FOREIGN KEY (owner_id) REFERENCES user (id)
 );
 
