@@ -22,5 +22,7 @@ def begin_learn(deck_id, routine_id):
     routine_position = 0
     session.pop('to_correct', None)
 
-    return redirect(url_for("learn.learn", deck_id=deck_id, routine_id=routine_id,
+    #return redirect(url_for("learn.learn", deck_id=deck_id, routine_id=routine_id,
+    # term_id=smallest_term_id, routine_position=routine_position))
+    return redirect(url_for("learn.batch_learn", deck_id=deck_id, routine_id=routine_id,
      term_id=smallest_term_id, routine_position=routine_position))

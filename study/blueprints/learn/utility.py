@@ -39,8 +39,10 @@ def is_answer_correct(given_answer, term):
 
 def redirect_to_next(deck_id, routine_id, term_id, routine_position):
     """Returns redirect to learn with incremented routine position"""
-    routine_position = int(routine_position) + 1
-    return redirect(url_for("learn.learn", deck_id=deck_id, routine_id=routine_id,
+    #routine_position = int(routine_position) + 1
+    #return redirect(url_for("learn.learn", deck_id=deck_id, routine_id=routine_id,
+    #    term_id=term_id, routine_position=routine_position))
+    return redirect(url_for("learn.batch_learn", deck_id=deck_id, routine_id=routine_id,
         term_id=term_id, routine_position=routine_position))
 
 def get_term(term_id):
