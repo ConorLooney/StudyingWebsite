@@ -38,12 +38,17 @@ def is_answer_correct(given_answer, term):
     return given_answer.strip() == term["answer"].strip()
 
 def redirect_to_next(deck_id, routine_id, term_id, routine_position):
-    """Returns redirect to learn with incremented routine position"""
-    #routine_position = int(routine_position) + 1
-    #return redirect(url_for("learn.learn", deck_id=deck_id, routine_id=routine_id,
-    #    term_id=term_id, routine_position=routine_position))
-    return redirect(url_for("learn.batch_learn", deck_id=deck_id, routine_id=routine_id,
-        term_id=term_id, routine_position=routine_position))
+    db = get_db()
+    routine = db.execute(
+        "SELECT * FROM Routine WHERE id = ?",
+        (str(routine_id),)
+    ).fetchone()
+    if routine["is_step_mode"] == 1:
+        return redirect(url_for("learn.step_mode", deck_id=deck_id, routine_id=routine_id,
+         term_id=term_id, routine_position=int(routine_position)+1))
+    else:
+        return redirect(url_for("learn.term_mode", deck_id=deck_id, routine_id=routine_id,
+         term_id=term_id, routine_position=routine_position))
 
 def get_term(term_id):
     db = get_db()

@@ -61,7 +61,7 @@ def get_smallest_term_id(deck_id):
 @login_required
 @member_deck_view
 @member_routine_view
-def batch_learn(deck_id, routine_id, term_id, routine_position):
+def term_mode(deck_id, routine_id, term_id, routine_position):
     """Argument names are the same as learn but values are different TODO: make this make sense
     these values would be passed from a redirecting learn function because this increments the term,
     however that is not done simply by incrementing the term id. therefore that logic is done here
