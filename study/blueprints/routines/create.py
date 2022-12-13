@@ -16,6 +16,8 @@ def create():
     if request.method == "POST":
         routine_name = request.form["routine_name"]
         steps = request.form["steps"]
+        mode = request.form["mode"]
+        is_step_mode = 1 if mode == "step_mode" else 0
 
         error = None
         if routine_name is None:
@@ -29,8 +31,8 @@ def create():
             try:
 
                 cursor.execute(
-                    "INSERT INTO routine (owner_id, title, steps) VALUES (?, ?, ?)",
-                    (str(g.user['id']), routine_name, steps,)
+                    "INSERT INTO routine (owner_id, title, steps, is_step_mode) VALUES (?, ?, ?, ?)",
+                    (str(g.user['id']), routine_name, steps, str(is_step_mode))
                 )
                 db.commit()
                 routine_id = cursor.lastrowid

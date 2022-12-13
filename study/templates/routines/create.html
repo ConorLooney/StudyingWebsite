@@ -21,6 +21,10 @@
     <form method="post">
         <label for="routine_name">Routine name:</label>
         <input name="routine_name" id="routine_name" required>
+        <select name="mode">
+            <option value="term_mode">Do all terms, then go to next step</option>
+            <option value="step_mode">Do all steps, then go to next term</option>
+        </select>
         <label for="steps">Steps:</label>
         <input name="steps" id="steps" required>
         <input type="submit" value="Create Routine">
