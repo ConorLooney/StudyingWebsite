@@ -33,7 +33,6 @@ def correct(deck_id, routine_id, term_id, routine_position):
 
     # if the queue is empty, no need to correct anything
     if len(to_correct_queue) == 0:
-        print("redirect2")
         session.pop("to_correct", None)
         return redirect_to_next(deck_id, routine_id, term_id, routine_position)
 
@@ -42,14 +41,12 @@ def correct(deck_id, routine_id, term_id, routine_position):
     term = get_term(term_id)
 
     if request.method == "POST":
-        print("post")
         given_answer = read_form()
         if not presence_check(given_answer):
             error = "Answer is required"
             flash(error)
         else:
             is_correct = is_answer_correct(given_answer, term)
-            print("recording attempt")
             record_attempt("c", term_id, is_correct)
             pop_queue_to_correct()
             if not is_correct:

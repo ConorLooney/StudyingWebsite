@@ -49,7 +49,7 @@ def record_study_session(routine_id, deck_id):
 @login_required
 @member_deck_view
 @member_routine_view
-def learn(deck_id, routine_id, term_id, routine_position):
+def step_mode(deck_id, routine_id, term_id, routine_position):
     """Redirects user to next step in routine or ends study session
     
     Routine position is the index of the step that it is currently on"""
@@ -77,7 +77,7 @@ def learn(deck_id, routine_id, term_id, routine_position):
         # redirects to this function with the next term in line and back to start of routine
         else:
             next_term_id = get_next_term_id(terms, term_id)
-            return redirect(url_for("learn.learn", deck_id=deck_id, routine_id=routine_id,
+            return redirect(url_for("learn.step_mode", deck_id=deck_id, routine_id=routine_id,
          term_id=next_term_id, routine_position=0))
 
     # redirects to the view for the current step

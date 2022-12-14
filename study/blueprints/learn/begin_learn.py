@@ -22,5 +22,14 @@ def begin_learn(deck_id, routine_id):
     routine_position = 0
     session.pop('to_correct', None)
 
-    return redirect(url_for("learn.learn", deck_id=deck_id, routine_id=routine_id,
-     term_id=smallest_term_id, routine_position=routine_position))
+    db = get_db()
+    routine = db.execute(
+        "SELECT * FROM Routine WHERE id = ?",
+        (str(routine_id),)
+    ).fetchone()
+    if routine["is_step_mode"] == 1:
+        return redirect(url_for("learn.step_mode", deck_id=deck_id, routine_id=routine_id,
+         term_id=smallest_term_id, routine_position=routine_position))
+    else:
+        return redirect(url_for("learn.term_mode", deck_id=deck_id, routine_id=routine_id,
+         term_id=smallest_term_id, routine_position=routine_position))

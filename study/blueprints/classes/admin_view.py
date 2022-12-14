@@ -1,6 +1,7 @@
-from flask import render_template, request, redirect, url_for, g
+from flask import render_template, request, g
 from study.db import get_db
-from study.utility.general import remove_user_from_class, get_all_user_routines
+from study.utility.general import remove_user_from_class
+from study.utility.routine_helper import get_all_user_routines
 
 from .main import bp
 from .view_levels import admin_level_view

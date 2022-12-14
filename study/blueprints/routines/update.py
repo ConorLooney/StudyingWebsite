@@ -3,41 +3,28 @@ from study.db import get_db
 from study.auth import login_required, owner_routine_view
 
 from .main import bp
+from .utility import get_routine, read_form, validate
+from study.validation import presence_check, lookup_check
+
+def update_routine_in_db(routine_id, name, steps, is_step_mode):
+    db = get_db()
+    db.execute(
+        "UPDATE routine SET title = ?, steps = ?, is_step_mode = ? WHERE id = ?",
+        (name, steps, str(is_step_mode), str(routine_id),)
+    )
+    db.commit()
 
 @bp.route("/update/<routine_id>", methods=("GET", "POST"))
 @login_required
 @owner_routine_view
 def update(routine_id):
-    db = get_db()
-
     if request.method == "POST":
-        routine_name = request.form["routine_name"]
-        steps = request.form["steps"]
+        name, steps, is_step_mode = read_form()
 
-        error = None
-        if routine_name is None:
-            error = "Routine name is required"
-        if steps is None:
-            error = "Routine steps are required"
+        if validate(name, steps, is_step_mode):
+            update_routine_in_db(routine_id, name, steps, is_step_mode)
+            return redirect(url_for("routines.see_one", routine_id=routine_id))
 
-        if error is None:
-            try:
+    routine = get_routine(routine_id)
 
-                db.execute(
-                    "UPDATE routine SET title = ?, steps = ?, WHERE id = ?",
-                    (routine_name, steps, str(routine_id),)
-                )
-                db.commit()
-
-                return redirect(url_for("routines.view_routine", routine_id=routine_id))
-            except db.IntegrityError:
-                error = "Routine name must be unique"
-
-        flash(error) 
-
-    current_routine = db.execute(
-        "SELECT * FROM routine WHERE id = ?",
-        (str(routine_id),)
-    ).fetchone()
-
-    return render_template("routines/update.html", routine=current_routine)
+    return render_template("routines/update.html", routine=routine)

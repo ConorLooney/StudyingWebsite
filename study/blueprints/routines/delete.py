@@ -4,36 +4,33 @@ from study.db import get_db
 from study.auth import login_required, owner_routine_view
 
 from .main import bp
+from .utility import get_routine
+from study.validation import presence_check
+
+def delete_routine_from_db(routine_id):
+    db = get_db()
+    db.execute(
+        "DELETE FROM routine WHERE id = ?",
+        (str(routine_id),)
+    )
+    db.commit()
 
 @bp.route("/delete/<routine_id>", methods=("GET", "POST"))
 @login_required
 @owner_routine_view
 def delete(routine_id):
-    db = get_db()
     if request.method == "POST":
         password = request.form["password"]
-        
-        error = None
 
-        if password is None:
-            error = "Password is required"
-        
-        if error is None:
+        if not presence_check(password):
+            flash("Error: No password entered")
+        else:
             if check_password_hash(g.user["password"], password):
-                db.execute(
-                    "DELETE FROM routine WHERE id = ?",
-                    (str(routine_id),)
-                )
-                db.commit()
-                return redirect(url_for("routines.all_user"))
+                delete_routine_from_db(routine_id)
+                return redirect(url_for("routines.see_all"))
             else:
-                error = "Incorrect password"
-        
-        flash(error)
+               flash("Error: Incorrect password entered")
 
-    routine = db.execute(
-        "SELECT * FROM routine WHERE id = ?",
-        (str(routine_id),)
-    ).fetchone()
+    routine = get_routine(routine_id)
 
     return render_template("routines/delete.html", routine=routine)

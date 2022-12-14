@@ -3,6 +3,8 @@ from study.db import get_db
 from study.auth import login_required
 
 from .main import bp
+from .utility import read_form, validate
+from study.validation import presence_check, lookup_check
 
 class Step:
 
@@ -10,36 +12,25 @@ class Step:
         self.name = name
         self.abbreviation = abbreviation
 
+def insert_routine_in_db(name, steps, is_step_mode):
+    db = get_db()
+    cursor = db.cursor()
+    cursor.execute(
+        "INSERT INTO routine (owner_id, title, steps, is_step_mode) VALUES (?, ?, ?, ?)",
+        (str(g.user["id"]), name, steps, str(is_step_mode),)
+    )
+    db.commit()
+    routine_id = cursor.lastrowid
+    return routine_id
+
 @bp.route("/create", methods=("GET", "POST"))
 @login_required
 def create():
     if request.method == "POST":
-        routine_name = request.form["routine_name"]
-        steps = request.form["steps"]
-
-        error = None
-        if routine_name is None:
-            error = "Routine name is required"
-        if steps is None:
-            error = "Routine steps are required"
-
-        if error is None:
-            db = get_db()
-            cursor = db.cursor()
-            try:
-
-                cursor.execute(
-                    "INSERT INTO routine (owner_id, title, steps) VALUES (?, ?, ?)",
-                    (str(g.user['id']), routine_name, steps,)
-                )
-                db.commit()
-                routine_id = cursor.lastrowid
-
-                return redirect(url_for("routines.view_routine", routine_id=routine_id))
-            except db.IntegrityError:
-                error = "Routine name must be unique"
-
-        flash(error)
+        name, steps, is_step_mode = read_form()
+        if validate(name, steps, is_step_mode):
+            routine_id = insert_routine_in_db(name, steps, is_step_mode)
+            return redirect(url_for("routines.see_one", routine_id=routine_id))
 
     avaliable_steps = [
         Step("Ask", "a"),

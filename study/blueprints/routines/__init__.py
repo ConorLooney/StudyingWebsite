@@ -1,5 +1,5 @@
-from . import all_user
+from . import see_all
 from . import create
-from . import view_routine
+from . import see_one
 from . import update
 from . import delete

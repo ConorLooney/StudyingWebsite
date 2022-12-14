@@ -11,8 +11,8 @@ def read_form():
     request.form["intra_term_delimiter"],
     request.form["is_public"]]
 
-"""Returns true if data is valid otherwise displays error and returns false"""
 def validate_data(deck_name, terms, intra_term_delimiter, is_public):
+    """Returns true if data is valid otherwise displays error and returns false"""
     # validate deck name
     if not presence_check(deck_name):
         error = "Invalid deck name"

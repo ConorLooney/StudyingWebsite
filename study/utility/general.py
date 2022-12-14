@@ -4,8 +4,11 @@ from flask import (
 from study.db import get_db, to_bool
 from study.utility.folder import get_user_root_folder
 
-"""Can be used to get saved info for classes, decks, and routines"""
 def get_saved_info(objects, object_table, user_id):
+    """Returns a list of 1s or 0s. 1 means the corresponding object
+     has been saved by the given user, 0 means it has not
+    
+    Can be used to get saved info for classes, decks, and routines"""
     if object_table not in ["deck", "routine", "class"]:
         error = "Error: Invalid saved information request"
         flash(error)
@@ -64,14 +67,6 @@ def get_all_user_decks(user_id, folder_id):
         (str(user_id), str(folder_id),)
     ).fetchall())
     return decks
-
-def get_all_user_routines(user_id):
-    db = get_db()
-    routines = db.execute(
-        "SELECT * FROM routine WHERE owner_id = ?",
-        (str(user_id),)
-    ).fetchall()
-    return routines
 
 def delete_class(class_id):
     db = get_db()
