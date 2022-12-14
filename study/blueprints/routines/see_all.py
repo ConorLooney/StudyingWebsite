@@ -7,7 +7,7 @@ from .main import bp
 
 @bp.route("/", methods=("GET", "POST"))
 @login_required
-def all_user():
+def see_all():
     search_term = None
     search_function = None
 
@@ -20,5 +20,5 @@ def all_user():
 
     saved_info = get_saved_info(routines, "routine", g.user["id"])
 
-    return render_template("routines/all_user.html",
+    return render_template("routines/see_all.html",
      routines=routines, saved_info=saved_info)
