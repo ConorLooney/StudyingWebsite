@@ -13,6 +13,8 @@ def update(routine_id):
     if request.method == "POST":
         routine_name = request.form["routine_name"]
         steps = request.form["steps"]
+        mode = request.form["mode"]
+        is_step_mode = 1 if mode == "step_mode" else 0
 
         error = None
         if routine_name is None:
@@ -24,8 +26,8 @@ def update(routine_id):
             try:
 
                 db.execute(
-                    "UPDATE routine SET title = ?, steps = ?, WHERE id = ?",
-                    (routine_name, steps, str(routine_id),)
+                    "UPDATE routine SET title = ?, steps = ?, is_step_mode = ? WHERE id = ?",
+                    (routine_name, steps, str(is_step_mode), str(routine_id),)
                 )
                 db.commit()
 
