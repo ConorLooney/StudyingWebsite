@@ -1,5 +1,6 @@
 from flask import render_template, g, request, redirect, url_for
-from study.utility.general import unsave_deck_from_user, save_deck_to_user, get_all_user_routines, get_saved_info, get_all_user_controlled_classes
+from study.utility.general import unsave_deck_from_user, save_deck_to_user, get_saved_info, get_all_user_controlled_classes
+from study.utility.routine_helper import get_all_user_routines
 from study.utility.folder import get_user_root_folder, get_all_folders_orderered, get_formatted_folder_path
 from study.db import get_db, to_bit
 from study.auth import login_required

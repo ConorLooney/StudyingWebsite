@@ -1,7 +1,8 @@
 from flask import render_template, request, redirect, url_for, g, flash
 from study.auth import login_required
 from study.db import get_db
-from study.utility.general import save_deck_to_user, get_all_user_routines
+from study.utility.general import save_deck_to_user
+from study.utility.routine_helper import get_all_user_routines
 
 from .main import bp
 from .view_levels import member_level_view

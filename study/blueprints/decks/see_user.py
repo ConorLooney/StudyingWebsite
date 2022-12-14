@@ -2,9 +2,10 @@ from flask import (
     render_template, g, request, redirect, url_for
 )
 from study.utility.general import (
-    unsave_deck_from_user, get_all_user_routines, 
+    unsave_deck_from_user, 
     get_all_user_decks, get_all_user_controlled_classes
 )
+from study.utility.routine_helper import get_all_user_routines
 from study.utility.folder import (
     get_all_immediate_child_folders, new_folder, open_folder, open_prev_folder,
     move_deck_to_folder, move_saved_deck_to_folder, delete_folder, get_formatted_folder_path,
