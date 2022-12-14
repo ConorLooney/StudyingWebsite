@@ -1,8 +1,9 @@
-from flask import request, url_for, render_template, redirect, g
-from study.utility.general import get_all_user_controlled_classes, get_saved_info, get_all_user_routines, save_routine_to_class
+from flask import request, render_template, g
+from study.utility.general import get_saved_info
 from study.search_utility import handle_search,apply_filter
 from study.auth import login_required
 
+from .utility import get_all_user_routines
 from .main import bp
 
 @bp.route("/", methods=("GET", "POST"))

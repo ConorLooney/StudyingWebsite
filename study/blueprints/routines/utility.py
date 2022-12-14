@@ -36,3 +36,12 @@ def validate(name, steps, is_step_mode):
         return False
     
     return True
+
+def get_all_user_routines(user_id):
+    """Returns all routines owned by the given user"""
+    db = get_db()
+    routines = db.execute(
+        "SELECT * FROM routine WHERE owner_id = ?",
+        (str(user_id),)
+    ).fetchall()
+    return routines

@@ -1,17 +1,8 @@
-from flask import render_template, request
-from study.db import get_db
+from flask import render_template
 from study.auth import login_required, member_routine_view
 
+from .utility import get_routine
 from .main import bp
-
-def get_routine(routine_id):
-    """Return routine with corresponding id"""
-    db = get_db()
-    routine = db.execute(
-        "SELECT * FROM routine WHERE id = ?",
-        (str(routine_id),)
-    ).fetchone()
-    return routine
 
 @bp.route("/view/<routine_id>")
 @login_required
