@@ -68,6 +68,10 @@ def step_mode(deck_id, routine_id, term_id, routine_position):
         terms = get_terms(deck_id)
         last_term_id = get_highest_term_id(terms)
 
+        print(term_id)
+        print(last_term_id)
+        print()
+
         # we are done with all the steps on the last term, so we are done with everything
         # records the study session and redirects to index
         if term_id == last_term_id:

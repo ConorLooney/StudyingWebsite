@@ -73,7 +73,7 @@ def fill_in_blanks(deck_id, routine_id, term_id, routine_position):
                 all_correct = False
                 add_to_queue_to_correct(term_id, whole_answer)
         
-        record_attempt("b",term_id, all_correct)
+        attempt_id = record_attempt("b", term_id, all_correct)
         return redirect_to_next(deck_id, routine_id, term_id, routine_position)
 
     blanked_words, blanked_map = blank_words(words)

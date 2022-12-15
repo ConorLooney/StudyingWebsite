@@ -60,9 +60,9 @@ def choice(deck_id, routine_id, term_id, routine_position):
     if request.method == "POST":
         chosen_answer = read_form()
         is_correct = is_answer_correct(chosen_answer, term)
-        record_attempt("m", term_id, is_correct)
+        attempt_id = record_attempt("m", term_id, is_correct)
         if not is_correct:
-            add_to_queue_to_correct(term_id, chosen_answer)
+            add_to_queue_to_correct(term_id, chosen_answer, attempt_id)
         return redirect_to_next(deck_id, routine_id, term_id, routine_position)
 
     choices = get_choices(deck_id, term)

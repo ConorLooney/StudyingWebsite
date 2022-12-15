@@ -25,9 +25,9 @@ def ask(deck_id, routine_id, term_id, routine_position):
             flash(error)
         else:
             is_correct = is_answer_correct(given_answer, term)
-            record_attempt("a", term_id, is_correct)
+            attempt_id = record_attempt("a", term_id, is_correct)
             if not is_correct:
-                add_to_queue_to_correct(term_id, given_answer)           
+                add_to_queue_to_correct(term_id, given_answer, attempt_id)           
             return redirect_to_next(deck_id, routine_id, term_id, routine_position)
 
     question = term["question"]

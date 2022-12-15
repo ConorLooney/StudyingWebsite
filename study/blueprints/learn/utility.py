@@ -11,21 +11,24 @@ def record_study_session(routine_id, deck_id):
     db.commit()
 
 def record_attempt(step, term_id, is_correct):
-    """Records an attempt of the given step and term"""
+    """Records an attempt of the given step and term and returns the attempt id"""
     db = get_db()
-    db.execute(
+    cursor = db.cursor()
+    cursor.execute(
         "INSERT INTO attempt (step, term_id, user_id, is_correct) VALUES (?, ?, ?, ?)",
         (step, str(term_id), str(g.user["id"]), str(to_bit(is_correct)),)
     )
     db.commit()
+    attempt_id = cursor.lastrowid
+    return attempt_id
 
-def add_to_queue_to_correct(term_id, given_answer):
+def add_to_queue_to_correct(term_id, given_answer, attempt_id):
     """Adds new item to correct at end of queue
     
     Takes the term id and the answer the user gave to be corrected"""
     if "to_correct" not in session:
         session["to_correct"] = []
-    session['to_correct'].append([term_id, given_answer])
+    session['to_correct'].append([term_id, given_answer, attempt_id])
     session.modified = True
 
 def pop_queue_to_correct():
