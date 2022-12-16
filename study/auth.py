@@ -88,7 +88,7 @@ def login():
 def logout():
     session.clear()
     g.pop("user", None)
-    g.pop("root", None)
+    g.pop("folder", None)
     return redirect(url_for("auth.login"))
 
 @bp.before_app_request
