@@ -424,6 +424,10 @@ div#select_routine_steps > p#routine_steps_further_explanation:hover {
     display: block;
 }
 
+div#select_routine_steps:hover > p#routine_steps_further_explanation {
+    display:block;
+}
+
 div#select_routine_steps > input {
     border: 2px solid black;
     background: white;
@@ -435,4 +439,44 @@ div#select_routine_steps > input {
 div#select_routine_steps > input:hover {
     background: black;
     color: white;
+}
+
+/* MANUAL CORRECTION STYLING */
+
+div#manual_correction_buttons {
+    margin-top: 20px;
+}
+
+div#manual_correction_buttons > form > * {
+    background-color: white;
+    color: black;
+    font-family: monospace;
+    font-size: 18px;
+    border: none;
+}
+
+div#manual_correction_buttons > form > input:hover {
+    background-color: black;
+    color: white;
+}
+
+div#manual_corrections_explanation {
+    display: none;
+    font-family: monospace;
+    font-size: 16px;
+
+    max-width: 300px;
+}
+
+div#manual_corrections_explanation:hover {
+    display: block;
+}
+
+img#manual_corrections_help {
+    width: 24px;
+    height: 24px;
+}
+
+img#manual_corrections_help:hover + div#manual_corrections_explanation {
+    display: block;
 }

@@ -15,12 +15,21 @@
         <input type="submit" value="Answer">
     </form>
 </div>
-<form method="post">
-        <input type="submit" value="Override correction">
+<div id="manual_correction_buttons">
+    <form method="post">
+        <label for="override_correction">Override correction:</label>
+        <input type="submit" id="override_correction" value="Override correction">
         <input type="hidden" name="override">
+        </form>
+    <form method="post">
+        <label for="skip_correction">Skip correction:</label>
+        <input type="submit" id="skip_correction" value="Skip correction">
+        <input type="hidden" name="skip">
     </form>
-<form method="post">
-    <input type="submit" value="Skip correction">
-    <input type="hidden" name="skip">
-</form>
+    <img class="help_icon" id="manual_corrections_help" src="{{ url_for('static', filename='pictures/help.png') }}" alt="Help">
+    <div id="manual_corrections_explanation">
+        Overriding a correction changes the record of the attempt from incorrect to correct.<br>
+        Skipping a correction simply moves on to the next term or step, leaving the original attempt incorrect.
+    </div>
+</div>
 {% endblock %}
