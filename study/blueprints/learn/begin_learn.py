@@ -32,4 +32,4 @@ def begin_learn(deck_id, routine_id):
          term_id=smallest_term_id, routine_position=routine_position))
     else:
         return redirect(url_for("learn.term_mode", deck_id=deck_id, routine_id=routine_id,
-         term_id=smallest_term_id, routine_position=routine_position))
+         term_id=-1, routine_position=routine_position))

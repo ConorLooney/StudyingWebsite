@@ -54,7 +54,6 @@ def get_smallest_term_id(deck_id):
     smallest_id = int(terms[0]['id'])
     return smallest_id
 
-
 # TODO: move shared functions into shared file. Test?
 
 @bp.route("/b/<deck_id>/<routine_id>/<term_id>/<routine_position>", methods=("GET", "POST"))
@@ -65,7 +64,10 @@ def term_mode(deck_id, routine_id, term_id, routine_position):
     """Argument names are the same as learn but values are different TODO: make this make sense
     these values would be passed from a redirecting learn function because this increments the term,
     however that is not done simply by incrementing the term id. therefore that logic is done here
-    this function takes in the current values and moves onto the next term and or routine or ends the session"""
+    this function takes in the current values and moves onto the next term and or routine or ends the session
+    
+    If term_id is -1, a rogue value, then it is taken to mean the first term, i.e. the smallest, meaning
+    this is how to begin a learning session using term mode"""
     routine_position = int(routine_position)
     term_id = int(term_id)
     deck_id = int(deck_id)
@@ -75,9 +77,16 @@ def term_mode(deck_id, routine_id, term_id, routine_position):
     steps = get_steps(routine_id)
     amount_of_steps = len(steps)
 
-    terms = get_terms(deck_id)
-    next_term = get_next_term_id(terms, term_id)
-    if next_term == -1: # no more terms, reset term counter and move onto next routine step
+    if term_id == -1: # no term has been completed, get first term
+        next_term = get_smallest_term_id(deck_id)
+    else:
+        terms = get_terms(deck_id)
+        next_term = get_next_term_id(terms, term_id)
+
+    # if next term is -1 then there are no more terms
+    # reset term counter and move onto next routine step
+    # if there are no more routine steps end the session
+    if next_term == -1:
         next_term = get_smallest_term_id(deck_id)
         routine_position += 1
         if routine_position >= amount_of_steps:
