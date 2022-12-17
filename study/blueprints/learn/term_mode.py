@@ -3,7 +3,7 @@ from study.auth import login_required, member_routine_view, member_deck_view
 
 from study.db import get_db
 from .main import bp
-from .steps import does_step_run_once_per_session
+from .steps import does_step_run_once_per_session, get_step_view_func_from_abbreviation
 from .utility import redirect_to_next
 
 def get_steps(routine_id):
@@ -102,14 +102,6 @@ def term_mode(deck_id, routine_id, term_id, routine_position):
         if not next_term == get_smallest_term_id(deck_id):
             return redirect_to_next(deck_id, routine_id, get_highest_term_id(terms), routine_position)
 
-    # redirects to the view for the current step
-    step_views = {"a": "learn.ask", "c": "learn.correct", "f": "learn.flashcard",
-    "m": "learn.choice", "b": "learn.fill_in_blanks"}
-    if current_step in step_views:
-        return redirect(url_for(step_views[current_step], deck_id=deck_id, routine_id=routine_id,
-         term_id=next_term, routine_position=routine_position))
-    else:
-        error = "Error: Routine step does not exist"
-        flash(error)
-
-    return redirect(url_for("index"))
+    step_function = get_step_view_func_from_abbreviation(current_step)
+    return redirect(url_for(step_function, deck_id=deck_id, routine_id=routine_id,
+        term_id=next_term, routine_position=routine_position))

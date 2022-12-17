@@ -2,6 +2,7 @@ from flask import redirect, url_for, g, flash
 from study.auth import login_required, member_routine_view, member_deck_view
 from study.db import get_db
 
+from .steps import get_step_view_func_from_abbreviation
 from .main import bp
 
 def get_steps(routine_id):
@@ -68,10 +69,6 @@ def step_mode(deck_id, routine_id, term_id, routine_position):
         terms = get_terms(deck_id)
         last_term_id = get_highest_term_id(terms)
 
-        print(term_id)
-        print(last_term_id)
-        print()
-
         # we are done with all the steps on the last term, so we are done with everything
         # records the study session and redirects to index
         if term_id == last_term_id:
@@ -84,15 +81,8 @@ def step_mode(deck_id, routine_id, term_id, routine_position):
             return redirect(url_for("learn.step_mode", deck_id=deck_id, routine_id=routine_id,
          term_id=next_term_id, routine_position=0))
 
-    # redirects to the view for the current step
     current_step = steps[routine_position]
-    step_views = {"a": "learn.ask", "c": "learn.correct", "f": "learn.flashcard",
-    "m": "learn.choice", "b": "learn.fill_in_blanks"}
-    if current_step in step_views:
-        return redirect(url_for(step_views[current_step], deck_id=deck_id, routine_id=routine_id,
-         term_id=term_id, routine_position=routine_position))
-    else:
-        error = "Error: Routine step does not exist"
-        flash(error)
-
-    return redirect(url_for("index"))
+    print("STEP MODE")
+    step_function = get_step_view_func_from_abbreviation(current_step)
+    return redirect(url_for(step_function, deck_id=deck_id, routine_id=routine_id,
+        term_id=term_id, routine_position=routine_position))
