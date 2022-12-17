@@ -2,7 +2,8 @@ from flask import redirect, url_for, g, flash
 from study.auth import login_required, member_routine_view, member_deck_view
 from study.db import get_db
 
-from .steps import get_step_view_func_from_abbreviation
+from .steps import get_step_view_func_from_abbreviation, does_step_run_once_per_session
+from .utility import redirect_to_next
 from .main import bp
 
 def get_steps(routine_id):
@@ -46,6 +47,15 @@ def record_study_session(routine_id, deck_id):
     )
     db.commit()
 
+def get_smallest_term_id(deck_id):
+    db = get_db()
+    terms = db.execute(
+        "SELECT id FROM term WHERE deck_id = ? ORDER BY id",
+        (str(deck_id),)
+    ).fetchall()
+    smallest_id = int(terms[0]['id'])
+    return smallest_id
+
 @bp.route("/<deck_id>/<routine_id>/<term_id>/<routine_position>", methods=("GET", "POST"))
 @login_required
 @member_deck_view
@@ -82,7 +92,16 @@ def step_mode(deck_id, routine_id, term_id, routine_position):
          term_id=next_term_id, routine_position=0))
 
     current_step = steps[routine_position]
-    print("STEP MODE")
+
+    if does_step_run_once_per_session(current_step):
+        # this step only runs once per session
+        # if we are at the first term right now then that is fine
+        # but if this is not the first term then this step has run before
+        # so skip this step if this term is not the first
+        if not term_id == get_smallest_term_id(deck_id):
+            # redirec to next automatically increments routine pos
+            return redirect_to_next(deck_id, routine_id, term_id, routine_position)
+    
     step_function = get_step_view_func_from_abbreviation(current_step)
     return redirect(url_for(step_function, deck_id=deck_id, routine_id=routine_id,
         term_id=term_id, routine_position=routine_position))
