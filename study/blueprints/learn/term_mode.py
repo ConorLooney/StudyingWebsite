@@ -3,6 +3,8 @@ from study.auth import login_required, member_routine_view, member_deck_view
 
 from study.db import get_db
 from .main import bp
+from .steps import does_step_run_once_per_session
+from .utility import redirect_to_next
 
 def get_steps(routine_id):
     db = get_db()
@@ -72,15 +74,16 @@ def term_mode(deck_id, routine_id, term_id, routine_position):
     term_id = int(term_id)
     deck_id = int(deck_id)
     routine_id = int(routine_id)
+    terms = get_terms(deck_id)
 
     # all the steps for the current routine
     steps = get_steps(routine_id)
     amount_of_steps = len(steps)
+    current_step = steps[routine_position]
 
     if term_id == -1: # no term has been completed, get first term
         next_term = get_smallest_term_id(deck_id)
     else:
-        terms = get_terms(deck_id)
         next_term = get_next_term_id(terms, term_id)
 
     # if next term is -1 then there are no more terms
@@ -93,8 +96,13 @@ def term_mode(deck_id, routine_id, term_id, routine_position):
             record_study_session(routine_id, deck_id)
             return redirect(url_for("index"))
 
+    if does_step_run_once_per_session(current_step):
+        # if this term is not the first term to run, then 
+        # it should be skipped as this step only runs once per session
+        if not next_term == get_smallest_term_id(deck_id):
+            return redirect_to_next(deck_id, routine_id, get_highest_term_id(terms), routine_position)
+
     # redirects to the view for the current step
-    current_step = steps[routine_position]
     step_views = {"a": "learn.ask", "c": "learn.correct", "f": "learn.flashcard",
     "m": "learn.choice", "b": "learn.fill_in_blanks"}
     if current_step in step_views:
