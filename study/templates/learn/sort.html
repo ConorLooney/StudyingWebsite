@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block header %}
+    <h1>{% block title %}Sorting{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<script>
+function sort(element, from) {
+    let data = [element.name, element.value, from];
+    let url = document.URL;
+    fetch(url,
+        {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: data
+        }
+    ).then(async (response) => {
+        const output = await response.text()
+        document.open();
+        document.write(output);
+        document.close();
+        return output;
+    });
+}
+</script>
+<p>Questions:</p>
+{% for term in unsorted_terms %}
+    <form method="post">
+        {{ term.question }}
+        <select name="{{ term.id }}" oninput="sort(this, 'unsorted');">
+            <option></option>
+            {% for category in categories %}
+                <option>{{ category }}</option>
+            {% endfor %}
+        </select>
+    </form>
+{% endfor %}
+
+<p>Categories:</p>
+{% for category in categories %}
+    <p>{{ category }}</p>
+    {% for term in categorised_terms[category] %}
+        <p>{{ term.question }}</p>
+        <select name="{{ term.id }}" oninput="sort(this, '{{category}}');">
+            <option></option>
+            {% for change_category in categories %}
+                {% if change_category == category %}#
+                    <option selected>{{ change_category }}</option>
+                {% else %}
+                    <option>{{ change_category }}</option>
+                {% endif %}
+            {% endfor %}
+        </select>
+    {% endfor %}
+{% endfor %}
+
+<form method="post">
+    <input type="submit" value="Submit">
+</form>
+
+{% endblock %}

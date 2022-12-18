@@ -6,12 +6,13 @@ class Step:
         self.run_once_per_session = run_once_per_session
         self.view_function_name = view_function_name
 
-ASK = Step("ask", "a", "learn.ask")
-CORRECT = Step("correct", "c", "learn.correct")
-FLASHCARD = Step("flashcard", "f", "learn.flashcard")
-MULTIPLE_CHOICE = Step("multiple choice", "m", "learn.choice")
-FILL_IN_BLANKS = Step("fill in blanks", "b", "learn.fill_in_blanks")
-steps = [ASK, CORRECT, FLASHCARD, MULTIPLE_CHOICE, FILL_IN_BLANKS]
+ASK = Step("Ask", "a", "learn.ask")
+CORRECT = Step("Correct", "c", "learn.correct")
+FLASHCARD = Step("Flashcard", "f", "learn.flashcard")
+MULTIPLE_CHOICE = Step("Multiple Choice", "m", "learn.choice")
+FILL_IN_BLANKS = Step("Fill in Blanks", "b", "learn.fill_in_blanks")
+SORT = Step("Sort", "s", "learn.sort", run_once_per_session=True)
+steps = [ASK, CORRECT, FLASHCARD, MULTIPLE_CHOICE, FILL_IN_BLANKS, SORT]
 
 def get_step_from_abbreviation(abbreviation):
     for step in steps:
@@ -25,3 +26,6 @@ def get_step_view_func_from_abbreviation(abbreviation):
 def does_step_run_once_per_session(abbreviation):
     step = get_step_from_abbreviation(abbreviation)
     return step.run_once_per_session
+
+def get_all_steps():
+    return steps

@@ -4,7 +4,7 @@ from study.auth import login_required
 
 from .main import bp
 from .utility import read_form, validate
-from study.validation import presence_check, lookup_check
+from study.blueprints.learn.steps import get_all_steps
 
 class Step:
 
@@ -31,14 +31,6 @@ def create():
         if validate(name, steps, is_step_mode):
             routine_id = insert_routine_in_db(name, steps, is_step_mode)
             return redirect(url_for("routines.see_one", routine_id=routine_id))
-
-    avaliable_steps = [
-        Step("Ask", "a"),
-        Step("Correct", "c"),
-        Step("Choice", "m"),
-        Step("Flashcard", "f"),
-        Step("Blanks", "b")
-        ]
     
     return render_template("routines/create.html",
-    steps=avaliable_steps)
+    steps=get_all_steps())
