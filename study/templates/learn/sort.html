@@ -26,39 +26,51 @@ function sort(element, from) {
     });
 }
 </script>
-<p>Questions:</p>
-{% for term in unsorted_terms %}
-    <form method="post">
-        {{ term.question }}
-        <select name="{{ term.id }}" oninput="sort(this, 'unsorted');">
-            <option></option>
-            {% for category in categories %}
-                <option>{{ category }}</option>
-            {% endfor %}
-        </select>
-    </form>
-{% endfor %}
 
-<p>Categories:</p>
-{% for category in categories %}
-    <p>{{ category }}</p>
-    {% for term in categorised_terms[category] %}
-        <p>{{ term.question }}</p>
-        <select name="{{ term.id }}" oninput="sort(this, '{{category}}');">
-            <option></option>
-            {% for change_category in categories %}
-                {% if change_category == category %}#
-                    <option selected>{{ change_category }}</option>
-                {% else %}
-                    <option>{{ change_category }}</option>
-                {% endif %}
-            {% endfor %}
-        </select>
-    {% endfor %}
-{% endfor %}
+<div id="sorting_step">
+    <div id="unsorted_questions">
+        {% for term in unsorted_terms %}
+            <div id="unsorted_question">
+                <form method="post">
+                    {{ term.question }}
+                    <select name="{{ term.id }}" oninput="sort(this, 'unsorted');">
+                        <option></option>
+                        {% for category in categories %}
+                            <option>{{ category }}</option>
+                        {% endfor %}
+                    </select>
+                </form>
+            </div>
+        {% endfor %}
+        <div id="submit_sort">
+            <form method="post">
+                <input type="submit" value="Submit">
+            </form>
+        </div>
+    </div>
 
-<form method="post">
-    <input type="submit" value="Submit">
-</form>
+    <div id="sorting_categories">
+        {% for category in categories %}
+            <div id="sorting_category">
+                <p>{{ category }}</p>
+                {% for term in categorised_terms[category] %}
+                    <div id="term_sorted_in_category">
+                        {{ term.question }}
+                        <select name="{{ term.id }}" oninput="sort(this, '{{category}}');">
+                            <option></option>
+                            {% for change_category in categories %}
+                                {% if change_category == category %}
+                                    <option selected>{{ change_category }}</option>
+                                {% else %}
+                                    <option>{{ change_category }}</option>
+                                {% endif %}
+                            {% endfor %}
+                        </select>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endfor %}
+    </div>
+</div>
 
 {% endblock %}
