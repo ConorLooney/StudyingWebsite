@@ -7,3 +7,4 @@ from . import flashcard
 from . import choice
 from . import fill_in_blanks
 from . import sort
+from . import order

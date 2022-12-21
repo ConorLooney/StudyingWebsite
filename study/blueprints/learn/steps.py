@@ -12,7 +12,8 @@ FLASHCARD = Step("Flashcard", "f", "learn.flashcard")
 MULTIPLE_CHOICE = Step("Multiple Choice", "m", "learn.choice")
 FILL_IN_BLANKS = Step("Fill in Blanks", "b", "learn.fill_in_blanks")
 SORT = Step("Sort", "s", "learn.sort", run_once_per_session=True)
-steps = [ASK, CORRECT, FLASHCARD, MULTIPLE_CHOICE, FILL_IN_BLANKS, SORT]
+ORDER = Step("Order", "o", "learn.order", run_once_per_session=True)
+steps = [ASK, CORRECT, FLASHCARD, MULTIPLE_CHOICE, FILL_IN_BLANKS, SORT, ORDER]
 
 def get_step_from_abbreviation(abbreviation):
     for step in steps:
