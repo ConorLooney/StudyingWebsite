@@ -263,7 +263,74 @@ div.object_options > form > *:hover {
     color: white;
 }
 
-/*Creating form styling*/
+/*Create deck styling*/
+
+div.deck_form {
+    font-family: monospace;
+    font-size: 20px;
+    
+    display: flex;
+}
+
+div.deck_form > form {
+    margin: auto;
+    
+    width: 700px;
+}
+
+div.deck_form > form > * {
+    margin: 10px;
+    margin-top: 20px;
+}
+
+div.deck_form > form > input {
+    font-family: monospace;
+    font-size: 20px;
+
+    border: 2px solid black;
+    background-color: white;
+}
+
+div.deck_form > form > input:hover {
+    background-color: black;
+    color: white;
+}
+
+div.deck_form > form > select {
+    font-family: monospace;
+    font-size: 20px;
+}
+
+div.deck_form > form > textarea {
+    font-family: monospace;
+    font-size: 20px;
+
+    border: 2px solid black;
+}
+
+div#deck_explanation {
+    display: none;
+    font-size: 18px;
+}
+
+img#deck_help_icon:hover + div#deck_explanation {
+    display: block;
+}
+
+div#deck_explanation:hover {
+    display: block;
+}
+
+div#deck_explanation, img#deck_help_icon {
+    padding: 0px;
+    margin: 0px;
+}
+
+div#deck_explanation {
+    width: 80%;
+}
+
+/*Creating form styling -- NOT USED FOR DECK*/
 div.object_form {
     display: flex;
     flex-direction: column;
@@ -492,7 +559,7 @@ div#manual_corrections_explanation:hover {
     display: block;
 }
 
-img#manual_corrections_help {
+img.help_icon {
     width: 24px;
     height: 24px;
 }
