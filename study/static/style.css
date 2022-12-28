@@ -330,6 +330,69 @@ div#deck_explanation {
     width: 80%;
 }
 
+/* VIEW DECK STYLING */
+div#view_deck {
+    display: grid;
+    grid-template-areas: 
+    "deck-view-modify deck-view-modify"
+    "deck-view-terms deck-view-terms";
+}
+
+div#view_deck > div {
+    font-family: monospace;
+    font-size: 20px;
+
+    margin: 20px;
+}
+
+div#view_deck > div > a {
+    color: black;
+    text-decoration: none;
+}
+
+div#view_deck > div > a:hover {
+    color: white;
+    background-color: black;
+}
+
+div#view_deck > div > form > input {
+    background-color: white;
+    color: black;
+    border: none;
+    font-size: 20px;
+    font-family: monospace;
+}
+
+div#view_deck > div > form > input:hover {
+    background-color: black;
+    color: white;
+}
+
+div#view_deck > div > form > select {
+    font-family: monospace;
+    font-size: 20px;
+    color: black;
+    background-color: white;
+}
+
+div#view_deck > div#view_deck_terms {
+    grid-area: deck-view-terms;
+}
+
+div#view_deck > div#view_deck_modify > * {
+    margin: 20px;
+}
+
+div#view_deck > div#view_deck_modify {
+    grid-area: deck-view-modify;
+}
+
+div#view_deck > div#view_deck_terms {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+}
+
 /*Creating form styling -- NOT USED FOR DECK*/
 div.object_form {
     display: flex;

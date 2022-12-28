@@ -4,18 +4,26 @@
 {% endblock %}
 
 {% block content %}
-<div class="object_view">
-    <div class="object_elements" id="terms">
+<div id="view_deck">
+    <div id="view_deck_terms">
         {% if terms|length == 0 %}
             <p>No terms in this deck</p>
         {% else %}
-            <p>Terms:</p>
-            {% for term in terms %}
-                <div class="term" id="{{term.id}}">
-                    <p>{{ term.question }}, {{ term.answer }}</p>
-                </div>
-            {% endfor %}
+            <div id="deck_view_questions">
+                <p>Questions:</p>
+                {% for term in terms %}
+                    <p>{{ term.question }}</p>
+                {% endfor %}
+            </div>
+            <div id="deck_view_answers">
+                <p>Answers:</p>
+                {% for term in terms %}
+                    <p>{{ term.answer }}</p>
+                {% endfor %}
+            </div>
         {% endif %}
+    </div>
+    <div id="view_deck_modify">
         <a href="{{ url_for('decks.update', deck_id=deck.id) }}">Update deck</a>
         <a href="{{ url_for('decks.delete', deck_id=deck.id) }}">Delete deck</a>
         <form method="post">
