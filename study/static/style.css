@@ -450,6 +450,49 @@ img#routine_help_icon:hover + div#routine_steps_explanation {
     display: block;
 }
 
+/* VIEW ROUTINE styling */
+
+div#view_routine {
+    display: grid;
+    grid-template-areas:
+    "view_routine_steps view_routine_mode"
+    "view_routine_steps view_routine_modify";
+
+    grid-template-columns: 50% 50%;
+}
+
+div#view_routine > div#routine_steps {
+    grid-area: view_routine_steps;
+    font-family: monospace;
+    font-size: 20px;
+
+    margin-left: 300px;
+}
+
+div#view_routine > div#routine_mode {
+    grid-area: view_routine_mode;
+    font-family: monospace;
+    font-size: 20px;
+
+    margin-right: 300px;
+}
+
+div#view_routine > div#routine_modify {
+    grid-area: view_routine_modify;
+    font-family: monospace;
+    font-size: 20px;
+}
+
+div#view_routine > div#routine_modify > a {
+    color: black;
+    text-decoration: none;
+}
+
+div#view_routine > div#routine_modify > a:hover {
+    color: white;
+    background-color: black;
+}
+
 /*Creating form styling -- NOT USED FOR DECK, or ROUTINE*/
 div.object_form {
     display: flex;

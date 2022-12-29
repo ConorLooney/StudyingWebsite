@@ -9,5 +9,17 @@ from .main import bp
 @member_routine_view
 def see_one(routine_id):
     routine = get_routine(routine_id)
-
-    return render_template("routines/see_one.html", routine=routine)
+    # TODO: Add steps object and use those instead of hardcoded stuff here
+    steps = []
+    for step in routine["steps"]:
+        if step == "a":
+            steps.append("Ask")
+        elif step == "c":
+            steps.append("Correct")
+        elif step == "m":
+            steps.append("Multiple choice")
+        elif step == "f":
+            steps.append("Flashcards")
+        elif step == "b":
+            steps.append("Blanks")
+    return render_template("routines/see_one.html", routine=routine, steps=steps)

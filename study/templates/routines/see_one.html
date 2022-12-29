@@ -4,17 +4,25 @@
 {% endblock %}
 
 {% block content %}
-<div class="object_view">
-    <p>Steps:</p>
-    <div class="object_elements" id="routine_steps">
-        {{ routine.steps }}
+<div id="view_routine">
+    <div id="routine_steps">
+        <h2>Steps</h2>
+        <ol>
+        {% for n in range(steps|length) %}
+            <li>{{ steps[n] }}</li>
+        {% endfor %} 
+        </ol>
     </div>
-    {% if routine.is_step_mode %}
+    <div id="routine_mode">
+        {% if routine.is_step_mode %}
         <p>Routine is in step mode, meaning it goes through all steps, and then goes to the next term</p>
-    {% else %}
-        <p>Routine is term mode, meaning it goes through all terms, and then goes to the next step</p>
-    {% endif %}
-    <a href="{{ url_for('routines.update', routine_id=routine.id) }}">Update</a>
-    <a href="{{ url_for('routines.delete', routine_id=routine.id) }}">Delete</a>
+        {% else %}
+            <p>Routine is term mode, meaning it goes through all terms, and then goes to the next step</p>
+        {% endif %}
+    </div>
+    <div id="routine_modify">
+        <a href="{{ url_for('routines.update', routine_id=routine.id) }}">Update</a>
+        <a href="{{ url_for('routines.delete', routine_id=routine.id) }}">Delete</a>
+    </div>
 </div>
 {% endblock %}
