@@ -49,8 +49,20 @@ def validate_data(deck_name, terms, intra_term_delimiter, is_public):
 Assumes data is valid"""
 def insert_term_into_database(deck_id, intra_term_delimiter, line):
     db = get_db()
-    question, answer = line.split(intra_term_delimiter)
+
+    # question, answer = line.split(intra_term_delimiter) makes sense,
+    # but doesn't allow for the answer to contain the intra term delimiter
+    # so this sets the question to the first instance in the split list
+    # and then the answer to the rest of the list
+    # not forgetting to add back in the intra term delimiter which was removed when split
+    split_line = line.split(intra_term_delimiter)
+    question = split_line[0]
+    answer = split_line[1]
+    for component in split_line[2:]:
+        answer += intra_term_delimiter
+        answer += component
     answer = answer.strip()
+    
     db.execute(
         "INSERT INTO term (deck_id, question, answer) VALUES (?, ?, ?)",
         (str(deck_id), question, answer,)
