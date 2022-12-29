@@ -17,32 +17,42 @@
 {% endblock %}
 
 {% block content %}
-<div class="object_form">
+<div id="routine_form">
     <form method="post">
         <label for="routine_name">Routine name:</label>
-        <input name="routine_name" id="routine_name" required>
+        <input name="routine_name" id="routine_name" required><br>
         <label for="routine_mode">Routine mode:</label>
         <select name="mode">
             <option value="term_mode">Do all terms, then go to next step</option>
             <option value="step_mode">Do all steps, then go to next term</option>
-        </select>
+        </select><br>
         <label for="steps">Steps:</label>
-        <input name="steps" id="steps" required>
+        <input name="steps" id="steps" required><br>
         <input type="submit" value="Create Routine">
     </form>
-    <div id="select_routine_steps">
-        <p id="select_routine_steps_explanation">Press buttons to add steps to your routine, or type in the abbreviations</p>
-        <p id="routine_steps_further_explanation">
-        Each step is completed for a term in a deck before moving onto the next term.
-        So the routine "fac" would show a flashcard of a term, then ask you about that term,
-        then correct what you answered, and then do the same for the next term and so on.</p>
+</div>
+<div id="select_routine_steps">
+    Press buttons to add steps to your routine, or type in the abbreviations
+    <img class="help_icon" id="routine_help_icon" src="{{ url_for('static', filename='pictures/help.png') }}" alt="Help">
+    <div id="routine_steps_explanation">
+        Each step's abbreviation is shown next to its name. For example 'f' is the abbreviation for flashcard.<br>
+        The following shows the behaviour of each steps:<br>
         <br>
-        {% for step in steps %}
-            <input type="submit" name="{{ step.abbreviation }}" value="{{ step.name }} - {{ step.abbreviation }}" onclick="add_step(this)">
-        {% endfor %}
+        Ask - Shows the term's question. The user should input the answer.<br>
         <br>
-        <input type="submit" value="Remove" onclick="remove_step(this)">
-        <input type="submit" value="Clear" onclick="clear_steps(this)">
-    </div>
+        Correct - Shows the term's question, and the answer the user gave. The user should input the correct answer.<br>
+        <br>
+        Choice - Shows the term's question and four possible answers. The user should choose the correct one.<br>
+        <br>
+        Flashcard - Shows the term's question. The user can flip the card to see the answer.<br>
+        <br>
+        Blanks - Shows the term's question and the term's answer with random words blanked out. The user should input the words that are blanked out.<br>
+    </div><br>
+    {% for step in steps %}
+        <input type="submit" name="{{ step.abbreviation }}" value="{{ step.name }} - {{ step.abbreviation }}" onclick="add_step(this)">
+    {% endfor %}
+    <br>
+    <input type="submit" value="Remove" onclick="remove_step(this)">
+    <input type="submit" value="Clear" onclick="clear_steps(this)">
 </div>
 {% endblock %}

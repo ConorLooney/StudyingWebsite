@@ -393,7 +393,64 @@ div#view_deck > div#view_deck_terms {
     justify-content: space-around;
 }
 
-/*Creating form styling -- NOT USED FOR DECK*/
+/* CREATE ROUTINE CSS */
+
+div#routine_form { 
+    width: 700px;
+    font-family: monospace;
+    font-size: 20px;
+}
+
+div#routine_form > form > * { 
+    margin-top: 30px;
+}
+
+div#routine_form > form > input {
+    font-family: monospace;
+    font-size: 20px;
+
+    color: black;
+    background-color: white;
+
+    border: 2px solid black;
+}
+
+div#routine_form > form > input:hover {
+    color: white;
+    background-color: black;
+}
+
+div#routine_form > form > select {
+    font-family: monospace;
+    font-size: 20px;
+
+    color: black;
+    background-color: white;
+
+    border: 2px solid black;
+}
+
+div#select_routine_steps { 
+    margin-top: 20px;
+    font-family: monospace;
+    font-size: 20px;
+
+    width: 700px;
+}
+
+div#routine_steps_explanation {
+    display: none;
+}
+
+div#routine_steps_explanation:hover {
+    display: block;
+}
+
+img#routine_help_icon:hover + div#routine_steps_explanation {
+    display: block;
+}
+
+/*Creating form styling -- NOT USED FOR DECK, or ROUTINE*/
 div.object_form {
     display: flex;
     flex-direction: column;
