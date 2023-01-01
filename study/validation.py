@@ -12,3 +12,14 @@ def lookup_check(data, data_set):
     if data not in data_set:
         return False
     return True
+
+def range_check_exclusive(data, min, max):
+    return data > min and data < max
+
+def is_string_float(string):
+    try:
+        float(string)
+    except ValueError:
+        return False
+    else:
+        return True

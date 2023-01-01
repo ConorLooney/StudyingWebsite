@@ -7,3 +7,15 @@ def gen_random_code(length=16):
     for n in range(length):
         code += digits[random.randint(0, len(digits)-1)]
     return code
+
+def remove_duplicate_rows(rows, identifying_field_name):
+    """Return new list of rows where no row in the list has the same value
+    for the given identifying field name as any other row in the list
+    
+    :type rows: list of sqlite row objects 
+    """
+    unique_rows_dict = {}
+    for row in rows:
+        unique_rows_dict[row[identifying_field_name]] = row
+    unique_rows_list = list(unique_rows_dict.values())
+    return unique_rows_list

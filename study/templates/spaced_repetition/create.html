@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block header %}
+{% endblock %}
+    <h1>{% block title %}New spaced repetition setting{% endblock %}</h1>
+{% block content %}
+<form method="post">
+    <select name="deck">
+        {% for deck in decks %}
+            <option value="{{ deck.id }}">{{ deck.title }}</option>
+        {% endfor %}
+    </select>
+    <select name="routine">
+        {% for routine in routines %}
+            <option value="{{ routine.id }}">{{ routine.title }}</option>
+        {% endfor %}
+    </select>
+    <label for="spaced_repetition_threshold">Threshold for a reminder: </label>
+    <input name="threshold" id="spaced_repetition_threshold" required>
+    <label for="spaced_repetition_steepness_constant">Steepness constant: </label>
+    <input name="steepness_constant" id="spaced_repetition_steepness_constant" required>
+    <label for="spaced_repetition_change_constant">Change constant: </label>
+    <input name="change_constant" id="spaced_repetition_change_constant" required>
+    <input type="submit">
+</form>
+{% endblock %}
