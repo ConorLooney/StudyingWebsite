@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block header %}
+    <h1>{% block title %} Spaced Repetition Settings {% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+{% for spaced_repetition_setting in spaced_repetition_settings %}
+    <a href="{{ url_for('spaced_repetition.view', deck_id=spaced_repetition_setting.deck_id, routine_id=spaced_repetition_setting.routine_id) }}">{{ spaced_repetition_setting.deck_id }}</a>
+{% endfor %}
+{% endblock %}
