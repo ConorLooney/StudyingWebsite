@@ -6,4 +6,6 @@
 <p>{{ spaced_repetition_setting.reminder_threshold }}</p>
 <p>{{ spaced_repetition_setting.steepness_constant }}</p>
 <p>{{ spaced_repetition_setting.change_constant }}</p>
+<a href="{{ url_for('spaced_repetition.update', deck_id=spaced_repetition_setting.deck_id, routine_id=spaced_repetition_setting.routine_id) }}">Update</a>
+<a href="{{ url_for('spaced_repetition.delete', deck_id=spaced_repetition_setting.deck_id, routine_id=spaced_repetition_setting.routine_id) }}">Delete</a>
 {% endblock %}
