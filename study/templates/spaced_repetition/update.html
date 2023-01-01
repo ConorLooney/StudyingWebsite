@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block header %}
+    <h1>{% block title %}Update spaced repetition setting{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+Deck: {{ current_deck.title }}
+Routine: {{ current_routine.title }}
+<form method="post">
+    <label for="spaced_repetition_threshold">Threshold for a reminder: </label>
+    <input name="threshold" id="spaced_repetition_threshold" value="{{ current_threshold }}" required>
+    <label for="spaced_repetition_steepness_constant">Steepness constant: </label>
+    <input name="steepness_constant" id="spaced_repetition_steepness_constant" value="{{ current_steepness }}" required>
+    <label for="spaced_repetition_change_constant">Change constant: </label>
+    <input name="change_constant" id="spaced_repetition_change_constant" value="{{ current_change }}" required>
+    <input type="submit">
+</form>
+{% endblock %}
