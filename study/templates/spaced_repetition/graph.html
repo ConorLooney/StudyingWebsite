@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block header %}
+<h1>{% block title %}Graph Prototype{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<div id="jxgbox" class="jxgbox" style="width:500px; height:200px;"></div>
+
+<link href="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraph.css" rel="stylesheet" type="text/css" />
+<script src="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraphcore.js" charset="UTF-8"></script>
+<script type="text/javascript">
+var threshold = 0.5;
+var steepness = 1;
+var change = 0.5;
+
+// T = times studied
+// t = time since last studied
+function calc(T, t) {
+    var memoryRetention = Math.pow(Math.E, -steepness * (Math.pow(change, T) * t));
+    if (memoryRetention < threshold) {
+        t = t - Math.log(threshold) / (-steepness * (Math.pow(change, T)));
+        return calc(T + 1, t);
+    }
+    return [T, memoryRetention];
+}
+
+function forgettingCurveFunc(x) {
+    var timesStudied = 0;
+    [timesStudied, y] = calc(timesStudied, x);
+    return y;
+}
+
+var board = JXG.JSXGraph.initBoard('jxgbox', {boundingbox: [-7, 1, 100, -0.2], axis: true});
+var forgettingCurve = board.create('functiongraph', [forgettingCurveFunc]);
+
+var x = 0;
+let last = 0;
+while (x < 1000) {
+    var timesStudied = 0;
+    [timesStudied, y] = calc(timesStudied, x);
+    if (timesStudied > last) {
+        var line = board.create('line', [[x, 0], [x, 100]]);
+    }
+    last = timesStudied;
+    x += 0.1;
+}
+</script>
+
+{% endblock %}
