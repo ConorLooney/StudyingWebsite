@@ -122,17 +122,25 @@ def validate_input(threshold, steepness, change):
 
 def insert_spaced_repetition_setting_into_db(deck_id, routine_id, threshold,
     steepness, change):
+    """Insert new spaced repetition setting into database with given values.
+    Return true if no error and false otherwise"""
     db = get_db()
     user_id = g.user["id"]
 
-    db.execute(
-        "INSERT INTO spaced_repetition_setting (user_id, deck_id, routine_id, \
-        reminder_threshold, steepness_constant, change_constant) VALUES \
-        (?, ?, ?, ?, ?, ?)",
-        (str(user_id), str(deck_id), str(routine_id), str(threshold),
-        str(steepness), str(change),)
-    )
-    db.commit()
+    try:
+        db.execute(
+            "INSERT INTO spaced_repetition_setting (user_id, deck_id, routine_id, \
+            reminder_threshold, steepness_constant, change_constant) VALUES \
+            (?, ?, ?, ?, ?, ?)",
+            (str(user_id), str(deck_id), str(routine_id), str(threshold),
+            str(steepness), str(change),)
+        )
+        db.commit()
+        return True
+    except db.IntegrityError:
+        error = "Error: Spaced repetition setting already exists for this deck and routine. Either update that setting's values or delete that setting and try again."
+        flash(error)
+        return False
 
 @bp.route("/create", methods=("GET", "POST"))
 @login_required
@@ -144,10 +152,10 @@ def create():
             threshold = float(threshold)
             steepness = float(steepness)
             change = float(change)
-            insert_spaced_repetition_setting_into_db(
-                deck_id, routine_id, threshold, steepness, change)
-            return redirect(url_for("spaced_repetition.view",
-             deck_id=deck_id, routine_id=routine_id))
+            if insert_spaced_repetition_setting_into_db(
+                deck_id, routine_id, threshold, steepness, change):
+                return redirect(url_for("spaced_repetition.view",
+                deck_id=deck_id, routine_id=routine_id))
     
     decks = get_class_decks() + get_saved_decks() + get_owned_decks()
     decks = remove_duplicate_rows(decks, "id")
