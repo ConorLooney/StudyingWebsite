@@ -5,7 +5,16 @@
 {% endblock %}
 
 {% block content %}
-{% for spaced_repetition_setting in spaced_repetition_settings %}
-    <a href="{{ url_for('spaced_repetition.view', deck_id=spaced_repetition_setting.deck_id, routine_id=spaced_repetition_setting.routine_id) }}">{{ spaced_repetition_setting.deck_id }}</a>
-{% endfor %}
+<div class="object_list">
+    {% for spaced_repetition_setting in spaced_repetition_settings %}
+        <div class="object_instance">
+            <div class="object_info">
+                <a href="{{ url_for('spaced_repetition.view', deck_id=spaced_repetition_setting.deck_id, routine_id=spaced_repetition_setting.routine_id) }}">
+                Setting for deck: '{{ decks[spaced_repetition_setting.deck_id].title }}' with routine: 
+                '{{ routines[spaced_repetition_setting.routine_id].title }}'
+                </a>
+            </div>
+        </div>
+    {% endfor %}
+</div>
 {% endblock %}

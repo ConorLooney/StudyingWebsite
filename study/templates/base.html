@@ -17,8 +17,9 @@
             <a href="{{ url_for('class.all_user') }}">Your classes</a>
             <a href="{{ url_for('class.all_public') }}">Public classes</a>
             <a href="{{ url_for('class.create') }}">New class</a> |
-            <a href="{{ url_for('statistics.all_decks') }}">Stats</a>
-            <a href="{{ url_for('spaced_repetition.list') }}">Spaced Repetition</a>
+            <a href="{{ url_for('statistics.all_decks') }}">Stats</a> | 
+            <a href="{{ url_for('spaced_repetition.list') }}">Spaced Repetition Settings</a>
+            <a href="{{ url_for('spaced_repetition.create') }}">New Spaced Repetition Setting</a>
         {% else %}
             <a href="{{ url_for('auth.login') }}">Login</a>
             <a href="{{ url_for('auth.register') }}">Register</a>

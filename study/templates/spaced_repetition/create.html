@@ -4,25 +4,29 @@
 {% endblock %}
     <h1>{% block title %}New spaced repetition setting{% endblock %}</h1>
 {% block content %}
-<form method="post">
-    <select name="deck">
-        {% for deck in decks %}
-            <option value="{{ deck.id }}">{{ deck.title }}</option>
-        {% endfor %}
-    </select>
-    <select name="routine">
-        {% for routine in routines %}
-            <option value="{{ routine.id }}">{{ routine.title }}</option>
-        {% endfor %}
-    </select>
-    <label for="spaced_repetition_threshold">Threshold for a reminder: </label>
-    <input name="threshold" id="spaced_repetition_threshold" oninput="updateGraph();" required>
-    <label for="spaced_repetition_steepness_constant">Steepness constant: </label>
-    <input name="steepness_constant" id="spaced_repetition_steepness_constant" oninput="updateGraph();" required>
-    <label for="spaced_repetition_change_constant">Change constant: </label>
-    <input name="change_constant" id="spaced_repetition_change_constant" oninput="updateGraph();" required>
-    <input type="submit">
-</form>
+<div id="spaced_repetition_form">
+    <form method="post">
+        <label for="spaced_repetition_deck">Deck to apply the setting to:</label>
+        <select name="deck" id="spaced_repetition_deck">
+            {% for deck in decks %}
+                <option value="{{ deck.id }}">{{ deck.title }}</option>
+            {% endfor %}
+        </select><br>
+        <label for="spaced_repetition_routine">Routine to apply the setting to:</label>
+        <select name="routine" id="spaced_repetition_routine">
+            {% for routine in routines %}
+                <option value="{{ routine.id }}">{{ routine.title }}</option>
+            {% endfor %}
+        </select><br>
+        <label for="spaced_repetition_threshold">Threshold for a reminder: </label>
+        <input name="threshold" id="spaced_repetition_threshold" oninput="updateGraph();" value="0.5" required><br>
+        <label for="spaced_repetition_steepness_constant">Steepness constant: </label>
+        <input name="steepness_constant" id="spaced_repetition_steepness_constant" oninput="updateGraph();" value="0.5" required><br>
+        <label for="spaced_repetition_change_constant">Change constant: </label>
+        <input name="change_constant" id="spaced_repetition_change_constant" oninput="updateGraph();" value="0.5" required><br>
+        <input type="submit">
+    </form>
+</div>
 
 <div id="jxgbox" class="jxgbox"></div>
 
