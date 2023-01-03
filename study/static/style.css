@@ -730,3 +730,9 @@ img.help_icon {
 img#manual_corrections_help:hover + div#manual_corrections_explanation {
     display: block;
 }
+
+/* JXG GRAPH STYLING */
+div#jxgbox {
+    width: 1000px;
+    height: 625px;
+}
