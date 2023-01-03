@@ -8,4 +8,17 @@
 <p>{{ spaced_repetition_setting.change_constant }}</p>
 <a href="{{ url_for('spaced_repetition.update', deck_id=spaced_repetition_setting.deck_id, routine_id=spaced_repetition_setting.routine_id) }}">Update</a>
 <a href="{{ url_for('spaced_repetition.delete', deck_id=spaced_repetition_setting.deck_id, routine_id=spaced_repetition_setting.routine_id) }}">Delete</a>
+
+<div id="jxgbox" class="jxgbox"></div>
+
+<link href="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraph.css" rel="stylesheet" type="text/css" />
+<script src="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraphcore.js" charset="UTF-8"></script>
+<script src="{{ url_for('static', filename='js/memoryRetentionGraph.js') }}"></script>
+<script type="text/javascript">
+drawMemoryRetentionGraph(
+    {{ spaced_repetition_setting.reminder_threshold }},
+    {{ spaced_repetition_setting.steepness_constant }},
+    {{ spaced_repetition_setting.change_constant }}
+);
+</script>
 {% endblock %}

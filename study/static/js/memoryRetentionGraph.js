@@ -42,3 +42,46 @@ function drawMemoryRetentionGraph(threshold, steepness, change) {
         x += 0.1;
     }
 }
+
+function updateGraph() {
+    // get values 
+    let threshold = document.getElementById("spaced_repetition_threshold").value;
+    let steepness = document.getElementById("spaced_repetition_steepness_constant").value;
+    let change = document.getElementById("spaced_repetition_change_constant").value;
+
+    // validate values
+    let valid = true;
+
+    threshold = Number(threshold);
+    if (isNaN(threshold)) {
+        valid = false;
+    }
+    steepness = Number(steepness);
+    if (isNaN(steepness)) {
+        valid = false;
+    }
+    change = Number(change);
+    if (isNaN(change)) {
+        valid = false;
+    }
+
+    if (!valid) {
+        return;
+    }
+
+    if (threshold <= 0 || threshold >= 1) {
+        valid = false;
+    }
+
+    if (change <= 0 || change >= 1) {
+        valid = false;
+    }
+
+    // valid ranges for steepness is undecided
+    // TODO get valid ranges for steepness
+
+    // only draw if valid
+    if (valid) {
+        drawMemoryRetentionGraph(threshold, steepness, change)
+    }
+}

@@ -9,11 +9,20 @@ Deck: {{ current_deck.title }}
 Routine: {{ current_routine.title }}
 <form method="post">
     <label for="spaced_repetition_threshold">Threshold for a reminder: </label>
-    <input name="threshold" id="spaced_repetition_threshold" value="{{ current_threshold }}" required>
+    <input name="threshold" id="spaced_repetition_threshold" value="{{ current_threshold }}" oninput="updateGraph();" required>
     <label for="spaced_repetition_steepness_constant">Steepness constant: </label>
-    <input name="steepness_constant" id="spaced_repetition_steepness_constant" value="{{ current_steepness }}" required>
+    <input name="steepness_constant" id="spaced_repetition_steepness_constant" value="{{ current_steepness }}" oninput="updateGraph();" required>
     <label for="spaced_repetition_change_constant">Change constant: </label>
-    <input name="change_constant" id="spaced_repetition_change_constant" value="{{ current_change }}" required>
+    <input name="change_constant" id="spaced_repetition_change_constant" value="{{ current_change }}" oninput="updateGraph();" required>
     <input type="submit">
 </form>
+
+<div id="jxgbox" class="jxgbox"></div>
+
+<link href="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraph.css" rel="stylesheet" type="text/css" />
+<script src="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraphcore.js" charset="UTF-8"></script>
+<script src="{{ url_for('static', filename='js/memoryRetentionGraph.js') }}"></script>
+<script type="text/javascript">
+updateGraph();
+</script>
 {% endblock %}
