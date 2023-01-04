@@ -5,12 +5,14 @@
 {% endblock %}
 
 {% block content %}
-<p>Are you sure you want to delete this spaced repetition setting?</p>
-<p>This setting is for the deck '{{ deck.title }}' and the routine '{{ routine.title }}'</p>
-<p>If you want to delete this setting, enter your password and press Delete.</p>
-<form method="post">
-    <label for="password">Enter your password:</label>
-    <input type="password" id="password" name="password" required>
-    <input type="submit" value="Delete">
-</form>
+<div id="delete_spaced_repetition">
+    Are you sure you want to delete this spaced repetition setting?<br>
+    This setting is for the deck '{{ deck.title }}' and the routine '{{ routine.title }}'.<br>
+    If you want to delete this setting, enter your password and press Delete.<br>
+    <form method="post">
+        <label for="password">Enter your password:</label>
+        <input type="password" id="password" name="password" required>
+        <input type="submit" value="Delete">
+    </form>
+</div>
 {% endblock %}

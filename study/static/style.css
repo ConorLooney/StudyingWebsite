@@ -850,3 +850,26 @@ div#view_spaced_repetition_explanation:hover {
 img#spaced_repetition_help_icon:hover + div#view_spaced_repetition_explanation{
     display: block;
 }
+
+/* delete spaced repetition styling */
+
+div#delete_spaced_repetition {
+    font-family: monospace;
+    font-size: 20px;
+}
+
+div#delete_spaced_repetition > form {
+    margin-top: 20px;
+}
+
+div#delete_spaced_repetition > form > input {
+    border: 2px solid black;
+    font-size: 20px;
+    font-family: monospace;
+    background-color: white;
+}
+
+div#delete_spaced_repetition > form > input:hover {
+    background-color: black;
+    color: white;
+}
