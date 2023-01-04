@@ -798,3 +798,55 @@ div#spaced_repetition_setting > * > a:hover {
     color: white;
     background-color: black;
 }
+
+/* Tooltip hover for explanations in spaced repetition pages styling */
+
+div#spaced_repetition_graph_explanation {
+    display: none;
+
+    font-size: 20px;
+    font-family: monospace;
+
+    width: 800px;
+
+    padding: 20px;
+    line-height: 24px;
+}
+
+div#spaced_repetition_explanation {
+    display: none;
+}
+
+img#spaced_repetition_help_icon {
+    padding: 5px;
+}
+
+div#spaced_repetition_explanation:hover {
+    display: block;
+}
+
+div#spaced_repetition_graph_explanation:hover {
+    display: block;
+}
+
+img#spaced_repetition_help_icon:hover + div#spaced_repetition_explanation {
+    display: block;
+}
+
+img#spaced_repetition_help_icon:hover + div#spaced_repetition_graph_explanation {
+    display: block;
+}
+
+div#view_spaced_repetition_explanation {
+    display: none;
+
+    width: 300px;
+}
+
+div#view_spaced_repetition_explanation:hover {
+    display: block;
+}
+
+img#spaced_repetition_help_icon:hover + div#view_spaced_repetition_explanation{
+    display: block;
+}

@@ -10,15 +10,47 @@
     You cannot change the deck or routine, instead create a new setting.
     <form method="post">
         <label for="spaced_repetition_threshold">Threshold for a reminder: </label>
-        <input name="threshold" id="spaced_repetition_threshold" value="{{ current_threshold }}" oninput="updateGraph();" required><br>
+        <input name="threshold" id="spaced_repetition_threshold" value="{{ current_threshold }}" oninput="updateGraph();" required>
+        <img class="help_icon" id="spaced_repetition_help_icon" src="{{ url_for('static', filename='pictures/help.png') }}" alt="Help">
+        <div id="spaced_repetition_explanation">
+            This controls when you are reminded to revise the deck.<br>
+            A higher value means you will revise more often and a lower value means less often.
+        </div><br>
         <label for="spaced_repetition_steepness_constant">Steepness constant: </label>
-        <input name="steepness_constant" id="spaced_repetition_steepness_constant" value="{{ current_steepness }}" oninput="updateGraph();" required><br>
+        <input name="steepness_constant" id="spaced_repetition_steepness_constant" value="{{ current_steepness }}" oninput="updateGraph();" required>
+        <img class="help_icon" id="spaced_repetition_help_icon" src="{{ url_for('static', filename='pictures/help.png') }}" alt="Help">
+        <div id="spaced_repetition_explanation">
+            This controls the steepness, i.e. how quickly memory retention declines.<br>
+            A higher value means you will revise more often and a lower value means less often.
+        </div><br>
         <label for="spaced_repetition_change_constant">Change constant: </label>
-        <input name="change_constant" id="spaced_repetition_change_constant" value="{{ current_change }}" oninput="updateGraph();" required><br>
+        <input name="change_constant" id="spaced_repetition_change_constant" value="{{ current_change }}" oninput="updateGraph();" required>
+        <img class="help_icon" id="spaced_repetition_help_icon" src="{{ url_for('static', filename='pictures/help.png') }}" alt="Help">
+        <div id="spaced_repetition_explanation">
+            This controls how much revising the deck affects how well you remember the deck.<br>
+            When you revise a deck for the second time you will take longer to forget it than when you revised it the first time.<br>
+            The change constant affects how big a difference between those times there is.<br>
+            A higher value means there is less change, so you will revise more often.<br>
+            A smaller value means there is more change, so you will revise less often.<br>
+        </div><br>
         <input type="submit">
     </form>
 </div>
 
+<img class="help_icon" id="spaced_repetition_help_icon" src="{{ url_for('static', filename='pictures/help.png') }}" alt="Help">
+<div id="spaced_repetition_graph_explanation">
+Below shows a graph of memory retention using the given values for the threshold at which to revise, the steepness of the graph, and the change constant.<br>
+Each black vertical line represents the day you revise the deck with the given routine. Whenever you do that, your memory retention of the deck goes back to 1 (1 for 100%).<br>
+The more times you revise the deck, the longer it takes for you to forget the deck, so your memory retention stays higher for longer.<br>
+This gives revision dates that are spaced out from eachother, timed for whenever you are beginning to really forget the deck.<br>
+By changing the threshold at which you are reminded to revise, the steepness constant, and the change constant you can control the shape of the graph and your schedule for revision.<br>
+You will be reminded to revise the deck with the given routine whenever the memory retention goes below the given threshold, as calculated with your saved values.<br>
+You might not revise the deck every time you are reminded, or on the same day that you are reminded. This would give a differently shaped out graph as the one presented below, but it would be a similar sort of schedule.<br>
+Use the tooltips for each variable (threshold, steepness and constant) to understand their impact better.<br>
+<br>
+The graph is a transformed graph of e^-x, as this gives a line that declines quickly at first and then slows down, never quite reaching zero.<br>
+This is similar to the forgetting curve, which is what spaced repetition is based off of.
+</div>
 <div id="jxgbox" class="jxgbox"></div>
 
 <link href="https://cdn.jsdelivr.net/npm/jsxgraph/distrib/jsxgraph.css" rel="stylesheet" type="text/css" />
