@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block header %}
+<h1>{% block title %}Spaced Repetition Suggestions for Revision{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+
+{% for day in day_suggestions.keys() %}
+    {% set suggestions = day_suggestions[day] %}
+    {% for suggestion in suggestions %}
+        {% set setting = suggestion.spaced_repetition_setting %}
+        {% set memoryRetention = suggestion.projectedMemoryRetention %}
+        {% set deck = decks[setting["deck_id"]] %}
+        {% set routine = routines[setting["routine_id"]] %}
+        <p>{{ day }}</p>
+        Revise {{ deck["title"] }} with {{ routine["title"] }} - {{ memoryRetention }}
+        <a href="{{ url_for('learn.begin_learn', deck_id=deck['id'], routine_id=routine['id']) }}">Study</a>
+    {% endfor %}
+{% endfor %}
+
+{% endblock %}

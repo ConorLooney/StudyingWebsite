@@ -1,8 +1,16 @@
+function calculateMemoryRetention(t, T, steepness, change) {
+    if (T == 0) {
+        return 0;
+    }
+    var memoryRetention = Math.pow(Math.E, -steepness * (Math.pow(change, T) * t));
+    return memoryRetention;
+}
+
 function drawMemoryRetentionGraph(threshold, steepness, change) {
     // T = times studied
     // t = time since last studied
     function calc(T, t) {
-        var memoryRetention = Math.pow(Math.E, -steepness * (Math.pow(change, T) * t));
+        var memoryRetention = calculateMemoryRetention(t, T, steepness, change);
         if (memoryRetention < threshold) {
             t = t - Math.log(threshold) / (-steepness * (Math.pow(change, T)));
             return calc(T + 1, t);
@@ -32,6 +40,7 @@ function drawMemoryRetentionGraph(threshold, steepness, change) {
         var timesStudied = 0;
         [timesStudied, y] = calc(timesStudied, x);
         if (timesStudied > last) {
+            console.log(x);
             var line = board.create('line', [[x, 1], [x, 0]],
             {
                 color: 'black'

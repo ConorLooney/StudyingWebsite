@@ -4,3 +4,4 @@ from . import update
 from . import list
 from . import delete
 from . import graph
+from . import suggestions
