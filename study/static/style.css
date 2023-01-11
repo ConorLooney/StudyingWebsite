@@ -873,3 +873,38 @@ div#delete_spaced_repetition > form > input:hover {
     background-color: black;
     color: white;
 }
+
+/* spaced repetition suggestions styling */
+div#spaced_repetition_all_suggestions {
+    font-family: monospace;
+    font-size: 20px;
+
+    display: flex;
+    flex-direction: row;
+}
+
+div#spaced_repetition_day_suggestions {
+    display: flex;
+    flex-direction: column;
+
+    margin-right: 10px;
+    margin-left: 10px;
+
+    padding-left: 10px;
+    padding-right: 10px;
+    border-right: 2px dashed black;
+}
+
+div#spaced_repetition_day_suggestions > * {
+    margin-top: 10px;
+}
+
+div#spaced_repetition_day_suggestions > a {
+    color: black;
+    text-decoration: none;
+}
+
+div#spaced_repetition_day_suggestions > a:hover {
+    background-color: black;
+    color: white;
+}
