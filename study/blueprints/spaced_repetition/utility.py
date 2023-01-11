@@ -26,11 +26,6 @@ def getDaysOfRevision(t, T, threshold, steepness, change, absoluteDayLimit=500, 
         return []
     memoryRetention = calculateMemoryRetention(t, T, steepness, change)
     if memoryRetention < threshold:
-        print("less than threshold")
-        print(memoryRetention)
-        print(t)
-        print(T)
-        print()
         days = [[t+absoluteDay, memoryRetention]]
         days.extend(getDaysOfRevision(0, T+1, threshold, steepness, change, absoluteDayLimit, absoluteDay+1))
         return days

@@ -78,12 +78,8 @@ def get_suggestions(view_date, from_date=datetime.date.today()):
 
         # view date must be after or equal to from date
         difference = view_date - from_date
-        print(days)
         for day in days:
             if difference.days == day[0]:
-                print("record suggestion")
-                print(day)
-                print(view_date)
                 suggestions.append(Suggestion(setting, view_date, day[1]))
                 break
     return suggestions
@@ -124,22 +120,42 @@ def view_suggestions(day, month, year):
 
     # time_range number of days on either side of given date to be display
     time_range = 30
-    day_suggestions = {}
+    days_suggestions = {}
     for i in range(time_range):
-        day = date + datetime.timedelta(days=i)
-        day_suggestions[day] = get_suggestions(day)
+        view_date = date + datetime.timedelta(days=i)
+        days_suggestions[view_date] = get_suggestions(view_date)
 
     decks = {}
     routines = {}
-    for day in day_suggestions.keys():
-        decks = decks | get_decks(day_suggestions[day])
-        routines = routines | get_routines(day_suggestions[day])
+    for day_suggestion in days_suggestions.keys():
+        decks = decks | get_decks(days_suggestions[day_suggestion])
+        routines = routines | get_routines(days_suggestions[day_suggestion])
 
     return render_template("spaced_repetition/suggestions.html",
-    day_suggestions=day_suggestions, decks=decks, routines=routines)
+    days_suggestions=days_suggestions, decks=decks, routines=routines,
+    day=int(day), month=int(month), year=int(year))
 
 @bp.route("/suggestions_today")
 def suggestions_today():
     today = datetime.date.today()
     return redirect(url_for("spaced_repetition.view_suggestions",
      day=today.day, month=today.month, year=today.year))
+
+@bp.route("/suggestions_traverse/<day>/<month>/<year>/<day_change>/<sign>")
+def suggestions_traverse(day, month, year, day_change, sign):
+    """Return redirect to view suggestions day_change number of days from the
+    given day month year in direction sign (sign = 0 for position, 1 for negative)
+    
+    So a day=2, month=1, year=2023 with day_change=30 and sign=0 would redirect
+    to view suggestions """
+    date = datetime.date(int(year), int(month), int(day))
+    day_change = int(day_change)
+    if int(sign) == 0:
+        # positive
+        change_date = datetime.timedelta(days=day_change)
+    else:
+        # negative
+        change_date = datetime.timedelta(days=-day_change)
+    view_date = date + change_date
+    return redirect(url_for("spaced_repetition.view_suggestions",
+    day=view_date.day, month=view_date.month, year=view_date.year))

@@ -1,17 +1,23 @@
 {% extends "base.html" %}
 
 {% block header %}
-<h1>{% block title %}Spaced Repetition Suggestions for Revision{% endblock %}</h1>
+<h1>{% block title %}Spaced Repetition Suggestions for Revision {{ day }}/{{ month }}/{{ year }}{% endblock %}</h1>
 {% endblock %}
 
 {% block content %}
 
 <div id="spaced_repetition_all_suggestions">
-    {% for day in day_suggestions.keys() %}
-        {% set suggestions = day_suggestions[day] %}
+    <div class="spaced_repetition_traverse_days">
+        <a href="{{ url_for('spaced_repetition.suggestions_traverse', day=day, month=month, year=year, day_change=1, sign=1) }}"><-Back 1 day</a>
+        <a href="{{ url_for('spaced_repetition.suggestions_traverse', day=day, month=month, year=year, day_change=7, sign=1) }}"><-Back 7 days</a>
+        <a href="{{ url_for('spaced_repetition.suggestions_traverse', day=day, month=month, year=year, day_change=30, sign=1) }}"><-Back 30 days</a><br>
+        <a href="{{ url_for('spaced_repetition.suggestions_today') }}">Todays</a>
+    </div>
+    {% for date in days_suggestions.keys() %}
+        {% set suggestions = days_suggestions[date] %}
         {% if suggestions|length > 0 %}
             <div id="spaced_repetition_day_suggestions">
-                <p>{{ day.strftime("%d/%m/%y") }}</p>
+                <p>{{ date.strftime("%d/%m/%y") }}</p>
                 {% for suggestion in suggestions %}
                     {% set setting = suggestion.spaced_repetition_setting %}
                     {% set memoryRetention = suggestion.projectedMemoryRetention %}
@@ -24,6 +30,12 @@
             </div>
         {% endif %}
     {% endfor %}
+    <div class="spaced_repetition_traverse_days">
+        <a href="{{ url_for('spaced_repetition.suggestions_traverse', day=day, month=month, year=year, day_change=1, sign=0) }}">Forward 1 day-></a>
+        <a href="{{ url_for('spaced_repetition.suggestions_traverse', day=day, month=month, year=year, day_change=7, sign=0) }}">Forward 7 days-></a>
+        <a href="{{ url_for('spaced_repetition.suggestions_traverse', day=day, month=month, year=year, day_change=30, sign=0) }}">Forward 30 days-></a><br>
+        <a href="{{ url_for('spaced_repetition.suggestions_today') }}">Todays</a>
+    </div>
 </div>
 
 {% endblock %}
