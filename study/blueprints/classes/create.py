@@ -20,7 +20,7 @@ def new_class_in_database(title, description, is_public):
     cursor = db.cursor()
     cursor.execute(
         "INSERT INTO class (owner_id, title, description, is_public) VALUES (?, ?, ?, ?)",
-        (str(g.user["id"]), str(title), str(description), to_bit(is_public),)
+        (str(g.user["id"]), str(title), str(description), int(is_public),)
     )
     db.commit()
     return cursor.lastrowid

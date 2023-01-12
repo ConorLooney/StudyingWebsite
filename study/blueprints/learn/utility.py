@@ -1,5 +1,5 @@
 from flask import session, g, redirect, url_for
-from study.db import get_db, to_bit
+from study.db import get_db
 
 def record_study_session(routine_id, deck_id):
     db = get_db()
@@ -16,7 +16,7 @@ def record_attempt(step, term_id, is_correct):
     cursor = db.cursor()
     cursor.execute(
         "INSERT INTO attempt (step, term_id, user_id, is_correct) VALUES (?, ?, ?, ?)",
-        (step, str(term_id), str(g.user["id"]), str(to_bit(is_correct)),)
+        (step, str(term_id), str(g.user["id"]), str(int(is_correct)),)
     )
     db.commit()
     attempt_id = cursor.lastrowid

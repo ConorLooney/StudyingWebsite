@@ -1,6 +1,5 @@
 from flask import request, redirect, url_for, session, render_template, g
 from study.auth import login_required, member_routine_view, member_deck_view
-from study.db import get_db, to_bit
 
 from .main import bp
 from .utility import redirect_to_next, record_attempt, get_term

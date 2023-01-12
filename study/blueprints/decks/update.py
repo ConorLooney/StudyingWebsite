@@ -1,5 +1,5 @@
 from flask import render_template, request, flash, redirect, url_for
-from study.db import get_db, to_bit
+from study.db import get_db
 from study.auth import login_required, owner_deck_view
 
 from .main import bp
@@ -33,7 +33,7 @@ def update_deck_in_database(deck_id, deck_name, is_public):
     db = get_db()
     db.execute(
         "UPDATE deck SET title = ?, is_public = ?, modified = CURRENT_TIMESTAMP WHERE id = ?",
-        (deck_name, to_bit(is_public), str(deck_id),)
+        (deck_name, int(is_public), str(deck_id),)
     )
     db.commit()
 

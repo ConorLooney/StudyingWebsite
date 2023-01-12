@@ -1,6 +1,6 @@
 from flask import render_template, request, redirect, url_for, g, flash
 from study.auth import login_required
-from study.db import get_db, to_bit
+from study.db import get_db
 from study.search_utility import apply_filter, handle_search
 from study.utility.general import remove_user_from_class
 
@@ -39,7 +39,7 @@ def all_public():
         
     classes = db.execute(
         "SELECT * FROM class WHERE is_public = ?",
-        (str(to_bit(True)),)
+        (str(int(True)),)
     ).fetchall()
     classes = apply_filter(classes, "title", search_term, filter_function=search_function)
 

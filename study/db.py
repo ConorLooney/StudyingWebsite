@@ -35,10 +35,5 @@ def get_db():
         g.db = db
     return g.db
 
-def to_bit(bool):
-    if bool:
-        return "1"
-    return "0"
-
 def to_bool(bit):
     return str(bit) == "1"

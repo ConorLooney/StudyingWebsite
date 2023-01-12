@@ -1,6 +1,6 @@
 from flask import render_template, request, redirect, url_for
 from study.auth import login_required
-from study.db import get_db, to_bit
+from study.db import get_db
 
 from .main import bp
 from .view_levels import owner_level_view
@@ -26,7 +26,7 @@ def update_class_in_database(class_id, title, description, is_public):
     db.execute(
         "UPDATE class SET title = ?, description = ?, is_public = ? \
         WHERE id = ?",
-        (str(title), str(description), str(to_bit(is_public)), str(class_id),)
+        (str(title), str(description), str(int(is_public)), str(class_id),)
     )
     db.commit()
 

@@ -1,5 +1,5 @@
 from flask import render_template, g, request, flash, redirect, url_for
-from study.db import get_db, to_bit
+from study.db import get_db
 from study.auth import login_required
 
 from .main import bp
@@ -78,7 +78,7 @@ def insert_deck_into_database(deck_name, terms, intra_term_delimiter, is_public)
     cursor = db.cursor()
     cursor.execute(
         "INSERT INTO deck (owner_id, folder_id, title, is_public) VALUES (?, ?, ?, ?)",
-        (str(g.user['id']), str(g.folder["id"]), deck_name, to_bit(is_public),)
+        (str(g.user['id']), str(g.folder["id"]), deck_name, int(is_public),)
     )
     db.commit()
 
