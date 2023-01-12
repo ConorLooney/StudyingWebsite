@@ -8,19 +8,43 @@
         {% if g.user %}
             <p class="username_display">{{ g.user['username']}} Logged on</p>
             <a href="{{ url_for('auth.logout') }}">Logout</a> |
-            <a href="{{ url_for('decks.see_user') }}">Your decks</a>
-            <a href="{{ url_for('decks.see_public') }}">Public decks</a>
-            <a href="{{ url_for('decks.create') }}">New deck</a> |
-            <a href="{{ url_for('routines.see_all') }}">Your routines</a>
-            <a href="{{ url_for('routines.create') }}">New routine</a> |
-            <br>
-            <a href="{{ url_for('class.all_user') }}">Your classes</a>
-            <a href="{{ url_for('class.all_public') }}">Public classes</a>
-            <a href="{{ url_for('class.create') }}">New class</a> |
-            <a href="{{ url_for('statistics.all_decks') }}">Stats</a> | 
-            <a href="{{ url_for('spaced_repetition.list') }}">Spaced Repetition Settings</a>
-            <a href="{{ url_for('spaced_repetition.suggestions_today') }}">Spaced Repetition Suggestions</a>
-            <a href="{{ url_for('spaced_repetition.create') }}">New Spaced Repetition Setting</a>
+            <div class="navbar_dropdown">
+                <button class="navbar_dropdown_header">Decks</button>
+                <div class="navbar_dropdown_links">
+                    <a href="{{ url_for('decks.see_user') }}">Your decks</a>
+                    <a href="{{ url_for('decks.see_public') }}">Public decks</a>
+                    <a href="{{ url_for('decks.create') }}">New deck</a>
+                </div>
+            </div> | 
+            <div class="navbar_dropdown">
+                <button class="navbar_dropdown_header">Routines</button>
+                <div class="navbar_dropdown_links">
+                    <a href="{{ url_for('routines.see_all') }}">Your routines</a>
+                    <a href="{{ url_for('routines.create') }}">New routine</a>
+                </div>
+            </div> |
+            <div class="navbar_dropdown">
+                <button class="navbar_dropdown_header">Classes</button>
+                <div class="navbar_dropdown_links">
+                    <a href="{{ url_for('class.all_user') }}">Your classes</a>
+                    <a href="{{ url_for('class.all_public') }}">Public classes</a>
+                    <a href="{{ url_for('class.create') }}">New class</a>
+                </div>
+            </div> |
+            <div class="navbar_dropdown">
+                <button class="navbar_dropdown_header">Spaced Repetition</button>
+                <div class="navbar_dropdown_links">
+                    <a href="{{ url_for('spaced_repetition.list') }}">Spaced Repetition Settings</a>
+                    <a href="{{ url_for('spaced_repetition.suggestions_today') }}">Spaced Repetition Suggestions</a>
+                    <a href="{{ url_for('spaced_repetition.create') }}">New Spaced Repetition Setting</a>
+                </div>
+            </div> |
+            <div class="navbar_dropdown">
+                <button class="navbar_dropdown_header">Statistics</button>
+                <div class="navbar_dropdown_links">
+                    <a href="{{ url_for('statistics.all_decks') }}">Stats</a> 
+                </div>
+            </div>
         {% else %}
             <a href="{{ url_for('auth.login') }}">Login</a>
             <a href="{{ url_for('auth.register') }}">Register</a>

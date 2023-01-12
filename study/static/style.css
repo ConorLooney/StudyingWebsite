@@ -71,15 +71,11 @@ div.search > form > select:hover {
     justify-content: center;
     width: 80%;
     margin: 15px;
+    padding-bottom: 25px;
     border-bottom: 2px solid black;
 
     font-family: monospace;
     font-size: 20px;
-}
-
-.nav > p {
-    font-size: 18px;
-    align-self: flex-start;
 }
 
 .nav > a {
@@ -92,6 +88,62 @@ div.search > form > select:hover {
 .nav > a:hover {
     background: black;
     color: white;
+}
+
+/* dropdown navbar styling */
+
+div.navbar_dropdown_links {
+    display: none;
+
+    flex-direction: column;
+
+    position: absolute;
+}
+
+div.navbar_dropdown_links > a {
+    text-decoration: none;
+    color: white;
+    background-color: black;
+
+    padding: 5px;
+    
+    border: 1px solid #303030;
+
+    font-size: 20px;
+}
+
+div.navbar_dropdown_links > a:hover {
+    color: black;
+    background-color: white;
+    border:none;
+}
+
+div.navbar_dropdown > div.navbar_dropdown_links:hover {
+    display: flex;
+}
+
+div.navbar_dropdown > button:hover + div.navbar_dropdown_links {
+    display: flex;
+}
+
+div.navbar_dropdown > button.navbar_dropdown_header {
+    font-family: monospace;
+    font-size: 20px;
+
+    color: black;
+    background-color: white;
+
+    margin-right: 20px;
+    margin-left: 20px;
+
+    min-width: fit-content;
+
+    border: none;
+}
+
+div.navbar_dropdown > button.navbar_dropdown_header:hover {
+    color: white;
+    background-color: black;
 }
 
 /*Class contents stlying*/
