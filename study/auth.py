@@ -273,10 +273,11 @@ def member_routine_view(view):
         
         classes = db.execute(
             "SELECT * FROM class \
-            JOIN routine_class ON routine.id = routine_class.class_id \
+            JOIN routine_class ON class.id = routine_class.class_id \
             WHERE routine_class.routine_id = ?",
             (str(routine_id),)
         ).fetchall()
+
         for class_ in classes:
             membership = db.execute(
                 "SELECT * FROM user_class \
@@ -286,6 +287,6 @@ def member_routine_view(view):
             if membership is not None:
                 return view(**kwargs)
 
-        return redirect(url_for("/index"))
+        return redirect(url_for("index"))
     
     return wrapped_view
