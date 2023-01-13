@@ -57,7 +57,7 @@ def handle_gen_code(code, class_id):
                 "SELECT * FROM invite_code WHERE code = ?",
                 (str(new_code),)
             ).fetchone()
-            return new_code
+            return code
     return code
 
 def handle_delete_code(code):
@@ -88,5 +88,6 @@ def gen_code(class_id):
             code = handle_gen_code(code, class_id)
         if "delete_code" in request.form:
             handle_delete_code(code)
-
+            code = None
+            
     return render_template("class/gen_code.html", code=code)
