@@ -96,7 +96,7 @@ def term_mode(deck_id, routine_id, term_id, routine_position):
     # redirects to the view for the current step
     current_step = steps[routine_position]
     step_views = {"a": "learn.ask", "c": "learn.correct", "f": "learn.flashcard",
-    "m": "learn.choice", "b": "learn.fill_in_blanks"}
+    "m": "learn.choice", "b": "learn.fill_in_blanks", "y":"learn.copy"}
     if current_step in step_views:
         return redirect(url_for(step_views[current_step], deck_id=deck_id, routine_id=routine_id,
          term_id=next_term, routine_position=routine_position))

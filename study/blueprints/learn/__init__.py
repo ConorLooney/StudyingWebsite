@@ -6,3 +6,4 @@ from . import flashcard
 from . import choice
 from . import fill_in_blanks
 from . import term_mode
+from . import copy

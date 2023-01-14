@@ -22,4 +22,6 @@ def see_one(routine_id):
             steps.append("Flashcards")
         elif step == "b":
             steps.append("Blanks")
+        elif step == "y":
+            steps.append("Copy")
     return render_template("routines/see_one.html", routine=routine, steps=steps)
