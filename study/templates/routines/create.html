@@ -47,6 +47,8 @@
         Flashcard - Shows the term's question. The user can flip the card to see the answer.<br>
         <br>
         Blanks - Shows the term's question and the term's answer with random words blanked out. The user should input the words that are blanked out.<br>
+        <br>
+        Copy - Shows the term's question and the term's answer. The user inputs the answer given.<br>
     </div><br>
     {% for step in steps %}
         <input type="submit" name="{{ step.abbreviation }}" value="{{ step.name }} - {{ step.abbreviation }}" onclick="add_step(this)">

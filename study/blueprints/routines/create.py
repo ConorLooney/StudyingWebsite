@@ -37,7 +37,8 @@ def create():
         Step("Correct", "c"),
         Step("Choice", "m"),
         Step("Flashcard", "f"),
-        Step("Blanks", "b")
+        Step("Blanks", "b"),
+        Step("Copy", "y")
         ]
     
     return render_template("routines/create.html",
