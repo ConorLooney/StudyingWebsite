@@ -5,82 +5,84 @@
 
 {%block content%}
 {{ super() }}
-<div class="object_list" id="deck_list">
-    {% for deck in decks %}
-        <div class="object_instance" id="deck_instance">
-            {% set is_owned = deck.owner_id == user.id %}
-            <div class="object_info" id="deck_info">
-                <a href="{{ url_for('decks.view_deck', deck_id=deck.id) }}">{{ deck.title }}</a>
-            </div>
-            <div class="object_options" id="deck_options">
-                <form method="post">
-                    <input type="submit" name="study_deck" value="Study">
-                    <select name="routines" id="routines"> 
-                        {% for routine in routines %}
-                            <option name="routine" id="routine" value="{{ routine.id }}">{{ routine.title }}</option>
-                        {% endfor %}
-                    </select>
-                    <input type="submit" name="move_deck_to_folder" value="Move to folder">
-                    <select type="submit" name="folders">
-                        {% for n in range(all_folders|length) %}
-                            {% set folder = all_folders[n] %}
-                            {% set path = folder_paths[n] %}
-                            <option name="folder" id="folder" value="{{ folder.id }}">{{ path }}</option>
-                        {% endfor %}
-                    </select>
-                    {% if is_owned %}
-                        <input type="hidden" name="modify_deck" id="modify_deck">
-                        <input type="hidden" name="deck_id" value="{{ deck.id }}">
-                        <input type="hidden" name="owned_deck">
-                    {% else %}
-                        <input type="submit" name="unsave_deck" value="Unsave">
-                        <input type="hidden" name="deck_id" value="{{ deck.id }}">
-                        <input type="hidden" name="saved_deck">
-                    {% endif %}
-                </form>
-            </div>
-        </div>
-    {% endfor %}
-</div>
-<div id="folder_section">
-    <div class="object_list" id="folder_list">
-        <div class="object_instance" id="folder_instance">
-            <div class="object_options" id="folder_options">
-                <form method="post">
-                    <input type="submit" name="open_folder" value="Root Folder">
-                    <input type="hidden" name="folder_id" value="{{ root_folder.id }}">
-                </form>
-            </div>
-        </div>
-        {% for folder in child_folders %}
-            <div class="object_instance" id="folder_instance">
-                <div class="object_options" id="folder_options">
+<div id="user_deck_view">
+    <div class="object_list" id="deck_list">
+        {% for deck in decks %}
+            <div class="object_instance" id="deck_instance">
+                {% set is_owned = deck.owner_id == user.id %}
+                <div class="object_info" id="deck_info">
+                    <a href="{{ url_for('decks.view_deck', deck_id=deck.id) }}">{{ deck.title }}</a>
+                </div>
+                <div class="object_options" id="deck_options">
                     <form method="post">
-                        <input type="submit" name="open_folder" value="{{ folder.title }}"> |
-                        <input type="submit" name="move_folder_to_folder" value="Move to folder">
-                        <select type="submit" name="new_parent_folders">
+                        <input type="submit" name="study_deck" value="Study">
+                        <select name="routines" id="routines"> 
+                            {% for routine in routines %}
+                                <option name="routine" id="routine" value="{{ routine.id }}">{{ routine.title }}</option>
+                            {% endfor %}
+                        </select><br>
+                        <input type="submit" name="move_deck_to_folder" value="Move to folder">
+                        <select type="submit" name="folders">
                             {% for n in range(all_folders|length) %}
                                 {% set folder = all_folders[n] %}
                                 {% set path = folder_paths[n] %}
                                 <option name="folder" id="folder" value="{{ folder.id }}">{{ path }}</option>
                             {% endfor %}
                         </select>
-                        <input type="submit" name="delete_folder" value="Delete">
-                        <input name="new_folder_title" id="new_folder_title">
-                        <input type="submit" name="rename_folder" value="Rename">
-                        <input type="hidden" name="folder_id" value="{{ folder.id }}">
+                        {% if is_owned %}
+                            <input type="hidden" name="modify_deck" id="modify_deck">
+                            <input type="hidden" name="deck_id" value="{{ deck.id }}">
+                            <input type="hidden" name="owned_deck">
+                        {% else %}
+                            <input type="submit" name="unsave_deck" value="Unsave">
+                            <input type="hidden" name="deck_id" value="{{ deck.id }}">
+                            <input type="hidden" name="saved_deck">
+                        {% endif %}
                     </form>
                 </div>
             </div>
         {% endfor %}
     </div>
-    <div class="object_form">
-        <form method="post">
-            <label for="new_folder_title">New folder name: </label>
-            <input name="new_folder_title" id="new_folder_title">
-            <input type="submit" name="new_folder" value="New folder">
-            <input type="submit" name="prev_folder" value="Go back">
-        </form>
+    <div id="folder_section">
+        <div class="object_list" id="folder_list">
+            <div class="object_instance" id="folder_instance">
+                <div class="object_options" id="folder_options">
+                    <form method="post">
+                        <input type="submit" name="open_folder" value="Go To Root Folder">
+                        <input type="hidden" name="folder_id" value="{{ root_folder.id }}">
+                    </form>
+                </div>
+            </div>
+            {% for folder in child_folders %}
+                <div class="object_instance" id="folder_instance">
+                    <div class="object_options" id="folder_options">
+                        <form method="post">
+                            <input type="submit" name="open_folder" value="{{ folder.title }}"><br>
+                            <input type="submit" name="move_folder_to_folder" value="Move to folder">
+                            <select type="submit" name="new_parent_folders">
+                                {% for n in range(all_folders|length) %}
+                                    {% set folder = all_folders[n] %}
+                                    {% set path = folder_paths[n] %}
+                                    <option name="folder" id="folder" value="{{ folder.id }}">{{ path }}</option>
+                                {% endfor %}
+                            </select><br>
+                            <input type="submit" name="rename_folder" value="Rename">
+                            <input id="rename_folder" name="new_folder_title" id="new_folder_title"><br>
+                            <input type="submit" name="delete_folder" value="Delete">
+                            <input type="hidden" name="folder_id" value="{{ folder.id }}">
+                        </form>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="object_form">
+            <form method="post">
+                <label for="new_folder_title">New folder name: </label>
+                <input name="new_folder_title" id="new_folder_title">
+                <input type="submit" name="new_folder" value="New folder">
+                <input type="submit" name="prev_folder" value="Go back">
+            </form>
+        </div>
     </div>
 </div>
 {% endblock %}

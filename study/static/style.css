@@ -147,6 +147,7 @@ div.navbar_dropdown > button.navbar_dropdown_header:hover {
 }
 
 /*Class contents stlying*/
+/*
 div.class_contents {
     display: flex;
     align-items: center;
@@ -243,6 +244,142 @@ div.class_section > div.class_section_entry {
 
 div.class_section > .class_section_title {
     text-align: center;
+}
+*/
+
+div.class_container {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+
+    font-size: 20px;
+    font-family: monospace;
+    max-width: 80%;
+    min-width: 80%;
+
+    margin-top: 150px;
+}
+
+div.class_container > div.class_section {
+    flex: 1 1 0;
+    padding: 10px;
+    border-right: 2px dashed black;
+    border-left: 2px dashed black;
+}
+
+div.class_container > div.class_section > p.class_section_title {
+    font-weight: bold;
+}
+
+div.class_section > div.class_item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
+}
+
+div.class_section > div.class_item > form > input {
+    background-color: white;
+    color: black;
+    font-family: monospace;
+    font-size: 20px;
+    border: none;
+}
+
+div.class_section > div.class_item > form > input:hover {
+    background-color: black;
+    color: white;
+}
+
+div.class_section > div.class_item > form > select {
+    background-color: white;
+    color: black;
+    font-family: monospace;
+    font-size: 20px;
+    border: none;
+}
+
+div.class_section > div.class_item > form > select:hover {
+    background-color: black;
+    color: white;
+}
+
+div.class_header {
+    position: absolute;
+    left: 10%;
+}
+
+div.class_header > * > a {
+    color: black;
+    text-decoration: none;
+}
+
+div.class_header > * > a:hover {
+    background-color: black;
+    color: white;
+}
+
+div.class_section > * > form > input {
+    background-color: white;
+    color: black;
+    font-family: monospace;
+    font-size: 20px;
+    border: 2px solid black;
+}
+
+div.class_section > * > form > input:hover {
+    background-color: black;
+    color: white;
+}
+
+div.class_section > * > * > form > input {
+    background-color: white;
+    color: black;
+    font-family: monospace;
+    font-size: 20px;
+    border: 2px solid black;
+}
+
+div.class_section > * > * > form > input:hover {
+    background-color: black;
+    color: white;
+}
+
+/* Create class styling */
+div.class_form {
+    font-family: monospace;
+    font-size: 20px;
+}
+
+div.class_form > form > * {
+    padding: 5px;
+    margin: 10px;
+}
+
+div.class_form > form > input {
+    border: 2px solid black;
+    background-color: white;
+
+    font-family: monospace;
+    font-size: 20px;
+}
+
+div.class_form > form > input:hover {
+    color: white;
+    background-color: black;
+}
+
+div.class_form > form > select {
+    border: 2px solid black;
+    background-color: white;
+
+    font-family: monospace;
+    font-size: 20px;
+}
+
+div.class_form > form > select:hover {
+    color: white;
+    background-color: black;
 }
 
 /* STYLING OF DELETING PAGES */
@@ -975,4 +1112,22 @@ div.spaced_repetition_traverse_days > a {
     color: black;
     text-decoration: none;
     font-weight: bold;
+}
+
+/* STYLE USER DECK VIEW */
+div#user_deck_view {
+    display: flex;
+    flex-direction: row;
+}
+
+div#user_deck_view > div#deck_list {
+    flex: 1 1 auto;
+}
+
+div#user_deck_view > div#folder_section {
+    flex: 1 1 auto;
+}
+
+input#rename_folder {
+    border: 2px solid black;
 }
