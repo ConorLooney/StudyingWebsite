@@ -69,8 +69,8 @@ def see_user():
     classes = get_all_user_controlled_classes(g.user["id"])
 
     child_folders = get_all_immediate_child_folders(g.folder["id"])
-
     all_folders = get_all_folders_orderered(get_user_root_folder(g.user["id"])["id"], [])
+    root_folder = get_user_root_folder(g.user["id"])
 
     folder_paths = []
     for folder in all_folders:
@@ -78,5 +78,6 @@ def see_user():
     
     return render_template("decks/all_user.html",
      decks=decks, user=g.user, routines=routines, classes=classes,
-      parent_folder=g.folder, child_folders=child_folders,
-       folder_paths=folder_paths, all_folders=all_folders)
+     root_folder=root_folder, parent_folder=g.folder,
+      child_folders=child_folders, folder_paths=folder_paths,
+       all_folders=all_folders)

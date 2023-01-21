@@ -44,6 +44,14 @@
 </div>
 <div id="folder_section">
     <div class="object_list" id="folder_list">
+        <div class="object_instance" id="folder_instance">
+            <div class="object_options" id="folder_options">
+                <form method="post">
+                    <input type="submit" name="open_folder" value="Root Folder">
+                    <input type="hidden" name="folder_id" value="{{ root_folder.id }}">
+                </form>
+            </div>
+        </div>
         {% for folder in child_folders %}
             <div class="object_instance" id="folder_instance">
                 <div class="object_options" id="folder_options">
