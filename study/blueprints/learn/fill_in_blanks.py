@@ -71,9 +71,14 @@ def fill_in_blanks(deck_id, routine_id, term_id, routine_position):
             is_correct = given_answer == correct_answer
             if not is_correct:
                 all_correct = False
-                add_to_queue_to_correct(term_id, whole_answer)
-        
+
         attempt_id = record_attempt("b", term_id, all_correct)
+
+        for correct_answer, given_answer in answers.items():
+            is_correct = given_answer == correct_answer
+            if not is_correct:
+                add_to_queue_to_correct(term_id, whole_answer, attempt_id)
+        
         return redirect_to_next(deck_id, routine_id, term_id, routine_position)
 
     blanked_words, blanked_map = blank_words(words)

@@ -1,2 +1,1 @@
-from . import all_decks
-from . import one_deck
+from . import view

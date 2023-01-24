@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block header %}
+<h1>{% block title %}Statistics of {{ deck.title }}{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+<div class="stats">
+    <div class="overall_stats">
+        <h3>Overall</h3>
+        {% for stat in overall_stats %}
+            <p>{{ stat }}</p>
+        {% endfor %}
+    </div>
+    <div class="term_stats">
+    {% for term in terms %}
+        <div class="term_stats_title">
+            <h4>{{ term.question }}, {{ term.answer }}</h4>
+        </div>
+        <div class="term_stats_content">
+            {% for message in terms_messages[term["id"]] %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+    {% endfor %}
+    </div>
+</div>
+{% endblock %}

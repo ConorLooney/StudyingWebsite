@@ -23,6 +23,7 @@
             </div>
         {% endif %}
     </div>
+    <a id="deck_stats_link" href="{{ url_for('statistics.view', deck_id=deck.id) }}">Your Statistics</a>
     {% if is_owner %}
         <div id="view_deck_modify">
             <a href="{{ url_for('decks.update', deck_id=deck.id) }}">Update deck</a>
