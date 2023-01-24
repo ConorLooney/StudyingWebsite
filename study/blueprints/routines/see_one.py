@@ -1,4 +1,4 @@
-from flask import render_template
+from flask import render_template, g
 from study.auth import login_required, member_routine_view
 
 from .utility import get_routine
@@ -24,4 +24,10 @@ def see_one(routine_id):
             steps.append("Blanks")
         elif step == "y":
             steps.append("Copy")
-    return render_template("routines/see_one.html", routine=routine, steps=steps)
+
+    owner_id = routine["owner_id"]
+    logged_in_id = g.user["id"]
+    is_owner = owner_id == logged_in_id
+
+    return render_template("routines/see_one.html", routine=routine, steps=steps,
+    is_owner=is_owner)

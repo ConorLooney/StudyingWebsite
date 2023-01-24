@@ -401,6 +401,16 @@ div.class_section > form > select:hover {
     background-color: black;
 }
 
+a.class_item_title {
+    text-decoration: none;
+    color: black;
+}
+
+a.class_item_title:hover {
+    background-color: black;
+    color: white;
+}
+
 /* Create class styling */
 div.class_form {
     font-family: monospace;

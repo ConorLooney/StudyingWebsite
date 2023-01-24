@@ -20,9 +20,11 @@
             <p>Routine is term mode, meaning it goes through all terms, and then goes to the next step</p>
         {% endif %}
     </div>
-    <div id="routine_modify">
-        <a href="{{ url_for('routines.update', routine_id=routine.id) }}">Update</a>
-        <a href="{{ url_for('routines.delete', routine_id=routine.id) }}">Delete</a>
-    </div>
+    {% if is_owner %}
+        <div id="routine_modify">
+            <a href="{{ url_for('routines.update', routine_id=routine.id) }}">Update</a>
+            <a href="{{ url_for('routines.delete', routine_id=routine.id) }}">Delete</a>
+        </div>
+    {% endif %}
 </div>
 {% endblock %}

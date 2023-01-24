@@ -1,4 +1,4 @@
-from flask import render_template
+from flask import render_template, g
 from study.db import get_db
 from study.auth import login_required, member_deck_view
 
@@ -27,4 +27,9 @@ def view_deck(deck_id):
     deck = get_deck(deck_id)
     terms = get_terms(deck_id)
 
-    return render_template("decks/view.html", deck=deck, terms=terms)
+    owner_id = deck["owner_id"]
+    logged_in_id = g.user["id"]
+    is_owner = owner_id == logged_in_id
+
+    return render_template("decks/view.html", deck=deck, terms=terms,
+    is_owner=is_owner)

@@ -23,9 +23,11 @@
             </div>
         {% endif %}
     </div>
-    <div id="view_deck_modify">
-        <a href="{{ url_for('decks.update', deck_id=deck.id) }}">Update deck</a>
-        <a href="{{ url_for('decks.delete', deck_id=deck.id) }}">Delete deck</a>
-    </div>
+    {% if is_owner %}
+        <div id="view_deck_modify">
+            <a href="{{ url_for('decks.update', deck_id=deck.id) }}">Update deck</a>
+            <a href="{{ url_for('decks.delete', deck_id=deck.id) }}">Delete deck</a>
+        </div>
+    {% endif %}
 </div>
 {% endblock %}
