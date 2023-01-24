@@ -94,19 +94,23 @@ def logout():
 @bp.before_app_request
 def load_logged_in_user():
     if "user_id" in session:
-        db = get_db()
-        user_id = session["user_id"]
-        user = db.execute(
-            "SELECT * FROM user WHERE id = ?",
-            (str(user_id),)
-        ).fetchone()
-        folder_id = session["folder_id"]
-        folder = db.execute(
-            "SELECT * FROM folder WHERE id = ?",
-            (str(folder_id),)
-        ).fetchone()
-        g.user = user
-        g.folder = folder
+        try:
+            db = get_db()
+            user_id = session["user_id"]
+            user = db.execute(
+                "SELECT * FROM user WHERE id = ?",
+                (str(user_id),)
+            ).fetchone()
+            folder_id = session["folder_id"]
+            folder = db.execute(
+                "SELECT * FROM folder WHERE id = ?",
+                (str(folder_id),)
+            ).fetchone()
+            g.user = user
+            g.folder = folder
+        except KeyError:
+            session.clear()
+            return redirect(url_for("auth.logout"))
 
 def login_required(view):
     @functools.wraps(view)

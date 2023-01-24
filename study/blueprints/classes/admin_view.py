@@ -3,6 +3,9 @@ from study.db import get_db
 from study.utility.general import remove_user_from_class
 from study.utility.routine_helper import get_all_user_routines
 
+from .utility import (save_deck_to_class, get_decks_to_add_to_class, get_routines_to_save_to_class,
+ save_routine_to_class, get_decks_to_remove_from_class, get_routines_to_remove_from_class,
+ remove_deck_from_class, remove_routine_from_class)
 from .main import bp
 from .view_levels import admin_level_view
 
@@ -25,7 +28,6 @@ def admin_view(class_id):
     db = get_db()
     if request.method == "POST":
         error = None
-
         
         if "remove_user" in request.form:
             user_id = request.form["user_id"]
@@ -83,6 +85,18 @@ def admin_view(class_id):
                 (str(routine_id), str(class_id),)
             )
             db.commit()
+        if "add_deck" in request.form:
+            deck_id = int(request.form["deck_id"])
+            save_deck_to_class(class_id, deck_id)
+        if "add_routine" in request.form:
+            routine_id = int(request.form["routine_id"])
+            save_routine_to_class(class_id, routine_id)
+        if "remove_deck" in request.form:
+            deck_id = int(request.form["deck_id"])
+            remove_deck_from_class(class_id, deck_id)
+        if "remove_routine" in request.form:
+            routine_id = int(request.form["routine_id"])
+            remove_routine_from_class(class_id, routine_id)
         
     view_class = db.execute(
         "SELECT * FROM class WHERE id = ?",
@@ -135,6 +149,14 @@ def admin_view(class_id):
     is_owner = str(owner["id"]) == str(g.user["id"])
     is_admin =  str(g.user["id"]) in [str(x["id"]) for x in admins]
 
+    decks_to_add = get_decks_to_add_to_class(class_id)
+    routines_to_add = get_routines_to_save_to_class(class_id)
+
+    decks_to_remove = get_decks_to_remove_from_class(class_id)
+    routines_to_remove = get_routines_to_remove_from_class(class_id)
+
     return render_template("class/admin_view.html", user=user, view_class=view_class, owner=owner, decks=decks,
       class_routines=class_routines, user_routines=user_routines, members=members,
-      admins=admins, is_owner=is_owner, is_admin=is_admin, join_requests=join_requests)
+      admins=admins, is_owner=is_owner, is_admin=is_admin, join_requests=join_requests,
+      decks_to_add=decks_to_add, routines_to_add=routines_to_add,
+      decks_to_remove=decks_to_remove, routines_to_remove=routines_to_remove)

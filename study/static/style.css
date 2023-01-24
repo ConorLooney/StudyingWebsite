@@ -166,34 +166,6 @@ div.class_contents > * {
     border-bottom: 2px solid black;
 }
 
-div#join_class_with_code {
-    font-family: monospace;
-    font-size: 20px;
-    color: black;
-    background-color: white;
-}
-
-div#gen_class_code * {
-    font-family: monospace;
-    font-size: 20px;
-    color: black;
-    background-color: white;
-    border: none;
-}
-
-div#gen_class_code * input:hover {
-    color: white;
-    background-color: black;
-}
-
-p#class_code {
-    font-size: 200px;
-    border-bottom: 4px solid black;
-    border-top: 4px solid black;
-    text-align: center;
-    margin: 40px;
-}
-
 div.class_contents * {
     font-family: monospace;
     font-size: 20px;
@@ -247,6 +219,53 @@ div.class_section > .class_section_title {
 }
 */
 
+div#join_class_with_code {
+    font-family: monospace;
+    font-size: 20px;
+    color: black;
+    background-color: white;
+}
+
+div#join_class_with_code > form > input {
+    font-size: 20px;
+    font-family: monospace;
+
+    border: none;
+    background-color: white;
+    color: black;
+}
+
+div#join_class_with_code > form > input[name="code"] {
+    border: 2px solid black;
+}
+
+div#join_class_with_code > form > input:hover {
+    color: white;
+    background-color: black;
+}
+
+/* Use both id and class to increase specificity, hacky but works */
+p#display_code.display_code {
+    font-size: 100px;
+    border-bottom: 4px solid black;
+    border-top: 4px solid black;
+    text-align: center;
+    margin: 40px;
+}
+
+div#gen_class_code * {
+    font-family: monospace;
+    font-size: 20px;
+    color: black;
+    background-color: white;
+    border: none;
+}
+
+div#gen_class_code * input:hover {
+    color: white;
+    background-color: black;
+}
+
 div.class_container {
     display: flex;
     flex-direction: row;
@@ -271,14 +290,14 @@ div.class_container > div.class_section > p.class_section_title {
     font-weight: bold;
 }
 
-div.class_section > div.class_item {
+div.class_section > * > * > div.class_item {
     display: flex;
     flex-direction: row;
     align-items: center;
     justify-content: space-around;
 }
 
-div.class_section > div.class_item > form > input {
+div.class_section > * > * > div.class_item > form > input {
     background-color: white;
     color: black;
     font-family: monospace;
@@ -286,12 +305,12 @@ div.class_section > div.class_item > form > input {
     border: none;
 }
 
-div.class_section > div.class_item > form > input:hover {
+div.class_section > * > * > div.class_item > form > input:hover {
     background-color: black;
     color: white;
 }
 
-div.class_section > div.class_item > form > select {
+div.class_section > * > * > div.class_item > form > select {
     background-color: white;
     color: black;
     font-family: monospace;
@@ -299,7 +318,7 @@ div.class_section > div.class_item > form > select {
     border: none;
 }
 
-div.class_section > div.class_item > form > select:hover {
+div.class_section > * > * > div.class_item > form > select:hover {
     background-color: black;
     color: white;
 }
@@ -324,7 +343,6 @@ div.class_section > * > form > input {
     color: black;
     font-family: monospace;
     font-size: 20px;
-    border: 2px solid black;
 }
 
 div.class_section > * > form > input:hover {
@@ -333,16 +351,54 @@ div.class_section > * > form > input:hover {
 }
 
 div.class_section > * > * > form > input {
+    border: none;
     background-color: white;
     color: black;
     font-family: monospace;
     font-size: 20px;
-    border: 2px solid black;
 }
 
 div.class_section > * > * > form > input:hover {
     background-color: black;
     color: white;
+}
+
+div.class_section > a {
+    color: black;
+    text-decoration: none;
+}
+
+div.class_section > a:hover {
+    color: white;
+    background-color: black;
+}
+
+div.class_section > form > input {
+    border: none;
+    background-color: white;
+    color: black;
+    font-family: monospace;
+    font-size: 20px;
+}
+
+div.class_section > form > input:hover {
+    border: none;
+    background-color: black;
+    color: white;
+}
+
+div.class_section > form > select {
+    font-family: monospace;
+    font-size: 20px;
+
+    border: none;
+
+    min-width: 50px;
+}
+
+div.class_section > form > select:hover {
+    color: white;
+    background-color: black;
 }
 
 /* Create class styling */

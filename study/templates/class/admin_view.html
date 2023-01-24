@@ -1,23 +1,24 @@
 {% extends "base.html" %}
 
 {% block header %}
-    <h1>{% block title %}{{ view_class.title }}{%endblock%}</h1>
+    <div class="class_header">
+        <h1>{% block title %}{{ view_class.title }} Admin Page{% endblock %}</h1>
+        <h2>Owned by {{ owner["username"] }}</h2>
+        <h3><a href="{{ url_for('class.view', class_id=view_class.id) }}">Study Page</a>
+        {% if user.id in (admins|map(attribute="admin_id"))|list or user.id == owner.id %}
+            <a href="{{ url_for('class.meta_view', class_id=view_class.id) }}">Details Page</a>
+        {% endif %}
+        </h3>
+    </div>
 {% endblock %}
 
 {% block content %}
-<div class="class_contents">
-    <div class="class_section" id="class_owner">
-        <p>Owned by: {{ owner.username }}</p>
-    </div>
-    <div class="class_section" id="class_publicitity">
-        {% if view_class.is_public == 1 %}
-            <p>Is public</p>
-        {% elif view_class.is_public == 0 %}
-            <p>Is private</p>
-        {% endif %}
-    </div>
+<div class="class_container">
     <div class="class_section" id="class_admins">
         <p>Admins:</p>
+        {% if admins|length == 0 %}
+            <p>This class has no admins.</p>
+        {% endif %}
         {% for admin in admins %}
             <ul>
                 <li>{{ admin.username }}
@@ -35,30 +36,74 @@
         <p>Members:</p>
         {% for member in members %}
             <ul>
-                <li>{{ member.username }}</li>
+                <li>{{ member.username }}
                 {% if ((is_owner) or (is_admin and member.id != user.id)) and member.id != owner.id %}
                     <form method="post">
                         <input type="submit" name="remove_user" value="Remove">
                         {% if member.id not in (admins|map(attribute="admin_id"))|list %}
                             <input type="submit" name="make_admin" value="Make admin">
-                        {% else %}
-                            <input type="submit" name="remove_admin" value="Remove admin authority">
                         {% endif %}
                         <input type="hidden" name="user_id" value="{{ member.id }}">
                     </form>
-                {% endif %}
+                {% endif %}</li>
             </ul>
         {% endfor %}
     </div>
-    <a href="{{ url_for('class.add_decks', class_id=view_class.id) }}">Add decks</a>
-    <a href="{{ url_for('class.add_routines', class_id=view_class.id) }}">Add routines</a>
-    <div class="class_code">
-        <a href="{{ url_for('class.gen_code', class_id=view_class.id) }}">Generate a unique code for others to join the class</a>
+    <div class="class_section">
+        {% if decks_to_add|length == 0 %}
+            <p>There are no decks to add to this class.</p>
+        {% else %}
+            <form method="post">
+                <select name="deck_id">
+                    {% for deck in decks_to_add %}
+                        <option value="{{ deck.id }}">{{ deck.title }}</option>
+                    {% endfor %}
+                </select>
+                <input type="submit" name="add_deck" value="Add Deck">
+            </form>
+        {% endif %}<br>
+        {% if routines_to_add|length == 0 %}
+            <p>There are no routines to add to this class.</p>
+        {% else %}
+            <form method="post">
+                <select name="routine_id">
+                    {% for routine in routines_to_add %}
+                        <option value="{{ routine.id }}">{{ routine.title }}</option>
+                    {% endfor %}
+                </select>
+                <input type="submit" name="add_routine" value="Add Routine">
+            </form>
+        {% endif %}
+        {% if decks_to_remove|length == 0 %}
+            <p>There are no decks to remove from this class.</p>
+        {% else %}
+            <form method="post">
+                <select name="deck_id">
+                    {% for deck in decks_to_remove %}
+                        <option value="{{ deck.id }}">{{ deck.title }}</option>
+                    {% endfor %}
+                </select>
+                <input type="submit" name="remove_deck" value="Remove Deck">
+            </form>
+        {% endif %}
+        {% if routines_to_remove|length == 0 %}
+            <p>There are no routines to remove from this class.</p>
+        {% else %}
+            <form method="post">
+                <select name="routine_id">
+                    {% for routine in routines_to_remove %}
+                        <option value="{{ routine.id }}">{{ routine.title }}</option>
+                    {% endfor %}
+                </select>
+                <input type="submit" name="remove_routine" value="Remove Routine">
+            </form>
+        {% endif %}
     </div>
-    <div class="class_join_requests">
+    <div class="class_section">
+        <a href="{{ url_for('class.gen_code', class_id=view_class.id) }}">Generate a unique code for others to join the class</a><br><br>
         {% if join_requests|length > 0 %}
             {% for user in join_requests %}
-                <p>{{ user.username}} wants to join</p>
+                {{ user.username}} wants to join:
                 <form method="post">
                     <input type="submit" name="accept_request" value="Accept request">
                     <input type="submit" name="reject_request" value="Reject request">
@@ -68,10 +113,6 @@
         {% else %}
             <p>No new join requests</p>
         {% endif %}
-    </div>
-    <div class="other_class_info">
-        <a href="{{ url_for('class.view', class_id=view_class.id) }}">Normal View</a>
-        <a href="{{ url_for('class.meta_view', class_id=view_class.id) }}">Meta View</a>
     </div>
 </div>
 {% endblock %}

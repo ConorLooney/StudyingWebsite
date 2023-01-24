@@ -1,32 +1,60 @@
 {% extends "base.html" %}
 
 {% block header %}
-    <h1>{% block title %}{{ view_class.title }}{%endblock%}</h1>
+    <div class="class_header">
+        <h1>{% block title %}{{ view_class.title }}{% endblock %}</h1>
+        <h2>Owned by {{ owner["username"] }}</h2>
+        <h3><a href="{{ url_for('class.meta_view', class_id=view_class.id) }}">Details Page</a>
+        {% if user.id in (admins|map(attribute="admin_id"))|list or user.id == owner.id %}
+            <a href="{{ url_for('class.admin_view', class_id=view_class.id) }}">Admin Page</a>
+        {% endif %}
+        </h3>
+    </div>
 {% endblock %}
 
 {% block content %}
-<div class="class_contents">
-    <div class="main_class_info">
-        <div class="class_section" id="class_decks">
-            <p class="class_section_title">Decks:</p>
-            {% for n in range(decks|length) %}
-                <div class="class_section_entry" id="class_routine">
+
+<div id="class_overview_container" class="class_container">
+    <div id="class_study" class="class_section">
+        <p class="class_section_title">Revise:</p>
+        {% if decks|length == 0 %}
+            <p>There are no decks in this class</p>
+        {% endif %}
+        <ul>
+            {% for deck in decks %}
+                <li>
+                    <div class="class_item">
+                        <p class="class_item_title">{{ deck.title }}</p>
+                        <form method="post">
+                            <input type="submit" name="study_deck" value="Study">
+                            <select name="routines">
+                                {% for routine in class_routines %}
+                                    <option name="routine" id="routine" value="{{ routine.id }}">{{ routine.title }}</option>
+                                {% endfor %}
+                                {% for routine in user_routines %}
+                                    <option name="routine" id="routine" value="{{ routine.id }}">{{ routine.title }}</option>
+                                {% endfor %}
+                            </select>
+                            <input type="hidden" name="deck_id" value="{{ deck.id }}">
+                        </form>
+                    </div>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div id="class_display_decks" class="class_section">
+        <p class="class_section_title">Decks:</p>
+        {% if decks|length == 0 %}
+            <p>There are no decks in this class</p>
+        {% endif %}
+        <ul>
+        {% for n in range(decks|length) %}
+            <li>
+                <div class="class_item">
                     {% set deck = decks[n] %}
                     {% set saved = saved_decks_info[n] %}
-                    <p>{{ deck.title }}</p>
+                    <p class="class_item_title">{{ deck.title }}</p>
                     <form method="post">
-                        <input type="submit" name="study_deck" value="Study">
-                        <select name="routines">
-                            {% for routine in class_routines %}
-                                <option name="routine" id="routine" value="{{ routine.id }}">{{ routine.title }}</option>
-                            {% endfor %}
-                            {% for routine in user_routines %}
-                                <option name="routine" id="routine" value="{{ routine.id }}">{{ routine.title }}</option>
-                            {% endfor %}
-                        </select>
-                        {% if user.id in (admins|map(attribute="admin_id"))|list or user.id == owner.id %}
-                            <input type="submit" name="unsave_deck_from_class" value="Unsave from class">
-                        {% endif %}
                         {% if saved != -1 and deck.is_public == 1 %}
                             {% if saved == 1 %}
                                 <input type="submit" name="unsave_deck_from_user" value="Unsave">
@@ -37,29 +65,72 @@
                         <input type="hidden" name="deck_id" value="{{ deck.id }}">
                     </form>
                 </div>
-            {% endfor %}
-        </div>
-        <div class="class_section" id="class_routines">
-            <p class="class_section_title">Routines:</p>
-            {% for n in range(class_routines|length) %}
-                    <div class="class_section_entry" id="class_routine">
-                    {% set routine = class_routines[n] %}
-                    <p>{{ routine.title }}</p>
-                    <form method="post">
-                        {% if user.id in (admins|map(attribute="admin_id"))|list or user.id == owner.id %}
-                            <input type="submit" name="unsave_routine_from_class" value="Unsave from class">
-                        {% endif %}
-                        <input type="hidden" name="routine_id" value="{{ routine.id }}">
-                    </form>
-                </div>
-            {% endfor %}
-        </div>
+            </li>
+        {% endfor %}
+        </ul>
     </div>
-    <div class="other_class_info">
-        <a href="{{ url_for('class.meta_view', class_id=view_class.id) }}">Metainfo</a>
-        {% if user.id in (admins|map(attribute="admin_id"))|list or user.id == owner.id %}
-            <a href="{{ url_for('class.admin_view', class_id=view_class.id) }}">Admin View</a>
+    <div id="class_display_routines" class="class_section">
+        <p class="class_section_title">Routines:</p>
+        {% if class_routines|length == 0 %}
+            <p>There are no routines in this class</p>
         {% endif %}
+        <ul>
+        {% for routine in class_routines %}
+                <div class="class_item">
+                    <li>
+                        <p class="class_item_title">{{ routine.title }}</p>
+                    </li>
+                </div>
+        {% endfor %}
+        </ul>
     </div>
 </div>
+<!--
+<p class="class_section_title">Decks:</p>
+    {% for n in range(decks|length) %}
+        <div class="class_section_entry" id="class_routine">
+            {% set deck = decks[n] %}
+            {% set saved = saved_decks_info[n] %}
+            <p>{{ deck.title }}</p>
+            <form method="post">
+                <input type="submit" name="study_deck" value="Study">
+                <select name="routines">
+                    {% for routine in class_routines %}
+                        <option name="routine" id="routine" value="{{ routine.id }}">{{ routine.title }}</option>
+                    {% endfor %}
+                    {% for routine in user_routines %}
+                        <option name="routine" id="routine" value="{{ routine.id }}">{{ routine.title }}</option>
+                    {% endfor %}
+                </select>
+                {% if user.id in (admins|map(attribute="admin_id"))|list or user.id == owner.id %}
+                    <input type="submit" name="unsave_deck_from_class" value="Unsave from class">
+                {% endif %}
+                {% if saved != -1 and deck.is_public == 1 %}
+                    {% if saved == 1 %}
+                        <input type="submit" name="unsave_deck_from_user" value="Unsave">
+                    {% else %}
+                        <input type="submit" name="save_deck_to_user" value="Save">
+                    {% endif %}
+                {% endif %}
+                <input type="hidden" name="deck_id" value="{{ deck.id }}">
+            </form>
+        </div>
+    {% endfor %}
+</div>
+<div class="class_section" id="class_routines">
+    <p class="class_section_title">Routines:</p>
+    {% for n in range(class_routines|length) %}
+            <div class="class_section_entry" id="class_routine">
+            {% set routine = class_routines[n] %}
+            <p>{{ routine.title }}</p>
+            <form method="post">
+                {% if user.id in (admins|map(attribute="admin_id"))|list or user.id == owner.id %}
+                    <input type="submit" name="unsave_routine_from_class" value="Unsave from class">
+                {% endif %}
+                <input type="hidden" name="routine_id" value="{{ routine.id }}">
+            </form>
+        </div>
+    {% endfor %}
+</div>
+-->
 {% endblock %}
